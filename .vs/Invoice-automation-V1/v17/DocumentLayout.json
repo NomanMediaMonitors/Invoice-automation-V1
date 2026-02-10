@@ -1,7 +1,16 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "F:\\Invoice-automation-V1\\",
-  "Documents": [],
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{79DCB480-2D80-4EB6-BFA5-1EB8AFB09395}|Invoice-automation-V1\\Invoice-automation-V1.csproj|f:\\invoice-automation-v1\\invoice-automation-v1\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{79DCB480-2D80-4EB6-BFA5-1EB8AFB09395}|Invoice-automation-V1\\Invoice-automation-V1.csproj|solutionrelative:invoice-automation-v1\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{79DCB480-2D80-4EB6-BFA5-1EB8AFB09395}|Invoice-automation-V1\\Invoice-automation-V1.csproj|f:\\invoice-automation-v1\\invoice-automation-v1\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{79DCB480-2D80-4EB6-BFA5-1EB8AFB09395}|Invoice-automation-V1\\Invoice-automation-V1.csproj|solutionrelative:invoice-automation-v1\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
@@ -9,11 +18,37 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": -1,
+          "SelectedChildIndex": 1,
           "Children": [
             {
               "$type": "Bookmark",
               "Name": "ST:1:0:{d212f56b-c48a-434c-a121-1c5d80b59b9f}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "F:\\Invoice-automation-V1\\Invoice-automation-V1\\appsettings.json",
+              "RelativeDocumentMoniker": "Invoice-automation-V1\\appsettings.json",
+              "ToolTip": "F:\\Invoice-automation-V1\\Invoice-automation-V1\\appsettings.json",
+              "RelativeToolTip": "Invoice-automation-V1\\appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAABjAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-02-10T11:07:52.223Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Program.cs",
+              "DocumentMoniker": "F:\\Invoice-automation-V1\\Invoice-automation-V1\\Program.cs",
+              "RelativeDocumentMoniker": "Invoice-automation-V1\\Program.cs",
+              "ToolTip": "F:\\Invoice-automation-V1\\Invoice-automation-V1\\Program.cs",
+              "RelativeToolTip": "Invoice-automation-V1\\Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-10T11:07:45.614Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Bookmark",
