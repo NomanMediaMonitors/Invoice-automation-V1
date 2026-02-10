@@ -3,13 +3,16 @@
     ViewData["Title"] = "Register";
 }
 
-<div class="container mt-5">
+<div class="container animate-fadeIn">
     <div class="row justify-content-center">
         <div class="col-md-6">
-            <div class="card shadow">
-                <div class="card-body p-5">
+            <div class="card auth-card shadow-lg">
+                <div class="card-body">
                     <div class="text-center mb-4">
-                        <h2 class="fw-bold">Create Account</h2>
+                        <div class="mb-3">
+                            <i class="bi bi-person-plus-fill" style="font-size: 3rem; color: var(--primary-color);"></i>
+                        </div>
+                        <h2 class="fw-bold text-gradient">Create Account</h2>
                         <p class="text-muted">Join Invoice Automation System</p>
                     </div>
 
@@ -18,42 +21,62 @@
 
                         <div class="mb-3">
                             <label asp-for="FullName" class="form-label"></label>
-                            <input asp-for="FullName" class="form-control form-control-lg" placeholder="Enter your full name" />
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-2"><i class="bi bi-person"></i></span>
+                                <input asp-for="FullName" class="form-control form-control-lg border-start-0" placeholder="Enter your full name" />
+                            </div>
                             <span asp-validation-for="FullName" class="text-danger"></span>
                         </div>
 
                         <div class="mb-3">
                             <label asp-for="Email" class="form-label"></label>
-                            <input asp-for="Email" class="form-control form-control-lg" placeholder="Enter your email" />
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-2"><i class="bi bi-envelope"></i></span>
+                                <input asp-for="Email" class="form-control form-control-lg border-start-0" placeholder="Enter your email" />
+                            </div>
                             <span asp-validation-for="Email" class="text-danger"></span>
                         </div>
 
                         <div class="mb-3">
                             <label asp-for="Phone" class="form-label"></label>
-                            <input asp-for="Phone" class="form-control form-control-lg" placeholder="Enter your phone number (optional)" />
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-2"><i class="bi bi-telephone"></i></span>
+                                <input asp-for="Phone" class="form-control form-control-lg border-start-0" placeholder="Enter your phone number (optional)" />
+                            </div>
                             <span asp-validation-for="Phone" class="text-danger"></span>
                         </div>
 
                         <div class="mb-3">
                             <label asp-for="Password" class="form-label"></label>
-                            <input asp-for="Password" class="form-control form-control-lg" placeholder="Create a password" />
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-2"><i class="bi bi-lock"></i></span>
+                                <input asp-for="Password" class="form-control form-control-lg border-start-0" placeholder="Create a password" />
+                            </div>
                             <span asp-validation-for="Password" class="text-danger"></span>
                         </div>
 
                         <div class="mb-4">
                             <label asp-for="ConfirmPassword" class="form-label"></label>
-                            <input asp-for="ConfirmPassword" class="form-control form-control-lg" placeholder="Confirm your password" />
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-2"><i class="bi bi-lock-fill"></i></span>
+                                <input asp-for="ConfirmPassword" class="form-control form-control-lg border-start-0" placeholder="Confirm your password" />
+                            </div>
                             <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
                         </div>
 
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-primary btn-lg">Create Account</button>
+                        <div class="d-grid gap-2 mb-4">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-check-circle"></i> Create Account
+                            </button>
+                        </div>
+
+                        <div class="text-center">
+                            <p class="text-muted mb-0">
+                                Already have an account?
+                                <a asp-action="Login" class="fw-bold">Login here</a>
+                            </p>
                         </div>
                     </form>
-
-                    <div class="text-center mt-4">
-                        <p class="mb-0">Already have an account? <a asp-action="Login" class="text-primary fw-bold">Login here</a></p>
-                    </div>
                 </div>
             </div>
         </div>
