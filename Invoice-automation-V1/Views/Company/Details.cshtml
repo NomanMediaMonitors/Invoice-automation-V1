@@ -1,0 +1,192 @@
+@model InvoiceAutomation.Core.Entities.Company
+@{
+    ViewData["Title"] = "Company Details";
+    var userRole = (InvoiceAutomation.Core.Entities.UserRole)ViewBag.UserRole;
+    var canSync = (bool)ViewBag.CanSync;
+    var daysSinceSync = (int?)ViewBag.DaysSinceSync;
+    var isAdminOrAbove = userRole == InvoiceAutomation.Core.Entities.UserRole.Admin || userRole == InvoiceAutomation.Core.Entities.UserRole.SuperAdmin;
+}
+
+<div class="container animate-fadeIn">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card shadow-lg mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-4">
+                        <div>
+                            <h2 class="fw-bold text-gradient mb-1">@Model.Name</h2>
+                            <p class="text-muted mb-0">
+                                <i class="bi bi-tag"></i> NTN: @Model.Ntn
+                            </p>
+                        </div>
+                        @if (isAdminOrAbove)
+                        {
+                            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-secondary">
+                                <i class="bi bi-pencil"></i> Edit
+                            </a>
+                        }
+                    </div>
+
+                    @if (TempData["SuccessMessage"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="bi bi-check-circle"></i> @TempData["SuccessMessage"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    @if (TempData["ErrorMessage"] != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="bi bi-exclamation-triangle"></i> @TempData["ErrorMessage"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="info-item">
+                                <label class="text-muted small">STRN</label>
+                                <p class="mb-0">@(Model.Strn ?? "N/A")</p>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <div class="info-item">
+                                <label class="text-muted small">Phone</label>
+                                <p class="mb-0">@(Model.Phone ?? "N/A")</p>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <div class="info-item">
+                                <label class="text-muted small">Email</label>
+                                <p class="mb-0">@(Model.Email ?? "N/A")</p>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <div class="info-item">
+                                <label class="text-muted small">Your Role</label>
+                                <p class="mb-0"><span class="badge bg-primary">@userRole</span></p>
+                            </div>
+                        </div>
+
+                        <div class="col-12 mb-3">
+                            <div class="info-item">
+                                <label class="text-muted small">Address</label>
+                                <p class="mb-0">@(Model.Address ?? "N/A")</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-lg mb-4">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">
+                        <i class="bi bi-link-45deg"></i> Indraaj Integration
+                    </h5>
+
+                    @if (string.IsNullOrEmpty(Model.IndraajAccessToken))
+                    {
+                        <div class="alert alert-warning" role="alert">
+                            <i class="bi bi-exclamation-triangle"></i>
+                            <strong>Not Connected</strong>
+                            <p class="mb-0 mt-2 small">Connect your Indraaj account to sync Chart of Accounts.</p>
+                        </div>
+
+                        @if (isAdminOrAbove)
+                        {
+                            <a asp-action="ConnectIndraaj" asp-route-id="@Model.Id" class="btn btn-primary w-100">
+                                <i class="bi bi-link-45deg"></i> Connect Indraaj
+                            </a>
+                        }
+                    }
+                    else
+                    {
+                        <div class="alert alert-success" role="alert">
+                            <i class="bi bi-check-circle"></i>
+                            <strong>Connected</strong>
+                        </div>
+
+                        @if (Model.LastCoaSyncAt.HasValue)
+                        {
+                            <div class="mb-3">
+                                <label class="text-muted small">Last Sync</label>
+                                <p class="mb-0">@Model.LastCoaSyncAt.Value.ToString("MMM dd, yyyy HH:mm")</p>
+                                @if (daysSinceSync.HasValue)
+                                {
+                                    <small class="text-muted">(@daysSinceSync days ago)</small>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="alert alert-info" role="alert">
+                                <small>No sync performed yet</small>
+                            </div>
+                        }
+
+                        <form asp-action="SyncCoa" asp-route-id="@Model.Id" method="post" class="mb-2">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-success w-100" disabled="@(!canSync)">
+                                <i class="bi bi-arrow-repeat"></i>
+                                @if (canSync)
+                                {
+                                    <text>Sync Chart of Accounts</text>
+                                }
+                                else
+                                {
+                                    <text>Sync Available in @(7 - daysSinceSync.GetValueOrDefault()) Days</text>
+                                }
+                            </button>
+                        </form>
+
+                        @if (!canSync)
+                        {
+                            <small class="text-muted">
+                                <i class="bi bi-info-circle"></i> Sync is available once every 7 days
+                            </small>
+                        }
+
+                        <hr />
+
+                        <a asp-action="ViewChartOfAccounts" asp-route-id="@Model.Id" class="btn btn-outline-primary w-100 mb-2">
+                            <i class="bi bi-list-ul"></i> View Chart of Accounts
+                        </a>
+
+                        @if (isAdminOrAbove)
+                        {
+                            <a asp-action="ConnectIndraaj" asp-route-id="@Model.Id" class="btn btn-outline-secondary w-100">
+                                <i class="bi bi-arrow-repeat"></i> Update Access Token
+                            </a>
+                        }
+                    }
+                </div>
+            </div>
+
+            <div class="text-center">
+                <a asp-action="Index" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Back to Companies
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.info-item {
+    padding: 0.5rem;
+    background: #f8f9fa;
+    border-radius: 0.375rem;
+}
+
+.info-item label {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    display: block;
+}
+</style>

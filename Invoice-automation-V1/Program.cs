@@ -35,12 +35,20 @@ builder.Services.AddAuthorization();
 // Register Repositories
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserTokenRepository, UserTokenRepository>();
+builder.Services.AddScoped<ICompanyRepository, CompanyRepository>();
+builder.Services.AddScoped<IUserCompanyRepository, UserCompanyRepository>();
+builder.Services.AddScoped<IChartOfAccountRepository, ChartOfAccountRepository>();
 
 // Register Services
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<ICompanyService, CompanyService>();
+builder.Services.AddScoped<IIndraajSyncService, IndraajSyncService>();
 
-// Add Memory Cache for future use (Indraaj API)
+// Add HttpClient for external API calls
+builder.Services.AddHttpClient<IIndraajSyncService, IndraajSyncService>();
+
+// Add Memory Cache for future use
 builder.Services.AddMemoryCache();
 
 var app = builder.Build();

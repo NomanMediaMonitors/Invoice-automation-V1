@@ -1,0 +1,100 @@
+@model InvoiceAutomation.Core.DTOs.Company.UpdateCompanyDto
+@{
+    ViewData["Title"] = "Edit Company";
+}
+
+<div class="container animate-fadeIn">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg">
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <div class="mb-3">
+                            <i class="bi bi-pencil-square" style="font-size: 3rem; color: var(--primary-color);"></i>
+                        </div>
+                        <h2 class="fw-bold text-gradient">Edit Company</h2>
+                        <p class="text-muted">Update company information</p>
+                    </div>
+
+                    <form asp-action="Edit" method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Name" class="form-label">Company Name *</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-2"><i class="bi bi-building"></i></span>
+                                    <input asp-for="Name" class="form-control border-start-0" placeholder="Enter company name" />
+                                </div>
+                                <span asp-validation-for="Name" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Ntn" class="form-label">NTN *</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-2"><i class="bi bi-tag"></i></span>
+                                    <input asp-for="Ntn" class="form-control border-start-0" placeholder="Enter NTN" />
+                                </div>
+                                <span asp-validation-for="Ntn" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Strn" class="form-label">STRN</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-2"><i class="bi bi-tag-fill"></i></span>
+                                <input asp-for="Strn" class="form-control border-start-0" placeholder="Enter STRN (optional)" />
+                            </div>
+                            <span asp-validation-for="Strn" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Address" class="form-label">Address</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-2"><i class="bi bi-geo-alt"></i></span>
+                                <textarea asp-for="Address" class="form-control border-start-0" rows="3" placeholder="Enter company address (optional)"></textarea>
+                            </div>
+                            <span asp-validation-for="Address" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Phone" class="form-label">Phone</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-2"><i class="bi bi-telephone"></i></span>
+                                    <input asp-for="Phone" class="form-control border-start-0" placeholder="Enter phone number (optional)" />
+                                </div>
+                                <span asp-validation-for="Phone" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Email" class="form-label">Email</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-2"><i class="bi bi-envelope"></i></span>
+                                    <input asp-for="Email" class="form-control border-start-0" placeholder="Enter email (optional)" />
+                                </div>
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 mb-3">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-check-circle"></i> Update Company
+                            </button>
+                        </div>
+
+                        <div class="text-center">
+                            <a asp-action="Index" class="text-muted">
+                                <i class="bi bi-arrow-left"></i> Back to Companies
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
