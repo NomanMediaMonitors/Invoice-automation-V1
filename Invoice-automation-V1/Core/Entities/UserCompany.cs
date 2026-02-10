@@ -28,6 +28,10 @@ public class UserCompany
     public DateTime? InvitedAt { get; set; }
     public DateTime JoinedAt { get; set; } = DateTime.UtcNow;
 
+    // Timestamps
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+
     // Navigation Properties
     public virtual User User { get; set; } = null!;
     public virtual Company Company { get; set; } = null!;

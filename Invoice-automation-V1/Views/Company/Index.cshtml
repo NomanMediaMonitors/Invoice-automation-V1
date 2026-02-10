@@ -92,7 +92,7 @@
                                     <i class="bi bi-eye"></i> View
                                 </a>
 
-                                @if (company.Role == InvoiceAutomation.Core.Entities.UserRole.Admin || company.Role == InvoiceAutomation.Core.Entities.UserRole.SuperAdmin)
+                                @if (company.Role == "Admin" || company.Role == "SuperAdmin")
                                 {
                                     <a asp-action="Edit" asp-route-id="@company.Id" class="btn btn-sm btn-outline-secondary">
                                         <i class="bi bi-pencil"></i> Edit

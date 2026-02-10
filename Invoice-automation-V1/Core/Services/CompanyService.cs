@@ -131,7 +131,7 @@ public class CompanyService : ICompanyService
                 Name = uc.Company.Name,
                 Ntn = uc.Company.Ntn,
                 IsUserDefault = uc.IsUserDefault,
-                Role = uc.Role,
+                Role = uc.Role.ToString(),
                 LastCoaSyncAt = uc.Company.LastCoaSyncAt,
                 HasIndraajConnection = !string.IsNullOrEmpty(uc.Company.IndraajAccessToken)
             });

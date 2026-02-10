@@ -56,11 +56,12 @@ public class CompanyDropdownDto
     public Guid Id { get; set; }
     public string Name { get; set; } = string.Empty;
     public string Ntn { get; set; } = string.Empty;
-    public bool IsDefault { get; set; }
+    public bool IsUserDefault { get; set; }
     public string Role { get; set; } = string.Empty;
     public DateTime? LastCoaSyncAt { get; set; }
+    public bool HasIndraajConnection { get; set; }
 
-    public string DisplayText => IsDefault ? $"⭐ {Name}" : Name;
+    public string DisplayText => IsUserDefault ? $"⭐ {Name}" : Name;
     public bool CanSync => !LastCoaSyncAt.HasValue ||
                            (DateTime.UtcNow - LastCoaSyncAt.Value).TotalDays >= 7;
 }
