@@ -1,0 +1,207 @@
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="container-fluid animate-fadeIn">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="page-header">
+                <div class="d-flex justify-content-between align-items-center flex-wrap">
+                    <div>
+                        <div class="page-title">
+                            <i class="bi bi-speedometer2"></i>
+                            <h2 class="fw-bold mb-0">Dashboard</h2>
+                        </div>
+                        <p class="page-subtitle mb-0">Welcome back, @User.Identity?.Name</p>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <a asp-controller="Company" asp-action="Index" class="btn btn-outline-primary">
+                            <i class="bi bi-building"></i> My Companies
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-6 col-lg-3">
+            <div class="stat-card">
+                <div class="stat-card-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                    <i class="bi bi-building"></i>
+                </div>
+                <div class="stat-card-value">0</div>
+                <div class="stat-card-label">Companies</div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+            <div class="stat-card">
+                <div class="stat-card-icon" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                    <i class="bi bi-truck"></i>
+                </div>
+                <div class="stat-card-value">0</div>
+                <div class="stat-card-label">Vendors</div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+            <div class="stat-card">
+                <div class="stat-card-icon" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                    <i class="bi bi-receipt"></i>
+                </div>
+                <div class="stat-card-value">0</div>
+                <div class="stat-card-label">Invoices</div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+            <div class="stat-card">
+                <div class="stat-card-icon" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                    <i class="bi bi-check-circle"></i>
+                </div>
+                <div class="stat-card-value">0</div>
+                <div class="stat-card-label">Approved</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="row g-4">
+        <!-- Quick Actions -->
+        <div class="col-lg-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title mb-4 d-flex align-items-center">
+                        <i class="bi bi-lightning-charge-fill text-warning me-2"></i>
+                        Quick Actions
+                    </h5>
+                    <div class="d-grid gap-3">
+                        <a asp-controller="Company" asp-action="Create" class="btn btn-outline-primary text-start">
+                            <i class="bi bi-plus-circle me-2"></i> Add New Company
+                        </a>
+                        <button class="btn btn-outline-secondary text-start" disabled>
+                            <i class="bi bi-upload me-2"></i> Upload Invoice
+                        </button>
+                        <button class="btn btn-outline-secondary text-start" disabled>
+                            <i class="bi bi-truck me-2"></i> Add Vendor
+                        </button>
+                        <button class="btn btn-outline-secondary text-start" disabled>
+                            <i class="bi bi-person-plus me-2"></i> Invite Team Member
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="col-lg-8">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title mb-4 d-flex align-items-center">
+                        <i class="bi bi-clock-history text-info me-2"></i>
+                        Recent Activity
+                    </h5>
+                    <div class="empty-state" style="padding: 2rem;">
+                        <i class="bi bi-inbox"></i>
+                        <h5>No Recent Activity</h5>
+                        <p class="text-muted mb-0">Your recent activities will appear here</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Info -->
+    <div class="row g-4 mt-2">
+        <div class="col-md-4">
+            <div class="card h-100 border-0" style="background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3">
+                        <i class="bi bi-eye-fill" style="font-size: 2.5rem; color: var(--primary-color);"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2">Intelligent OCR</h5>
+                    <p class="text-muted small mb-0">
+                        Advanced OCR technology automatically extracts invoice data with high accuracy
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 border-0" style="background: linear-gradient(135deg, #f093fb15 0%, #f5576c15 100%);">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3">
+                        <i class="bi bi-diagram-3-fill" style="font-size: 2.5rem; color: #f5576c;"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2">Smart Workflow</h5>
+                    <p class="text-muted small mb-0">
+                        Multi-level approval system with automated routing and notifications
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 border-0" style="background: linear-gradient(135deg, #4facfe15 0%, #00f2fe15 100%);">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3">
+                        <i class="bi bi-link-45deg" style="font-size: 2.5rem; color: #00f2fe;"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2">Indraaj Integration</h5>
+                    <p class="text-muted small mb-0">
+                        Seamless integration with your accounting system for real-time sync
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .container-fluid {
+        max-width: 1400px;
+        padding-left: 2rem;
+        padding-right: 2rem;
+    }
+
+    .stat-card {
+        height: 100%;
+    }
+
+    .card {
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow-md);
+        transition: all var(--transition-base);
+    }
+
+    .card:hover {
+        box-shadow: var(--shadow-lg);
+    }
+
+    .card-title {
+        font-size: 1.125rem;
+        font-weight: 700;
+        color: var(--text-primary);
+    }
+
+    .btn-outline-secondary:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    @@media (max-width: 768px) {
+        .container-fluid {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+
+        .stat-card-value {
+            font-size: 1.75rem;
+        }
+
+        .stat-card-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            font-size: 1.25rem;
+        }
+    }
+</style>
