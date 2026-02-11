@@ -89,7 +89,7 @@ public class EmailService : IEmailService
         await SendEmailAsync(toEmail, subject, body);
     }
 
-    private async Task SendEmailAsync(string toEmail, string subject, string htmlBody)
+    public async Task SendEmailAsync(string toEmail, string subject, string htmlBody)
     {
         try
         {
