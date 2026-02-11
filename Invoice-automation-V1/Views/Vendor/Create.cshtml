@@ -41,13 +41,8 @@
                                 </select>
                                 <span asp-validation-for="Type" class="text-danger"></span>
                             </div>
-                        </div>
-
-                        <!-- Contact Information -->
-                        <h5 class="mb-3 mt-4"><i class="bi bi-envelope"></i> Contact Information</h5>
-                        <div class="row">
                             <div class="col-md-4 mb-3">
-                                <label asp-for="Email" class="form-label">Email *</label>
+                                <label asp-for="Email" class="form-label">Email</label>
                                 <input asp-for="Email" class="form-control" />
                                 <span asp-validation-for="Email" class="text-danger"></span>
                             </div>
@@ -57,6 +52,10 @@
                                 <span asp-validation-for="Phone" class="text-danger"></span>
                             </div>
                             <div class="col-md-4 mb-3">
+                                <label asp-for="MobilePhone" class="form-label">Mobile Phone</label>
+                                <input asp-for="MobilePhone" class="form-control" />
+                            </div>
+                            <div class="col-md-12 mb-3">
                                 <label asp-for="Website" class="form-label">Website</label>
                                 <input asp-for="Website" class="form-control" />
                                 <span asp-validation-for="Website" class="text-danger"></span>
@@ -67,19 +66,17 @@
                         <h5 class="mb-3 mt-4"><i class="bi bi-file-text"></i> Tax Information</h5>
                         <div class="row">
                             <div class="col-md-4 mb-3">
-                                <label asp-for="Ntn" class="form-label">NTN</label>
+                                <label asp-for="Ntn" class="form-label">NTN *</label>
                                 <input asp-for="Ntn" class="form-control" />
                                 <span asp-validation-for="Ntn" class="text-danger"></span>
                             </div>
                             <div class="col-md-4 mb-3">
                                 <label asp-for="Strn" class="form-label">STRN</label>
                                 <input asp-for="Strn" class="form-control" />
-                                <span asp-validation-for="Strn" class="text-danger"></span>
                             </div>
                             <div class="col-md-4 mb-3">
                                 <label asp-for="RegistrationNumber" class="form-label">Registration Number</label>
                                 <input asp-for="RegistrationNumber" class="form-control" />
-                                <span asp-validation-for="RegistrationNumber" class="text-danger"></span>
                             </div>
                         </div>
 
@@ -87,24 +84,48 @@
                         <h5 class="mb-3 mt-4"><i class="bi bi-geo-alt"></i> Address</h5>
                         <div class="row">
                             <div class="col-md-12 mb-3">
-                                <label asp-for="Address" class="form-label">Street Address</label>
+                                <label asp-for="Address" class="form-label">Street Address *</label>
                                 <textarea asp-for="Address" class="form-control" rows="2"></textarea>
                                 <span asp-validation-for="Address" class="text-danger"></span>
                             </div>
                             <div class="col-md-4 mb-3">
-                                <label asp-for="City" class="form-label">City</label>
+                                <label asp-for="City" class="form-label">City *</label>
                                 <input asp-for="City" class="form-control" />
                                 <span asp-validation-for="City" class="text-danger"></span>
                             </div>
                             <div class="col-md-4 mb-3">
-                                <label asp-for="State" class="form-label">State</label>
+                                <label asp-for="State" class="form-label">State/Province *</label>
                                 <input asp-for="State" class="form-control" />
                                 <span asp-validation-for="State" class="text-danger"></span>
                             </div>
                             <div class="col-md-4 mb-3">
-                                <label asp-for="Country" class="form-label">Country</label>
+                                <label asp-for="PostalCode" class="form-label">Postal Code</label>
+                                <input asp-for="PostalCode" class="form-control" />
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <label asp-for="Country" class="form-label">Country *</label>
                                 <input asp-for="Country" class="form-control" value="Pakistan" />
                                 <span asp-validation-for="Country" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <!-- Contact Person -->
+                        <h5 class="mb-3 mt-4"><i class="bi bi-person"></i> Contact Person</h5>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="ContactPersonName" class="form-label">Contact Person Name *</label>
+                                <input asp-for="ContactPersonName" class="form-control" />
+                                <span asp-validation-for="ContactPersonName" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="ContactPersonEmail" class="form-label">Contact Person Email</label>
+                                <input asp-for="ContactPersonEmail" class="form-control" />
+                                <span asp-validation-for="ContactPersonEmail" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="ContactPersonPhone" class="form-label">Contact Person Phone *</label>
+                                <input asp-for="ContactPersonPhone" class="form-control" />
+                                <span asp-validation-for="ContactPersonPhone" class="text-danger"></span>
                             </div>
                         </div>
 
@@ -112,24 +133,28 @@
                         <h5 class="mb-3 mt-4"><i class="bi bi-bank"></i> Banking Information</h5>
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label asp-for="BankName" class="form-label">Bank Name</label>
+                                <label asp-for="BankName" class="form-label">Bank Name *</label>
                                 <input asp-for="BankName" class="form-control" />
                                 <span asp-validation-for="BankName" class="text-danger"></span>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label asp-for="BankAccountTitle" class="form-label">Account Title</label>
+                                <label asp-for="BankAccountTitle" class="form-label">Account Title *</label>
                                 <input asp-for="BankAccountTitle" class="form-control" />
                                 <span asp-validation-for="BankAccountTitle" class="text-danger"></span>
                             </div>
-                            <div class="col-md-6 mb-3">
-                                <label asp-for="BankAccountNumber" class="form-label">Account Number</label>
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="BankAccountNumber" class="form-label">Account Number *</label>
                                 <input asp-for="BankAccountNumber" class="form-control" />
                                 <span asp-validation-for="BankAccountNumber" class="text-danger"></span>
                             </div>
-                            <div class="col-md-6 mb-3">
-                                <label asp-for="Iban" class="form-label">IBAN</label>
-                                <input asp-for="Iban" class="form-control" />
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="Iban" class="form-label">IBAN *</label>
+                                <input asp-for="Iban" class="form-control" placeholder="PK00XXXX0000000000000000" />
                                 <span asp-validation-for="Iban" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="SwiftCode" class="form-label">SWIFT Code</label>
+                                <input asp-for="SwiftCode" class="form-control" />
                             </div>
                         </div>
 
@@ -138,13 +163,16 @@
                         <div class="row">
                             <div class="col-md-4 mb-3">
                                 <label asp-for="PaymentTermDays" class="form-label">Payment Terms (Days)</label>
-                                <input asp-for="PaymentTermDays" class="form-control" type="number" min="0" max="365" />
+                                <input asp-for="PaymentTermDays" class="form-control" type="number" min="0" max="365" placeholder="30" />
                                 <span asp-validation-for="PaymentTermDays" class="text-danger"></span>
                             </div>
                             <div class="col-md-8 mb-3">
                                 <label asp-for="PaymentTermsNotes" class="form-label">Payment Terms Notes</label>
-                                <input asp-for="PaymentTermsNotes" class="form-control" />
-                                <span asp-validation-for="PaymentTermsNotes" class="text-danger"></span>
+                                <input asp-for="PaymentTermsNotes" class="form-control" placeholder="e.g., Net 30 days from invoice date" />
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <label asp-for="Notes" class="form-label">Additional Notes</label>
+                                <textarea asp-for="Notes" class="form-control" rows="3"></textarea>
                             </div>
                         </div>
 
