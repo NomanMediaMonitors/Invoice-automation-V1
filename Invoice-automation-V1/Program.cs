@@ -47,6 +47,8 @@ builder.Services.AddScoped<ICompanyService, CompanyService>();
 builder.Services.AddScoped<IIndraajSyncService, IndraajSyncService>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<IVendorService, VendorService>();
+builder.Services.AddScoped<IOcrService, OcrService>();
+builder.Services.AddScoped<IInvoiceService, InvoiceService>();
 
 // Add HttpClient for external API calls
 builder.Services.AddHttpClient<IIndraajSyncService, IndraajSyncService>();
