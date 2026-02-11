@@ -1,0 +1,99 @@
+@model InvoiceAutomation.Core.DTOs.Employee.InviteEmployeeDto
+@{
+    ViewData["Title"] = "Invite Employee";
+    var companyId = (Guid)ViewBag.CompanyId;
+    var companyName = (string)ViewBag.CompanyName;
+}
+
+<div class="container animate-fadeIn">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg">
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <div class="mb-3">
+                            <i class="bi bi-person-plus-fill" style="font-size: 3rem; color: var(--primary-color);"></i>
+                        </div>
+                        <h2 class="fw-bold text-gradient">Invite Employee</h2>
+                        <p class="text-muted">@companyName</p>
+                    </div>
+
+                    <div class="alert alert-info" role="alert">
+                        <i class="bi bi-info-circle"></i>
+                        <strong>How it works:</strong>
+                        <ul class="mb-0 mt-2 small">
+                            <li>If the email is already registered, they'll be added to your company immediately</li>
+                            <li>If it's a new email, we'll create an account and send them an invitation with a temporary password</li>
+                            <li>The employee will receive an email notification</li>
+                        </ul>
+                    </div>
+
+                    <form asp-action="Invite" method="post">
+                        <input type="hidden" asp-for="CompanyId" value="@companyId" />
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label">Email Address *</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-2"><i class="bi bi-envelope"></i></span>
+                                <input asp-for="Email" class="form-control border-start-0" placeholder="Enter employee email" />
+                            </div>
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="FullName" class="form-label">Full Name *</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-2"><i class="bi bi-person"></i></span>
+                                <input asp-for="FullName" class="form-control border-start-0" placeholder="Enter full name" />
+                            </div>
+                            <span asp-validation-for="FullName" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Phone" class="form-label">Phone Number</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-2"><i class="bi bi-telephone"></i></span>
+                                <input asp-for="Phone" class="form-control border-start-0" placeholder="Enter phone number (optional)" />
+                            </div>
+                            <span asp-validation-for="Phone" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Role" class="form-label">Role *</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-2"><i class="bi bi-shield"></i></span>
+                                <select asp-for="Role" class="form-select border-start-0">
+                                    <option value="">Select a role...</option>
+                                    <option value="Manager">Manager - Can manage invoices and view reports</option>
+                                    <option value="Accountant">Accountant - Can create and edit invoices</option>
+                                    <option value="Approver">Approver - Can approve invoices</option>
+                                    <option value="Viewer">Viewer - Can only view invoices</option>
+                                    <option value="Admin">Admin - Full company management access</option>
+                                </select>
+                            </div>
+                            <span asp-validation-for="Role" class="text-danger"></span>
+                            <small class="text-muted">Choose the appropriate role based on the employee's responsibilities</small>
+                        </div>
+
+                        <div class="d-grid gap-2 mb-3">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-send"></i> Send Invitation
+                            </button>
+                        </div>
+
+                        <div class="text-center">
+                            <a asp-action="Index" asp-route-companyId="@companyId" class="text-muted">
+                                <i class="bi bi-arrow-left"></i> Back to Employees
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
