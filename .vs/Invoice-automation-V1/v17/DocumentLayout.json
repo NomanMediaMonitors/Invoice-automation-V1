@@ -46,8 +46,8 @@
       "RelativeMoniker": "D:0:0:{79DCB480-2D80-4EB6-BFA5-1EB8AFB09395}|Invoice-automation-V1\\Invoice-automation-V1.csproj|solutionrelative:invoice-automation-v1\\controllers\\accountcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{79DCB480-2D80-4EB6-BFA5-1EB8AFB09395}|Invoice-automation-V1\\Invoice-automation-V1.csproj|f:\\invoice-automation-v1\\invoice-automation-v1\\wwwroot\\css\\website.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
-      "RelativeMoniker": "D:0:0:{79DCB480-2D80-4EB6-BFA5-1EB8AFB09395}|Invoice-automation-V1\\Invoice-automation-V1.csproj|solutionrelative:invoice-automation-v1\\wwwroot\\css\\website.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+      "AbsoluteMoniker": "D:0:0:{79DCB480-2D80-4EB6-BFA5-1EB8AFB09395}|Invoice-automation-V1\\Invoice-automation-V1.csproj|f:\\invoice-automation-v1\\invoice-automation-v1\\wwwroot\\css\\site.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{79DCB480-2D80-4EB6-BFA5-1EB8AFB09395}|Invoice-automation-V1\\Invoice-automation-V1.csproj|solutionrelative:invoice-automation-v1\\wwwroot\\css\\site.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{79DCB480-2D80-4EB6-BFA5-1EB8AFB09395}|Invoice-automation-V1\\Invoice-automation-V1.csproj|f:\\invoice-automation-v1\\invoice-automation-v1\\views\\account\\register.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
@@ -69,7 +69,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 3,
+          "SelectedChildIndex": 4,
           "Children": [
             {
               "$type": "Bookmark",
@@ -77,7 +77,11 @@
             },
             {
               "$type": "Bookmark",
-              "Name": "ST:7:0:{e8034f19-ab72-4f06-83fd-f6832b41aa63}"
+              "Name": "ST:8:0:{e8034f19-ab72-4f06-83fd-f6832b41aa63}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:9:0:{e8034f19-ab72-4f06-83fd-f6832b41aa63}"
             },
             {
               "$type": "Bookmark",
@@ -106,8 +110,7 @@
               "RelativeToolTip": "Invoice-automation-V1\\Views\\Employee\\Index.cshtml",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-02-11T11:47:31.846Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-02-11T11:47:31.846Z"
             },
             {
               "$type": "Document",
@@ -117,8 +120,7 @@
               "ToolTip": "C:\\Program Files\\dotnet\\sdk\\9.0.300\\Sdks\\Microsoft.NET.Sdk.StaticWebAssets\\targets\\Microsoft.NET.Sdk.StaticWebAssets.targets",
               "ViewState": "AgIAAFMCAAAAAAAAAIAwwGYCAAAEAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003801|",
-              "WhenOpened": "2026-02-11T11:46:06.342Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-02-11T11:46:06.342Z"
             },
             {
               "$type": "Document",
@@ -130,8 +132,7 @@
               "RelativeToolTip": "Invoice-automation-V1\\Core\\Services\\EmployeeService.cs",
               "ViewState": "AgIAAFgAAAAAAAAAAAAuwHoAAAAuAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-11T11:34:57.834Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-02-11T11:34:57.834Z"
             },
             {
               "$type": "Document",
@@ -155,8 +156,7 @@
               "RelativeToolTip": "Invoice-automation-V1\\Views\\Shared\\_Layout.cshtml",
               "ViewState": "AgIAAEQAAAAAAAAAAAAuwFYAAAAgAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-02-11T09:51:33.483Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-02-11T09:51:33.483Z"
             },
             {
               "$type": "Document",
@@ -210,11 +210,11 @@
             {
               "$type": "Document",
               "DocumentIndex": 11,
-              "Title": "website.css",
-              "DocumentMoniker": "F:\\Invoice-automation-V1\\Invoice-automation-V1\\wwwroot\\css\\website.css",
-              "RelativeDocumentMoniker": "Invoice-automation-V1\\wwwroot\\css\\website.css",
-              "ToolTip": "F:\\Invoice-automation-V1\\Invoice-automation-V1\\wwwroot\\css\\website.css",
-              "RelativeToolTip": "Invoice-automation-V1\\wwwroot\\css\\website.css",
+              "Title": "site.css",
+              "DocumentMoniker": "F:\\Invoice-automation-V1\\Invoice-automation-V1\\wwwroot\\css\\site.css",
+              "RelativeDocumentMoniker": "Invoice-automation-V1\\wwwroot\\css\\site.css",
+              "ToolTip": "F:\\Invoice-automation-V1\\Invoice-automation-V1\\wwwroot\\css\\site.css",
+              "RelativeToolTip": "Invoice-automation-V1\\wwwroot\\css\\site.css",
               "ViewState": "AgIAAA8AAAAAAAAAAAAAAA8AAAAaAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
               "WhenOpened": "2026-02-10T14:08:36.071Z"

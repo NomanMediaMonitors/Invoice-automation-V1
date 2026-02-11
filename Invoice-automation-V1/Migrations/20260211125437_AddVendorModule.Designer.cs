@@ -3,6 +3,7 @@ using System;
 using InvoiceAutomation.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InvoiceAutomation.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260211125437_AddVendorModule")]
+    partial class AddVendorModule
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -445,27 +448,22 @@ namespace InvoiceAutomation.Migrations
                         .HasColumnName("id");
 
                     b.Property<string>("Address")
-                        .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("varchar(500)")
                         .HasColumnName("address");
 
                     b.Property<string>("BankAccountNumber")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("BankAccountTitle")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("BankName")
-                        .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("varchar(200)")
                         .HasColumnName("bank_name");
 
                     b.Property<string>("City")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("varchar(100)")
                         .HasColumnName("city");
@@ -478,15 +476,12 @@ namespace InvoiceAutomation.Migrations
                         .HasColumnType("longtext");
 
                     b.Property<string>("ContactPersonName")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("ContactPersonPhone")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("Country")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<DateTime>("CreatedAt")
@@ -506,7 +501,6 @@ namespace InvoiceAutomation.Migrations
                         .HasColumnName("email");
 
                     b.Property<string>("Iban")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<bool>("IsActive")
@@ -528,12 +522,11 @@ namespace InvoiceAutomation.Migrations
                         .HasColumnType("longtext");
 
                     b.Property<string>("Ntn")
-                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("varchar(50)")
                         .HasColumnName("ntn");
 
-                    b.Property<int?>("PaymentTermDays")
+                    b.Property<int>("PaymentTermDays")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasDefaultValue(30)
@@ -554,7 +547,6 @@ namespace InvoiceAutomation.Migrations
                         .HasColumnType("longtext");
 
                     b.Property<string>("State")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("Strn")

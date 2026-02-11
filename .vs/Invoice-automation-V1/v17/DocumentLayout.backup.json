@@ -77,7 +77,7 @@
             },
             {
               "$type": "Bookmark",
-              "Name": "ST:7:0:{e8034f19-ab72-4f06-83fd-f6832b41aa63}"
+              "Name": "ST:8:0:{e8034f19-ab72-4f06-83fd-f6832b41aa63}"
             },
             {
               "$type": "Bookmark",
@@ -106,8 +106,7 @@
               "RelativeToolTip": "Invoice-automation-V1\\Views\\Employee\\Index.cshtml",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-02-11T11:47:31.846Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-02-11T11:47:31.846Z"
             },
             {
               "$type": "Document",
@@ -117,8 +116,7 @@
               "ToolTip": "C:\\Program Files\\dotnet\\sdk\\9.0.300\\Sdks\\Microsoft.NET.Sdk.StaticWebAssets\\targets\\Microsoft.NET.Sdk.StaticWebAssets.targets",
               "ViewState": "AgIAAFMCAAAAAAAAAIAwwGYCAAAEAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003801|",
-              "WhenOpened": "2026-02-11T11:46:06.342Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-02-11T11:46:06.342Z"
             },
             {
               "$type": "Document",
@@ -130,8 +128,7 @@
               "RelativeToolTip": "Invoice-automation-V1\\Core\\Services\\EmployeeService.cs",
               "ViewState": "AgIAAFgAAAAAAAAAAAAuwHoAAAAuAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-11T11:34:57.834Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-02-11T11:34:57.834Z"
             },
             {
               "$type": "Document",
@@ -155,8 +152,7 @@
               "RelativeToolTip": "Invoice-automation-V1\\Views\\Shared\\_Layout.cshtml",
               "ViewState": "AgIAAEQAAAAAAAAAAAAuwFYAAAAgAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-02-11T09:51:33.483Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-02-11T09:51:33.483Z"
             },
             {
               "$type": "Document",
