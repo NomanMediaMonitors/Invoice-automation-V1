@@ -1,0 +1,54 @@
+@model InvoiceAutomation.Core.DTOs.Vendor.VendorDetailsDto
+@{
+    ViewData["Title"] = "Vendor Details";
+}
+<div class="container animate-fadeIn">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card shadow-lg">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-4">
+                        <div>
+                            <h2 class="fw-bold">@Model.Name</h2>
+                            <span class="badge bg-info">@Model.Type</span>
+                            @if (Model.IsActive) { <span class="badge bg-success">Active</span> } else { <span class="badge bg-secondary">Inactive</span> }
+                        </div>
+                        <a asp-action="Edit" asp-route-id="@Model.Id" asp-route-companyId="@Model.CompanyId" class="btn btn-outline-secondary"><i class="bi bi-pencil"></i> Edit</a>
+                    </div>
+                    @if (TempData["SuccessMessage"] != null) { <div class="alert alert-success">@TempData["SuccessMessage"]</div> }
+                    <div class="row">
+                        <div class="col-md-6 mb-3"><strong>Email:</strong> @Model.Email</div>
+                        <div class="col-md-6 mb-3"><strong>Phone:</strong> @(Model.Phone ?? "N/A")</div>
+                        <div class="col-md-6 mb-3"><strong>City:</strong> @(Model.City ?? "N/A")</div>
+                        <div class="col-md-6 mb-3"><strong>NTN:</strong> @(Model.Ntn ?? "N/A")</div>
+                        <div class="col-md-6 mb-3"><strong>Bank:</strong> @(Model.BankName ?? "N/A")</div>
+                        <div class="col-md-6 mb-3"><strong>Payment Terms:</strong> @Model.PaymentTermDays days</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-lg">
+                <div class="card-body">
+                    <h5><i class="bi bi-gear"></i> Actions</h5>
+                    @if (Model.IsActive) {
+                        <form asp-action="Deactivate" asp-route-id="@Model.Id" asp-route-companyId="@Model.CompanyId" method="post" class="mb-2">
+                            <button type="submit" class="btn btn-warning w-100">Deactivate</button>
+                        </form>
+                    } else {
+                        <form asp-action="Activate" asp-route-id="@Model.Id" asp-route-companyId="@Model.CompanyId" method="post" class="mb-2">
+                            <button type="submit" class="btn btn-success w-100">Activate</button>
+                        </form>
+                    }
+                    <hr />
+                    <form asp-action="Delete" asp-route-id="@Model.Id" asp-route-companyId="@Model.CompanyId" method="post" onsubmit="return confirm('Delete this vendor?')">
+                        <button type="submit" class="btn btn-danger w-100"><i class="bi bi-trash"></i> Delete</button>
+                    </form>
+                </div>
+            </div>
+            <div class="text-center mt-3">
+                <a asp-action="Index" asp-route-companyId="@Model.CompanyId" class="btn btn-outline-secondary">Back to Vendors</a>
+            </div>
+        </div>
+    </div>
+</div>

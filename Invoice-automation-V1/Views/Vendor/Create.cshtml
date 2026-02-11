@@ -1,0 +1,171 @@
+@model InvoiceAutomation.Core.DTOs.Vendor.CreateVendorDto
+@{
+    ViewData["Title"] = "Add Vendor";
+    var companyId = (Guid)ViewBag.CompanyId;
+    var companyName = (string)ViewBag.CompanyName;
+}
+
+<div class="container animate-fadeIn">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow-lg">
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <div class="mb-3">
+                            <i class="bi bi-truck" style="font-size: 3rem; color: var(--primary-color);"></i>
+                        </div>
+                        <h2 class="fw-bold text-gradient">Add New Vendor</h2>
+                        <p class="text-muted">@companyName</p>
+                    </div>
+
+                    <form asp-action="Create" method="post">
+                        <input type="hidden" asp-for="CompanyId" value="@companyId" />
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                        <!-- Basic Information -->
+                        <h5 class="mb-3"><i class="bi bi-info-circle"></i> Basic Information</h5>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Name" class="form-label">Vendor Name *</label>
+                                <input asp-for="Name" class="form-control" />
+                                <span asp-validation-for="Name" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Type" class="form-label">Vendor Type *</label>
+                                <select asp-for="Type" class="form-select">
+                                    <option value="Supplier">Supplier</option>
+                                    <option value="ServiceProvider">Service Provider</option>
+                                    <option value="Contractor">Contractor</option>
+                                    <option value="Consultant">Consultant</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                                <span asp-validation-for="Type" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <!-- Contact Information -->
+                        <h5 class="mb-3 mt-4"><i class="bi bi-envelope"></i> Contact Information</h5>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="Email" class="form-label">Email *</label>
+                                <input asp-for="Email" class="form-control" />
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="Phone" class="form-label">Phone</label>
+                                <input asp-for="Phone" class="form-control" />
+                                <span asp-validation-for="Phone" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="Website" class="form-label">Website</label>
+                                <input asp-for="Website" class="form-control" />
+                                <span asp-validation-for="Website" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <!-- Tax Information -->
+                        <h5 class="mb-3 mt-4"><i class="bi bi-file-text"></i> Tax Information</h5>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="Ntn" class="form-label">NTN</label>
+                                <input asp-for="Ntn" class="form-control" />
+                                <span asp-validation-for="Ntn" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="Strn" class="form-label">STRN</label>
+                                <input asp-for="Strn" class="form-control" />
+                                <span asp-validation-for="Strn" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="RegistrationNumber" class="form-label">Registration Number</label>
+                                <input asp-for="RegistrationNumber" class="form-control" />
+                                <span asp-validation-for="RegistrationNumber" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <!-- Address -->
+                        <h5 class="mb-3 mt-4"><i class="bi bi-geo-alt"></i> Address</h5>
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label asp-for="Address" class="form-label">Street Address</label>
+                                <textarea asp-for="Address" class="form-control" rows="2"></textarea>
+                                <span asp-validation-for="Address" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="City" class="form-label">City</label>
+                                <input asp-for="City" class="form-control" />
+                                <span asp-validation-for="City" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="State" class="form-label">State</label>
+                                <input asp-for="State" class="form-control" />
+                                <span asp-validation-for="State" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="Country" class="form-label">Country</label>
+                                <input asp-for="Country" class="form-control" value="Pakistan" />
+                                <span asp-validation-for="Country" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <!-- Banking Information -->
+                        <h5 class="mb-3 mt-4"><i class="bi bi-bank"></i> Banking Information</h5>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="BankName" class="form-label">Bank Name</label>
+                                <input asp-for="BankName" class="form-control" />
+                                <span asp-validation-for="BankName" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="BankAccountTitle" class="form-label">Account Title</label>
+                                <input asp-for="BankAccountTitle" class="form-control" />
+                                <span asp-validation-for="BankAccountTitle" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="BankAccountNumber" class="form-label">Account Number</label>
+                                <input asp-for="BankAccountNumber" class="form-control" />
+                                <span asp-validation-for="BankAccountNumber" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Iban" class="form-label">IBAN</label>
+                                <input asp-for="Iban" class="form-control" />
+                                <span asp-validation-for="Iban" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <!-- Payment Terms -->
+                        <h5 class="mb-3 mt-4"><i class="bi bi-calendar-check"></i> Payment Terms</h5>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="PaymentTermDays" class="form-label">Payment Terms (Days)</label>
+                                <input asp-for="PaymentTermDays" class="form-control" type="number" min="0" max="365" />
+                                <span asp-validation-for="PaymentTermDays" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-8 mb-3">
+                                <label asp-for="PaymentTermsNotes" class="form-label">Payment Terms Notes</label>
+                                <input asp-for="PaymentTermsNotes" class="form-control" />
+                                <span asp-validation-for="PaymentTermsNotes" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-check-circle"></i> Create Vendor
+                            </button>
+                        </div>
+
+                        <div class="text-center mt-3">
+                            <a asp-action="Index" asp-route-companyId="@companyId" class="text-muted">
+                                <i class="bi bi-arrow-left"></i> Back to Vendors
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

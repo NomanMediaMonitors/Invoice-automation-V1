@@ -187,6 +187,22 @@
                 </div>
             </div>
 
+            <div class="card shadow-lg mb-4">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">
+                        <i class="bi bi-truck"></i> Vendor Management
+                    </h5>
+
+                    <a asp-controller="Vendor" asp-action="Index" asp-route-companyId="@Model.Id" class="btn btn-outline-primary w-100 mb-2">
+                        <i class="bi bi-truck"></i> Manage Vendors
+                    </a>
+
+                    <a asp-controller="Vendor" asp-action="Create" asp-route-companyId="@Model.Id" class="btn btn-outline-success w-100">
+                        <i class="bi bi-plus-circle"></i> Add Vendor
+                    </a>
+                </div>
+            </div>
+
             <div class="text-center">
                 <a asp-action="Index" class="btn btn-outline-secondary">
                     <i class="bi bi-arrow-left"></i> Back to Companies

@@ -1,0 +1,55 @@
+@model InvoiceAutomation.Core.DTOs.Vendor.UpdateVendorDto
+@{
+    ViewData["Title"] = "Edit Vendor";
+}
+<div class="container animate-fadeIn">
+    <h2 class="fw-bold text-gradient mb-4"><i class="bi bi-pencil"></i> Edit Vendor</h2>
+    <div class="card shadow-lg">
+        <div class="card-body">
+            <form asp-action="Edit" asp-route-id="@ViewContext.RouteData.Values["id"]" asp-route-companyId="@ViewBag.CompanyId" method="post">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Name">Name *</label>
+                        <input asp-for="Name" class="form-control" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Type">Type *</label>
+                        <select asp-for="Type" class="form-select">
+                            <option value="Supplier">Supplier</option>
+                            <option value="ServiceProvider">Service Provider</option>
+                            <option value="Contractor">Contractor</option>
+                            <option value="Consultant">Consultant</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="Email">Email *</label>
+                        <input asp-for="Email" class="form-control" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="Phone">Phone</label>
+                        <input asp-for="Phone" class="form-control" />
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="City">City</label>
+                        <input asp-for="City" class="form-control" />
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="Ntn">NTN</label>
+                        <input asp-for="Ntn" class="form-control" />
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="PaymentTermDays">Payment Terms (Days)</label>
+                        <input asp-for="PaymentTermDays" class="form-control" type="number" />
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary"><i class="bi bi-check"></i> Update</button>
+                <a asp-action="Details" asp-route-id="@ViewContext.RouteData.Values["id"]" asp-route-companyId="@ViewBag.CompanyId" class="btn btn-secondary">Cancel</a>
+            </form>
+        </div>
+    </div>
+</div>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

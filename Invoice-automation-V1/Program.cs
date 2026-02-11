@@ -38,6 +38,7 @@ builder.Services.AddScoped<IUserTokenRepository, UserTokenRepository>();
 builder.Services.AddScoped<ICompanyRepository, CompanyRepository>();
 builder.Services.AddScoped<IUserCompanyRepository, UserCompanyRepository>();
 builder.Services.AddScoped<IChartOfAccountRepository, ChartOfAccountRepository>();
+builder.Services.AddScoped<IVendorRepository, VendorRepository>();
 
 // Register Services
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -45,6 +46,7 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<ICompanyService, CompanyService>();
 builder.Services.AddScoped<IIndraajSyncService, IndraajSyncService>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
+builder.Services.AddScoped<IVendorService, VendorService>();
 
 // Add HttpClient for external API calls
 builder.Services.AddHttpClient<IIndraajSyncService, IndraajSyncService>();
