@@ -5,4 +5,5 @@ public interface IEmailService
     Task SendEmailVerificationAsync(string toEmail, string fullName, string verificationUrl);
     Task SendPasswordResetAsync(string toEmail, string fullName, string resetUrl);
     Task SendWelcomeEmailAsync(string toEmail, string fullName);
+    Task SendEmailAsync(string toEmail, string subject, string body);
 }
