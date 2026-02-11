@@ -353,10 +353,18 @@ public class InvoiceService : IInvoiceService
                 Currency = i.Currency,
                 Status = i.Status.ToString(),
                 IsOcrProcessed = i.IsOcrProcessed,
-                IsOverdue = i.DueDate.HasValue && i.DueDate.Value < DateTime.Today && i.Status != InvoiceStatus.Paid,
-                DaysUntilDue = i.DueDate.HasValue ? (i.DueDate.Value - DateTime.Today).Days : 0
+                IsOverdue = i.DueDate.HasValue && i.DueDate.Value < DateTime.Today && i.Status != InvoiceStatus.Paid
             })
             .ToListAsync();
+
+        // Calculate DaysUntilDue in memory after fetching from database
+        foreach (var invoice in invoices)
+        {
+            if (invoice.DueDate.HasValue)
+            {
+                invoice.DaysUntilDue = (invoice.DueDate.Value - DateTime.Today).Days;
+            }
+        }
 
         return new InvoiceListViewModel
         {
