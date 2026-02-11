@@ -15,44 +15,44 @@ public class Vendor
     public Guid CompanyId { get; set; }
 
     // Basic Information
-    public string Name { get; set; } = string.Empty;
-    public string Email { get; set; } = string.Empty;
-    public string? Phone { get; set; }
-    public string? MobilePhone { get; set; }
-    public string? Website { get; set; }
+    public string Name { get; set; } = string.Empty; // Mandatory
+    public string? Email { get; set; } // Non-mandatory
+    public string? Phone { get; set; } // Non-mandatory
+    public string? MobilePhone { get; set; } // Non-mandatory
+    public string? Website { get; set; } // Non-mandatory
 
     // Business Information
-    public VendorType Type { get; set; } = VendorType.Supplier;
-    public string? Ntn { get; set; }  // National Tax Number
-    public string? Strn { get; set; } // Sales Tax Registration Number
-    public string? RegistrationNumber { get; set; }
+    public VendorType Type { get; set; } = VendorType.Supplier; // Mandatory
+    public string Ntn { get; set; } = string.Empty; // Mandatory
+    public string? Strn { get; set; } // Non-mandatory
+    public string? RegistrationNumber { get; set; } // Non-mandatory
 
     // Address Information
-    public string? Address { get; set; }
-    public string? City { get; set; }
-    public string? State { get; set; }
-    public string? PostalCode { get; set; }
-    public string? Country { get; set; }
+    public string Address { get; set; } = string.Empty; // Mandatory
+    public string City { get; set; } = string.Empty; // Mandatory
+    public string State { get; set; } = string.Empty; // Mandatory
+    public string? PostalCode { get; set; } // Non-mandatory
+    public string Country { get; set; } = string.Empty; // Mandatory
 
     // Contact Person
-    public string? ContactPersonName { get; set; }
-    public string? ContactPersonEmail { get; set; }
-    public string? ContactPersonPhone { get; set; }
+    public string ContactPersonName { get; set; } = string.Empty; // Mandatory
+    public string? ContactPersonEmail { get; set; } // Non-mandatory
+    public string ContactPersonPhone { get; set; } = string.Empty; // Mandatory
 
     // Banking Information
-    public string? BankName { get; set; }
-    public string? BankAccountNumber { get; set; }
-    public string? BankAccountTitle { get; set; }
-    public string? Iban { get; set; }
-    public string? SwiftCode { get; set; }
+    public string BankName { get; set; } = string.Empty; // Mandatory
+    public string BankAccountNumber { get; set; } = string.Empty; // Mandatory
+    public string BankAccountTitle { get; set; } = string.Empty; // Mandatory
+    public string Iban { get; set; } = string.Empty; // Mandatory
+    public string? SwiftCode { get; set; } // Non-mandatory
 
     // Payment Terms
-    public int PaymentTermDays { get; set; } = 30; // Default 30 days
-    public string? PaymentTermsNotes { get; set; }
+    public int? PaymentTermDays { get; set; } // Non-mandatory
+    public string? PaymentTermsNotes { get; set; } // Non-mandatory
 
     // Additional Information
-    public string? Notes { get; set; }
-    public bool IsActive { get; set; } = true;
+    public string? Notes { get; set; } // Non-mandatory
+    public bool IsActive { get; set; } = true; // Mandatory
 
     // Timestamps
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
