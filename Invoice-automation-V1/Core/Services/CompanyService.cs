@@ -57,9 +57,14 @@ public class CompanyService : ICompanyService
             Name = dto.Name,
             Ntn = dto.Ntn,
             Strn = dto.Strn,
-            Address = dto.Address,
-            Phone = dto.Phone,
-            Email = dto.Email,
+            Address = dto.Address ?? string.Empty,
+            Phone = dto.Phone ?? string.Empty,
+            Email = dto.Email ?? string.Empty,
+            City = string.Empty,
+            Website = null,
+            LogoUrl = null,
+            FiscalYearStart = new DateTime(DateTime.Now.Year, 7, 1), // July 1st of current year
+            DefaultCurrency = "PKR",
             IsDefault = isFirstCompany,
             DisplayOrder = companyCount + 1
         };
@@ -99,9 +104,9 @@ public class CompanyService : ICompanyService
         company.Name = dto.Name;
         company.Ntn = dto.Ntn;
         company.Strn = dto.Strn;
-        company.Address = dto.Address;
-        company.Phone = dto.Phone;
-        company.Email = dto.Email;
+        company.Address = dto.Address ?? string.Empty;
+        company.Phone = dto.Phone ?? string.Empty;
+        company.Email = dto.Email ?? string.Empty;
 
         await _companyRepository.UpdateAsync(company);
 

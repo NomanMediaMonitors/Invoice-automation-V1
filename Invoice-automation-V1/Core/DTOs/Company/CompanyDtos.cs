@@ -9,40 +9,47 @@ public class CreateCompanyDto
     public string Name { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "NTN is required")]
-    [StringLength(20, ErrorMessage = "NTN cannot exceed 20 characters")]
+    [StringLength(50, ErrorMessage = "NTN cannot exceed 50 characters")]
     public string Ntn { get; set; } = string.Empty;
 
-    [StringLength(20)]
+    [StringLength(50)]
     public string? Strn { get; set; }
 
-    [Required(ErrorMessage = "Address is required")]
-    public string Address { get; set; } = string.Empty;
+    [StringLength(500)]
+    public string? Address { get; set; }
 
-    [Required(ErrorMessage = "City is required")]
-    [StringLength(100)]
-    public string City { get; set; } = string.Empty;
-
-    [Required(ErrorMessage = "Email is required")]
-    [EmailAddress(ErrorMessage = "Invalid email address")]
-    public string Email { get; set; } = string.Empty;
-
-    [Required(ErrorMessage = "Phone is required")]
     [Phone(ErrorMessage = "Invalid phone number")]
     [StringLength(20)]
-    public string Phone { get; set; } = string.Empty;
+    public string? Phone { get; set; }
 
-    [Url(ErrorMessage = "Invalid website URL")]
-    public string? Website { get; set; }
-
-    [Required(ErrorMessage = "Fiscal year start date is required")]
-    public DateTime FiscalYearStart { get; set; } = new DateTime(DateTime.Now.Year, 7, 1);
-
-    public string DefaultCurrency { get; set; } = "PKR";
+    [EmailAddress(ErrorMessage = "Invalid email address")]
+    [StringLength(255)]
+    public string? Email { get; set; }
 }
 
-public class UpdateCompanyDto : CreateCompanyDto
+public class UpdateCompanyDto
 {
-    public Guid Id { get; set; }
+    [Required(ErrorMessage = "Company name is required")]
+    [StringLength(200, ErrorMessage = "Company name cannot exceed 200 characters")]
+    public string Name { get; set; } = string.Empty;
+
+    [Required(ErrorMessage = "NTN is required")]
+    [StringLength(50, ErrorMessage = "NTN cannot exceed 50 characters")]
+    public string Ntn { get; set; } = string.Empty;
+
+    [StringLength(50)]
+    public string? Strn { get; set; }
+
+    [StringLength(500)]
+    public string? Address { get; set; }
+
+    [Phone(ErrorMessage = "Invalid phone number")]
+    [StringLength(20)]
+    public string? Phone { get; set; }
+
+    [EmailAddress(ErrorMessage = "Invalid email address")]
+    [StringLength(255)]
+    public string? Email { get; set; }
 }
 
 public class ConnectIndraajDto
