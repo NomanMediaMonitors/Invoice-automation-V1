@@ -113,21 +113,112 @@
         @RenderBody()
     </main>
 
-    <!-- Modern Footer -->
+    <!-- Modern Footer - Redesigned -->
     <footer class="footer mt-auto">
-        <div class="container py-4">
-            <div class="row align-items-center">
-                <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
-                    <p class="mb-0 text-muted">
-                        &copy; 2026 Invoice Automation System. All rights reserved.
-                    </p>
+        <div class="footer-main">
+            <div class="container py-5">
+                <div class="row g-4">
+                    <!-- Brand Column -->
+                    <div class="col-lg-4 col-md-6">
+                        <div class="footer-brand mb-4">
+                            <div class="footer-logo d-flex align-items-center mb-3">
+                                <div class="footer-logo-icon me-2">
+                                    <i class="bi bi-receipt"></i>
+                                </div>
+                                <span class="footer-logo-text">Invoice Automation</span>
+                            </div>
+                            <p class="footer-description">
+                                Streamline your invoice processing with intelligent OCR, automated workflows,
+                                and seamless accounting integration.
+                            </p>
+                            @if (User.Identity?.IsAuthenticated != true)
+                            {
+                                <a asp-controller="Account" asp-action="Register" class="btn btn-primary btn-sm mt-3">
+                                    <i class="bi bi-rocket-takeoff"></i> Get Started Free
+                                </a>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Product Links -->
+                    <div class="col-lg-2 col-md-6 col-6">
+                        <h6 class="footer-heading">Product</h6>
+                        <ul class="footer-links">
+                            <li><a asp-controller="Home" asp-action="Index">Features</a></li>
+                            @if (User.Identity?.IsAuthenticated == true)
+                            {
+                                <li><a asp-controller="Home" asp-action="Dashboard">Dashboard</a></li>
+                                <li><a asp-controller="Company" asp-action="Index">Companies</a></li>
+                            }
+                            else
+                            {
+                                <li><a asp-controller="Account" asp-action="Register">Pricing</a></li>
+                                <li><a href="#">Integrations</a></li>
+                            }
+                        </ul>
+                    </div>
+
+                    <!-- Company Links -->
+                    <div class="col-lg-2 col-md-6 col-6">
+                        <h6 class="footer-heading">Company</h6>
+                        <ul class="footer-links">
+                            <li><a href="#">About Us</a></li>
+                            <li><a href="#">Contact</a></li>
+                            <li><a href="#">Careers</a></li>
+                            <li><a href="#">Blog</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Resources Links -->
+                    <div class="col-lg-2 col-md-6 col-6">
+                        <h6 class="footer-heading">Resources</h6>
+                        <ul class="footer-links">
+                            <li><a href="#">Documentation</a></li>
+                            <li><a href="#">API Reference</a></li>
+                            <li><a href="#">Support</a></li>
+                            <li><a href="#">FAQ</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Legal Links -->
+                    <div class="col-lg-2 col-md-6 col-6">
+                        <h6 class="footer-heading">Legal</h6>
+                        <ul class="footer-links">
+                            <li><a asp-controller="Home" asp-action="Privacy">Privacy Policy</a></li>
+                            <li><a href="#">Terms of Service</a></li>
+                            <li><a href="#">Security</a></li>
+                            <li><a href="#">Compliance</a></li>
+                        </ul>
+                    </div>
                 </div>
-                <div class="col-md-6 text-center text-md-end">
-                    <a asp-controller="Home" asp-action="Privacy" class="footer-link">Privacy</a>
-                    <span class="text-muted mx-2">|</span>
-                    <a href="#" class="footer-link">Terms</a>
-                    <span class="text-muted mx-2">|</span>
-                    <a href="#" class="footer-link">Support</a>
+            </div>
+        </div>
+
+        <!-- Footer Bottom -->
+        <div class="footer-bottom">
+            <div class="container py-3">
+                <div class="row align-items-center">
+                    <div class="col-md-6 text-center text-md-start mb-2 mb-md-0">
+                        <p class="footer-copyright mb-0">
+                            &copy; 2026 Invoice Automation System. All rights reserved.
+                        </p>
+                    </div>
+                    <div class="col-md-6 text-center text-md-end">
+                        <div class="footer-tech-stack">
+                            <span class="tech-item" title="ASP.NET Core">
+                                <i class="bi bi-code-square"></i> ASP.NET
+                            </span>
+                            <span class="tech-item" title="MySQL Database">
+                                <i class="bi bi-database"></i> MySQL
+                            </span>
+                            <span class="tech-item" title="Tesseract OCR">
+                                <i class="bi bi-eye"></i> OCR
+                            </span>
+                            <span class="tech-item" title="Indraaj Integration">
+                                <i class="bi bi-link-45deg"></i> Indraaj
+                            </span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

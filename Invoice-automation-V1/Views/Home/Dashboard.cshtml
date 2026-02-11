@@ -1,3 +1,5 @@
+@model Invoice_automation_V1.ViewModels.DashboardViewModel
+
 @{
     ViewData["Title"] = "Dashboard";
 }
@@ -13,7 +15,10 @@
                             <i class="bi bi-speedometer2"></i>
                             <h2 class="fw-bold mb-0">Dashboard</h2>
                         </div>
-                        <p class="page-subtitle mb-0">Welcome back, @User.Identity?.Name</p>
+                        <p class="page-subtitle mb-0">
+                            Welcome back, @Model.UserFullName
+                            <span class="text-muted ms-2">• @DateTime.Now.ToString("MMMM dd, yyyy")</span>
+                        </p>
                     </div>
                     <div class="d-flex gap-2">
                         <a asp-controller="Company" asp-action="Index" class="btn btn-outline-primary">
@@ -25,42 +30,89 @@
         </div>
     </div>
 
-    <!-- Stats Cards -->
+    <!-- Stats Cards - Now with real data -->
     <div class="row g-4 mb-4">
         <div class="col-md-6 col-lg-3">
-            <div class="stat-card">
-                <div class="stat-card-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                    <i class="bi bi-building"></i>
+            <a asp-controller="Company" asp-action="Index" class="text-decoration-none">
+                <div class="stat-card clickable">
+                    <div class="stat-card-header">
+                        <div class="stat-card-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                            <i class="bi bi-building"></i>
+                        </div>
+                        @if (Model.Stats.CompaniesTrend != 0)
+                        {
+                            <div class="stat-card-trend @(Model.Stats.CompaniesTrend > 0 ? "trend-up" : "trend-down")">
+                                <i class="bi bi-arrow-@(Model.Stats.CompaniesTrend > 0 ? "up" : "down")"></i>
+                                @Math.Abs(Model.Stats.CompaniesTrend)%
+                            </div>
+                        }
+                    </div>
+                    <div class="stat-card-value">@Model.Stats.TotalCompanies</div>
+                    <div class="stat-card-label">Companies</div>
+                    <div class="stat-card-footer">Click to manage</div>
                 </div>
-                <div class="stat-card-value">0</div>
-                <div class="stat-card-label">Companies</div>
-            </div>
+            </a>
         </div>
+
+        <div class="col-md-6 col-lg-3">
+            <a asp-controller="Vendor" asp-action="Index" class="text-decoration-none">
+                <div class="stat-card clickable">
+                    <div class="stat-card-header">
+                        <div class="stat-card-icon" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                            <i class="bi bi-truck"></i>
+                        </div>
+                        @if (Model.Stats.VendorsTrend != 0)
+                        {
+                            <div class="stat-card-trend @(Model.Stats.VendorsTrend > 0 ? "trend-up" : "trend-down")">
+                                <i class="bi bi-arrow-@(Model.Stats.VendorsTrend > 0 ? "up" : "down")"></i>
+                                @Math.Abs(Model.Stats.VendorsTrend)%
+                            </div>
+                        }
+                    </div>
+                    <div class="stat-card-value">@Model.Stats.TotalVendors</div>
+                    <div class="stat-card-label">Vendors</div>
+                    <div class="stat-card-footer">Click to view all</div>
+                </div>
+            </a>
+        </div>
+
         <div class="col-md-6 col-lg-3">
             <div class="stat-card">
-                <div class="stat-card-icon" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
-                    <i class="bi bi-truck"></i>
+                <div class="stat-card-header">
+                    <div class="stat-card-icon" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                        <i class="bi bi-receipt"></i>
+                    </div>
+                    @if (Model.Stats.InvoicesTrend != 0)
+                    {
+                        <div class="stat-card-trend @(Model.Stats.InvoicesTrend > 0 ? "trend-up" : "trend-down")">
+                            <i class="bi bi-arrow-@(Model.Stats.InvoicesTrend > 0 ? "up" : "down")"></i>
+                            @Math.Abs(Model.Stats.InvoicesTrend)%
+                        </div>
+                    }
                 </div>
-                <div class="stat-card-value">0</div>
-                <div class="stat-card-label">Vendors</div>
+                <div class="stat-card-value">@Model.Stats.TotalInvoices</div>
+                <div class="stat-card-label">Total Invoices</div>
+                <div class="stat-card-footer text-muted">Coming soon</div>
             </div>
         </div>
+
         <div class="col-md-6 col-lg-3">
             <div class="stat-card">
-                <div class="stat-card-icon" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
-                    <i class="bi bi-receipt"></i>
+                <div class="stat-card-header">
+                    <div class="stat-card-icon" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                        <i class="bi bi-check-circle"></i>
+                    </div>
+                    @if (Model.Stats.ApprovedTrend != 0)
+                    {
+                        <div class="stat-card-trend @(Model.Stats.ApprovedTrend > 0 ? "trend-up" : "trend-down")">
+                            <i class="bi bi-arrow-@(Model.Stats.ApprovedTrend > 0 ? "up" : "down")"></i>
+                            @Math.Abs(Model.Stats.ApprovedTrend)%
+                        </div>
+                    }
                 </div>
-                <div class="stat-card-value">0</div>
-                <div class="stat-card-label">Invoices</div>
-            </div>
-        </div>
-        <div class="col-md-6 col-lg-3">
-            <div class="stat-card">
-                <div class="stat-card-icon" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
-                    <i class="bi bi-check-circle"></i>
-                </div>
-                <div class="stat-card-value">0</div>
+                <div class="stat-card-value">@Model.Stats.ApprovedInvoices</div>
                 <div class="stat-card-label">Approved</div>
+                <div class="stat-card-footer text-muted">Coming soon</div>
             </div>
         </div>
     </div>
@@ -76,18 +128,41 @@
                         Quick Actions
                     </h5>
                     <div class="d-grid gap-3">
-                        <a asp-controller="Company" asp-action="Create" class="btn btn-outline-primary text-start">
-                            <i class="bi bi-plus-circle me-2"></i> Add New Company
+                        <a asp-controller="Company" asp-action="Create" class="btn btn-outline-primary text-start d-flex align-items-center">
+                            <i class="bi bi-plus-circle me-2"></i>
+                            <div>
+                                <div class="fw-bold">Add New Company</div>
+                                <small class="text-muted d-block">Register a new business</small>
+                            </div>
                         </a>
-                        <button class="btn btn-outline-secondary text-start" disabled>
-                            <i class="bi bi-upload me-2"></i> Upload Invoice
-                        </button>
-                        <button class="btn btn-outline-secondary text-start" disabled>
-                            <i class="bi bi-truck me-2"></i> Add Vendor
-                        </button>
-                        <button class="btn btn-outline-secondary text-start" disabled>
-                            <i class="bi bi-person-plus me-2"></i> Invite Team Member
-                        </button>
+                        @if (Model.HasAnyCompanies)
+                        {
+                            <a asp-controller="Vendor" asp-action="Create" class="btn btn-outline-success text-start d-flex align-items-center">
+                                <i class="bi bi-truck me-2"></i>
+                                <div>
+                                    <div class="fw-bold">Add Vendor</div>
+                                    <small class="text-muted d-block">Register new supplier</small>
+                                </div>
+                            </a>
+                            <a asp-controller="Employee" asp-action="Invite" class="btn btn-outline-info text-start d-flex align-items-center">
+                                <i class="bi bi-person-plus me-2"></i>
+                                <div>
+                                    <div class="fw-bold">Invite Team Member</div>
+                                    <small class="text-muted d-block">Add users to company</small>
+                                </div>
+                            </a>
+                        }
+                        else
+                        {
+                            <button class="btn btn-outline-secondary text-start" disabled>
+                                <i class="bi bi-upload me-2"></i> Upload Invoice
+                                <small class="d-block text-muted" style="font-size: 0.75rem;">Create a company first</small>
+                            </button>
+                            <button class="btn btn-outline-secondary text-start" disabled>
+                                <i class="bi bi-truck me-2"></i> Add Vendor
+                                <small class="d-block text-muted" style="font-size: 0.75rem;">Create a company first</small>
+                            </button>
+                        }
                     </div>
                 </div>
             </div>
@@ -97,15 +172,49 @@
         <div class="col-lg-8">
             <div class="card h-100">
                 <div class="card-body">
-                    <h5 class="card-title mb-4 d-flex align-items-center">
-                        <i class="bi bi-clock-history text-info me-2"></i>
-                        Recent Activity
+                    <h5 class="card-title mb-4 d-flex align-items-center justify-content-between">
+                        <span>
+                            <i class="bi bi-clock-history text-info me-2"></i>
+                            Recent Activity
+                        </span>
+                        @if (Model.RecentActivities.Any())
+                        {
+                            <span class="badge bg-primary">@Model.RecentActivities.Count</span>
+                        }
                     </h5>
-                    <div class="empty-state" style="padding: 2rem;">
-                        <i class="bi bi-inbox"></i>
-                        <h5>No Recent Activity</h5>
-                        <p class="text-muted mb-0">Your recent activities will appear here</p>
-                    </div>
+
+                    @if (Model.RecentActivities.Any())
+                    {
+                        <div class="activity-list">
+                            @foreach (var activity in Model.RecentActivities)
+                            {
+                                <div class="activity-item">
+                                    <div class="activity-icon activity-icon-@activity.IconColor">
+                                        <i class="bi bi-@activity.Icon"></i>
+                                    </div>
+                                    <div class="activity-content">
+                                        <div class="activity-title">@activity.Title</div>
+                                        <div class="activity-description">@activity.Description</div>
+                                    </div>
+                                    <div class="activity-time">
+                                        <i class="bi bi-clock"></i>
+                                        @activity.TimeAgo
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="empty-state" style="padding: 2rem;">
+                            <i class="bi bi-inbox"></i>
+                            <h5>No Recent Activity</h5>
+                            <p class="text-muted mb-0">Your recent activities will appear here</p>
+                            <a asp-controller="Company" asp-action="Create" class="btn btn-primary btn-sm mt-3">
+                                <i class="bi bi-plus-circle"></i> Create Your First Company
+                            </a>
+                        </div>
+                    }
                 </div>
             </div>
         </div>
@@ -114,7 +223,7 @@
     <!-- Features Info -->
     <div class="row g-4 mt-2">
         <div class="col-md-4">
-            <div class="card h-100 border-0" style="background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);">
+            <div class="card h-100 border-0 feature-info-card" style="background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);">
                 <div class="card-body text-center p-4">
                     <div class="mb-3">
                         <i class="bi bi-eye-fill" style="font-size: 2.5rem; color: var(--primary-color);"></i>
@@ -127,7 +236,7 @@
             </div>
         </div>
         <div class="col-md-4">
-            <div class="card h-100 border-0" style="background: linear-gradient(135deg, #f093fb15 0%, #f5576c15 100%);">
+            <div class="card h-100 border-0 feature-info-card" style="background: linear-gradient(135deg, #f093fb15 0%, #f5576c15 100%);">
                 <div class="card-body text-center p-4">
                     <div class="mb-3">
                         <i class="bi bi-diagram-3-fill" style="font-size: 2.5rem; color: #f5576c;"></i>
@@ -140,7 +249,7 @@
             </div>
         </div>
         <div class="col-md-4">
-            <div class="card h-100 border-0" style="background: linear-gradient(135deg, #4facfe15 0%, #00f2fe15 100%);">
+            <div class="card h-100 border-0 feature-info-card" style="background: linear-gradient(135deg, #4facfe15 0%, #00f2fe15 100%);">
                 <div class="card-body text-center p-4">
                     <div class="mb-3">
                         <i class="bi bi-link-45deg" style="font-size: 2.5rem; color: #00f2fe;"></i>
@@ -164,6 +273,82 @@
 
     .stat-card {
         height: 100%;
+        background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-xl);
+        padding: 1.5rem;
+        transition: all var(--transition-base);
+    }
+
+    .stat-card.clickable {
+        cursor: pointer;
+    }
+
+    .stat-card.clickable:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+        border-color: var(--primary-color);
+    }
+
+    .stat-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+    }
+
+    .stat-card-icon {
+        width: 3rem;
+        height: 3rem;
+        border-radius: var(--radius-lg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: white;
+    }
+
+    .stat-card-trend {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        padding: 0.25rem 0.75rem;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        font-weight: 700;
+    }
+
+    .stat-card-trend.trend-up {
+        background: var(--success-light);
+        color: var(--success-color);
+    }
+
+    .stat-card-trend.trend-down {
+        background: var(--danger-light);
+        color: var(--danger-color);
+    }
+
+    .stat-card-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        line-height: 1;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-card-label {
+        font-size: 0.875rem;
+        color: var(--text-tertiary);
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .stat-card-footer {
+        font-size: 0.75rem;
+        color: var(--primary-color);
+        margin-top: 0.75rem;
+        font-weight: 500;
     }
 
     .card {
@@ -177,10 +362,88 @@
         box-shadow: var(--shadow-lg);
     }
 
+    .feature-info-card:hover {
+        transform: translateY(-4px);
+    }
+
     .card-title {
         font-size: 1.125rem;
         font-weight: 700;
         color: var(--text-primary);
+    }
+
+    /* Activity List Styles */
+    .activity-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        max-height: 400px;
+        overflow-y: auto;
+    }
+
+    .activity-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        padding: 1rem;
+        background: var(--bg-secondary);
+        border-radius: var(--radius-lg);
+        transition: all var(--transition-fast);
+    }
+
+    .activity-item:hover {
+        background: var(--bg-tertiary);
+    }
+
+    .activity-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: var(--radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        flex-shrink: 0;
+    }
+
+    .activity-icon-primary {
+        background: var(--info-light);
+        color: var(--primary-color);
+    }
+
+    .activity-icon-success {
+        background: var(--success-light);
+        color: var(--success-color);
+    }
+
+    .activity-icon-warning {
+        background: var(--warning-light);
+        color: var(--warning-color);
+    }
+
+    .activity-content {
+        flex: 1;
+    }
+
+    .activity-title {
+        font-weight: 600;
+        color: var(--text-primary);
+        font-size: 0.938rem;
+    }
+
+    .activity-description {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        margin-top: 0.125rem;
+    }
+
+    .activity-time {
+        display: flex;
+        align-items: center;
+        gap: 0.375rem;
+        font-size: 0.813rem;
+        color: var(--text-tertiary);
+        white-space: nowrap;
     }
 
     .btn-outline-secondary:disabled {
@@ -202,6 +465,15 @@
             width: 2.5rem;
             height: 2.5rem;
             font-size: 1.25rem;
+        }
+
+        .activity-item {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .activity-time {
+            align-self: flex-start;
         }
     }
 </style>
