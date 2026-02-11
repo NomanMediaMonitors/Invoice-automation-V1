@@ -16,6 +16,8 @@ public class ApplicationDbContext : DbContext
     public DbSet<UserCompany> UserCompanies { get; set; }
     public DbSet<ChartOfAccount> ChartOfAccounts { get; set; }
     public DbSet<Vendor> Vendors { get; set; }
+    public DbSet<Invoice> Invoices { get; set; }
+    public DbSet<InvoiceLineItem> InvoiceLineItems { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -397,6 +399,101 @@ public class ApplicationDbContext : DbContext
 
             entity.HasOne(e => e.Company).WithMany().HasForeignKey(e => e.CompanyId).OnDelete(DeleteBehavior.Cascade);
             entity.HasIndex(e => new { e.CompanyId, e.Email }).IsUnique();
+        });
+
+        // Invoice Configuration
+        modelBuilder.Entity<Invoice>(entity =>
+        {
+            entity.ToTable("invoices");
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.Id).HasColumnName("id").HasColumnType("CHAR(36)");
+            entity.Property(e => e.CompanyId).HasColumnName("company_id").HasColumnType("CHAR(36)");
+            entity.Property(e => e.VendorId).HasColumnName("vendor_id").HasColumnType("CHAR(36)");
+            entity.Property(e => e.InvoiceNumber).IsRequired().HasMaxLength(100).HasColumnName("invoice_number");
+            entity.Property(e => e.InvoiceDate).HasColumnName("invoice_date").HasColumnType("DATE");
+            entity.Property(e => e.DueDate).HasColumnName("due_date").HasColumnType("DATE");
+            entity.Property(e => e.SubTotal).HasColumnName("sub_total").HasColumnType("DECIMAL(18,2)");
+            entity.Property(e => e.TaxAmount).HasColumnName("tax_amount").HasColumnType("DECIMAL(18,2)");
+            entity.Property(e => e.TotalAmount).HasColumnName("total_amount").HasColumnType("DECIMAL(18,2)");
+            entity.Property(e => e.Currency).HasMaxLength(10).HasColumnName("currency").HasDefaultValue("PKR");
+            entity.Property(e => e.Status).IsRequired().HasColumnName("status").HasConversion<string>().HasMaxLength(50);
+            entity.Property(e => e.Description).HasMaxLength(1000).HasColumnName("description");
+            entity.Property(e => e.Notes).HasColumnName("notes").HasColumnType("TEXT");
+
+            // OCR Fields
+            entity.Property(e => e.OriginalFileName).HasMaxLength(255).HasColumnName("original_file_name");
+            entity.Property(e => e.FileStoragePath).HasMaxLength(500).HasColumnName("file_storage_path");
+            entity.Property(e => e.FileUrl).HasMaxLength(500).HasColumnName("file_url");
+            entity.Property(e => e.FileType).HasMaxLength(50).HasColumnName("file_type");
+            entity.Property(e => e.FileSize).HasColumnName("file_size");
+            entity.Property(e => e.IsOcrProcessed).HasColumnName("is_ocr_processed").HasColumnType("TINYINT(1)").HasDefaultValue(false);
+            entity.Property(e => e.OcrProcessedAt).HasColumnName("ocr_processed_at").HasColumnType("DATETIME");
+            entity.Property(e => e.OcrConfidenceScore).HasColumnName("ocr_confidence_score").HasColumnType("DECIMAL(5,2)");
+            entity.Property(e => e.OcrRawData).HasColumnName("ocr_raw_data").HasColumnType("LONGTEXT");
+            entity.Property(e => e.OcrErrorMessage).HasMaxLength(1000).HasColumnName("ocr_error_message");
+
+            // Approval Fields
+            entity.Property(e => e.ApprovedBy).HasColumnName("approved_by").HasColumnType("CHAR(36)");
+            entity.Property(e => e.ApprovedAt).HasColumnName("approved_at").HasColumnType("DATETIME");
+            entity.Property(e => e.ApprovalNotes).HasMaxLength(1000).HasColumnName("approval_notes");
+
+            // Payment Fields
+            entity.Property(e => e.PaidAt).HasColumnName("paid_at").HasColumnType("DATETIME");
+            entity.Property(e => e.PaymentReference).HasMaxLength(100).HasColumnName("payment_reference");
+            entity.Property(e => e.PaidBy).HasColumnName("paid_by").HasColumnType("CHAR(36)");
+
+            // Indraaj Fields
+            entity.Property(e => e.IndraajVoucherNo).HasMaxLength(100).HasColumnName("indraaj_voucher_no");
+            entity.Property(e => e.SyncedToIndraajAt).HasColumnName("synced_to_indraaj_at").HasColumnType("DATETIME");
+
+            // Audit Fields
+            entity.Property(e => e.CreatedBy).HasColumnName("created_by").HasColumnType("CHAR(36)");
+            entity.Property(e => e.CreatedAt).HasColumnName("created_at").HasColumnType("DATETIME").HasDefaultValueSql("CURRENT_TIMESTAMP");
+            entity.Property(e => e.UpdatedAt).HasColumnName("updated_at").HasColumnType("DATETIME").HasDefaultValueSql("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP");
+            entity.Property(e => e.UpdatedBy).HasColumnName("updated_by").HasColumnType("CHAR(36)");
+
+            // Relationships
+            entity.HasOne(e => e.Company).WithMany().HasForeignKey(e => e.CompanyId).OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(e => e.Vendor).WithMany().HasForeignKey(e => e.VendorId).OnDelete(DeleteBehavior.Restrict);
+
+            // Indexes
+            entity.HasIndex(e => new { e.CompanyId, e.InvoiceNumber }).IsUnique();
+            entity.HasIndex(e => e.VendorId);
+            entity.HasIndex(e => e.Status);
+            entity.HasIndex(e => e.InvoiceDate);
+            entity.HasIndex(e => e.DueDate);
+        });
+
+        // InvoiceLineItem Configuration
+        modelBuilder.Entity<InvoiceLineItem>(entity =>
+        {
+            entity.ToTable("invoice_line_items");
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.Id).HasColumnName("id").HasColumnType("CHAR(36)");
+            entity.Property(e => e.InvoiceId).HasColumnName("invoice_id").HasColumnType("CHAR(36)");
+            entity.Property(e => e.LineNumber).HasColumnName("line_number");
+            entity.Property(e => e.Description).IsRequired().HasMaxLength(500).HasColumnName("description");
+            entity.Property(e => e.Quantity).HasColumnName("quantity").HasColumnType("DECIMAL(18,4)");
+            entity.Property(e => e.UnitPrice).HasColumnName("unit_price").HasColumnType("DECIMAL(18,2)");
+            entity.Property(e => e.Amount).HasColumnName("amount").HasColumnType("DECIMAL(18,2)");
+            entity.Property(e => e.TaxRate).HasColumnName("tax_rate").HasColumnType("DECIMAL(5,2)");
+            entity.Property(e => e.TaxAmount).HasColumnName("tax_amount").HasColumnType("DECIMAL(18,2)");
+            entity.Property(e => e.TotalAmount).HasColumnName("total_amount").HasColumnType("DECIMAL(18,2)");
+            entity.Property(e => e.ChartOfAccountId).HasColumnName("chart_of_account_id").HasColumnType("CHAR(36)");
+            entity.Property(e => e.AccountCode).HasMaxLength(50).HasColumnName("account_code");
+            entity.Property(e => e.IsOcrExtracted).HasColumnName("is_ocr_extracted").HasColumnType("TINYINT(1)").HasDefaultValue(false);
+            entity.Property(e => e.OcrConfidenceScore).HasColumnName("ocr_confidence_score").HasColumnType("DECIMAL(5,2)");
+            entity.Property(e => e.CreatedAt).HasColumnName("created_at").HasColumnType("DATETIME").HasDefaultValueSql("CURRENT_TIMESTAMP");
+            entity.Property(e => e.UpdatedAt).HasColumnName("updated_at").HasColumnType("DATETIME").HasDefaultValueSql("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP");
+
+            // Relationships
+            entity.HasOne(e => e.Invoice).WithMany(i => i.LineItems).HasForeignKey(e => e.InvoiceId).OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(e => e.ChartOfAccount).WithMany().HasForeignKey(e => e.ChartOfAccountId).OnDelete(DeleteBehavior.SetNull);
+
+            // Indexes
+            entity.HasIndex(e => new { e.InvoiceId, e.LineNumber }).IsUnique();
         });
     }
 }
