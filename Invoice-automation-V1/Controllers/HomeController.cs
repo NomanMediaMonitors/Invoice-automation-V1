@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Invoice_automation_V1.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Invoice_automation_V1.Controllers
@@ -14,6 +15,17 @@ namespace Invoice_automation_V1.Controllers
         }
 
         public IActionResult Index()
+        {
+            // Redirect to dashboard if authenticated
+            if (User.Identity?.IsAuthenticated == true)
+            {
+                return RedirectToAction(nameof(Dashboard));
+            }
+            return View();
+        }
+
+        [Authorize]
+        public IActionResult Dashboard()
         {
             return View();
         }
