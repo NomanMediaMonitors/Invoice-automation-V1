@@ -193,9 +193,33 @@ public class ApplicationDbContext : DbContext
                 .HasMaxLength(255)
                 .HasColumnName("email");
 
+            entity.Property(e => e.City)
+                .HasColumnName("City")
+                .HasColumnType("LONGTEXT");
+
+            entity.Property(e => e.Website)
+                .HasColumnName("Website")
+                .HasColumnType("LONGTEXT");
+
+            entity.Property(e => e.LogoUrl)
+                .HasColumnName("LogoUrl")
+                .HasColumnType("LONGTEXT");
+
+            entity.Property(e => e.FiscalYearStart)
+                .HasColumnName("FiscalYearStart")
+                .HasColumnType("DATETIME(6)");
+
+            entity.Property(e => e.DefaultCurrency)
+                .HasColumnName("DefaultCurrency")
+                .HasColumnType("LONGTEXT");
+
             entity.Property(e => e.IndraajAccessToken)
                 .HasMaxLength(500)
                 .HasColumnName("indraaj_access_token");
+
+            entity.Property(e => e.IndraajConnectedAt)
+                .HasColumnName("IndraajConnectedAt")
+                .HasColumnType("DATETIME(6)");
 
             entity.Property(e => e.LastCoaSyncAt)
                 .HasColumnName("last_coa_sync_at")
@@ -209,6 +233,11 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.DisplayOrder)
                 .HasColumnName("display_order")
                 .HasDefaultValue(0);
+
+            entity.Property(e => e.IsActive)
+                .HasColumnName("IsActive")
+                .HasColumnType("TINYINT(1)")
+                .HasDefaultValue(true);
 
             entity.Property(e => e.CreatedAt)
                 .HasColumnName("created_at")
