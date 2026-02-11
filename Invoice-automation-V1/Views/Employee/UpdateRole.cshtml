@@ -1,0 +1,75 @@
+@model InvoiceAutomation.Core.DTOs.Employee.UpdateEmployeeRoleDto
+@{
+    ViewData["Title"] = "Update Employee Role";
+    var companyId = (Guid)ViewBag.CompanyId;
+    var companyName = (string)ViewBag.CompanyName;
+    var employeeName = (string)ViewBag.EmployeeName;
+    var userId = (Guid)ViewBag.UserId;
+}
+
+<div class="container animate-fadeIn">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg">
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <div class="mb-3">
+                            <i class="bi bi-shield-check" style="font-size: 3rem; color: var(--primary-color);"></i>
+                        </div>
+                        <h2 class="fw-bold text-gradient">Update Employee Role</h2>
+                        <p class="text-muted mb-1">@employeeName</p>
+                        <p class="text-muted small">@companyName</p>
+                    </div>
+
+                    <div class="alert alert-info" role="alert">
+                        <i class="bi bi-info-circle"></i>
+                        <strong>Role Descriptions:</strong>
+                        <ul class="mb-0 mt-2 small">
+                            <li><strong>Admin:</strong> Full access to company management</li>
+                            <li><strong>Manager:</strong> Can manage invoices and view reports</li>
+                            <li><strong>Accountant:</strong> Can create and edit invoices</li>
+                            <li><strong>Approver:</strong> Can approve pending invoices</li>
+                            <li><strong>Viewer:</strong> Can only view invoices (read-only)</li>
+                        </ul>
+                    </div>
+
+                    <form asp-action="UpdateRole" asp-route-companyId="@companyId" asp-route-userId="@userId" method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <div class="mb-4">
+                            <label asp-for="Role" class="form-label">Select New Role *</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-2"><i class="bi bi-shield"></i></span>
+                                <select asp-for="Role" class="form-select border-start-0">
+                                    <option value="">Select a role...</option>
+                                    <option value="Admin">Admin - Full company management</option>
+                                    <option value="Manager">Manager - Manage invoices and reports</option>
+                                    <option value="Accountant">Accountant - Create and edit invoices</option>
+                                    <option value="Approver">Approver - Approve invoices</option>
+                                    <option value="Viewer">Viewer - Read-only access</option>
+                                </select>
+                            </div>
+                            <span asp-validation-for="Role" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-grid gap-2 mb-3">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-check-circle"></i> Update Role
+                            </button>
+                        </div>
+
+                        <div class="text-center">
+                            <a asp-action="Details" asp-route-companyId="@companyId" asp-route-userId="@userId" class="text-muted">
+                                <i class="bi bi-arrow-left"></i> Back to Employee Details
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
