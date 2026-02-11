@@ -15,6 +15,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<Company> Companies { get; set; }
     public DbSet<UserCompany> UserCompanies { get; set; }
     public DbSet<ChartOfAccount> ChartOfAccounts { get; set; }
+    public DbSet<Vendor> Vendors { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -370,6 +371,32 @@ public class ApplicationDbContext : DbContext
 
             entity.HasIndex(e => new { e.CompanyId, e.Recno }).IsUnique();
             entity.HasIndex(e => new { e.CompanyId, e.Code });
+        });
+
+        // Vendor Configuration
+        modelBuilder.Entity<Vendor>(entity =>
+        {
+            entity.ToTable("vendors");
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.Id).HasColumnName("id").HasColumnType("CHAR(36)");
+            entity.Property(e => e.CompanyId).HasColumnName("company_id").HasColumnType("CHAR(36)");
+            entity.Property(e => e.Name).IsRequired().HasMaxLength(200).HasColumnName("name");
+            entity.Property(e => e.Email).IsRequired().HasMaxLength(255).HasColumnName("email");
+            entity.Property(e => e.Phone).HasMaxLength(20).HasColumnName("phone");
+            entity.Property(e => e.Type).IsRequired().HasColumnName("type").HasConversion<string>();
+            entity.Property(e => e.Ntn).HasMaxLength(50).HasColumnName("ntn");
+            entity.Property(e => e.City).HasMaxLength(100).HasColumnName("city");
+            entity.Property(e => e.Address).HasMaxLength(500).HasColumnName("address");
+            entity.Property(e => e.BankName).HasMaxLength(200).HasColumnName("bank_name");
+            entity.Property(e => e.PaymentTermDays).HasColumnName("payment_term_days").HasDefaultValue(30);
+            entity.Property(e => e.IsActive).HasColumnName("is_active").HasColumnType("TINYINT(1)").HasDefaultValue(true);
+            entity.Property(e => e.CreatedAt).HasColumnName("created_at").HasColumnType("DATETIME").HasDefaultValueSql("CURRENT_TIMESTAMP");
+            entity.Property(e => e.UpdatedAt).HasColumnName("updated_at").HasColumnType("DATETIME").HasDefaultValueSql("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP");
+            entity.Property(e => e.CreatedBy).HasColumnName("created_by").HasColumnType("CHAR(36)");
+
+            entity.HasOne(e => e.Company).WithMany().HasForeignKey(e => e.CompanyId).OnDelete(DeleteBehavior.Cascade);
+            entity.HasIndex(e => new { e.CompanyId, e.Email }).IsUnique();
         });
     }
 }
