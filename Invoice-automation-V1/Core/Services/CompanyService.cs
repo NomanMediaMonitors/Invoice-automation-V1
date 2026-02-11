@@ -65,6 +65,7 @@ public class CompanyService : ICompanyService
             LogoUrl = null,
             FiscalYearStart = new DateTime(DateTime.Now.Year, 7, 1), // July 1st of current year
             DefaultCurrency = "PKR",
+            IsActive = true,
             IsDefault = isFirstCompany,
             DisplayOrder = companyCount + 1
         };
