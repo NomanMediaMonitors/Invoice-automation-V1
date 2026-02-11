@@ -103,7 +103,7 @@ F:\Invoice-automation-V1\Invoice-automation-V1\obj\Debug\net8.0\staticwebassets.
 F:\Invoice-automation-V1\Invoice-automation-V1\obj\Debug\net8.0\staticwebassets.build.json.cache
 F:\Invoice-automation-V1\Invoice-automation-V1\obj\Debug\net8.0\staticwebassets.development.json
 F:\Invoice-automation-V1\Invoice-automation-V1\obj\Debug\net8.0\staticwebassets.build.endpoints.json
-F:\Invoice-automation-V1\Invoice-automation-V1\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
 F:\Invoice-automation-V1\Invoice-automation-V1\obj\Debug\net8.0\Invoice-.A7DFA9A3.Up2Date
 F:\Invoice-automation-V1\Invoice-automation-V1\obj\Debug\net8.0\Invoice-automation-V1.genruntimeconfig.cache
 F:\Invoice-automation-V1\Invoice-automation-V1\obj\Debug\net8.0\ref\Invoice-automation-V1.dll
+F:\Invoice-automation-V1\Invoice-automation-V1\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt

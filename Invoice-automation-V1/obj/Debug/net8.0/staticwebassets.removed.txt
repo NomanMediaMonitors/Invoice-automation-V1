@@ -1,1 +1,3 @@
+F:\Invoice-automation-V1\Invoice-automation-V1\wwwroot\css\site.css
 F:\Invoice-automation-V1\Invoice-automation-V1\wwwroot\favicon.ico
+F:\Invoice-automation-V1\Invoice-automation-V1\wwwroot\js\site.js

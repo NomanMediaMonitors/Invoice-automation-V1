@@ -1,6 +1,6 @@
 wwwroot\css\website.css
 wwwroot\favicon1.ico
-wwwroot\js\site.js
+wwwroot\js\website.js
 wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css
 wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css.map
 wwwroot\lib\bootstrap\dist\css\bootstrap-grid.min.css
