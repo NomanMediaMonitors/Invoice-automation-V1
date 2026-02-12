@@ -1,5 +1,4 @@
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.Text.RegularExpressions;
 using Docnet.Core;
 using Docnet.Core.Models;
@@ -9,6 +8,9 @@ using InvoiceAutomation.Core.Interfaces;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Tesseract;
+using SysImageFormat = System.Drawing.Imaging.ImageFormat;
+using SysPixelFormat = System.Drawing.Imaging.PixelFormat;
+using SysImageLockMode = System.Drawing.Imaging.ImageLockMode;
 
 namespace InvoiceAutomation.Infrastructure.Services;
 
@@ -169,11 +171,11 @@ public class OcrService : IOcrService
 
                     // Convert PDF page to image bytes
                     using var ms = new MemoryStream();
-                    using (var bitmap = new Bitmap(width, height, PixelFormat.Format32bppArgb))
+                    using (var bitmap = new Bitmap(width, height, SysPixelFormat.Format32bppArgb))
                     {
                         var bitmapData = bitmap.LockBits(
                             new Rectangle(0, 0, width, height),
-                            ImageLockMode.WriteOnly,
+                            SysImageLockMode.WriteOnly,
                             bitmap.PixelFormat);
 
                         unsafe
@@ -186,7 +188,7 @@ public class OcrService : IOcrService
                         }
 
                         bitmap.UnlockBits(bitmapData);
-                        bitmap.Save(ms, ImageFormat.Png);
+                        bitmap.Save(ms, SysImageFormat.Png);
                     }
 
                     ms.Position = 0;
