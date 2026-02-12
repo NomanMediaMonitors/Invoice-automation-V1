@@ -503,6 +503,131 @@ public class InvoiceController : Controller
         ViewBag.ChartOfAccounts = accounts;
     }
 
+    // POST: Invoice/AddLineItem
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> AddLineItem(Guid invoiceId, string description, decimal quantity, decimal unitPrice, decimal taxRate, Guid? chartOfAccountId)
+    {
+        try
+        {
+            var userId = GetCurrentUserId();
+            if (!await _invoiceService.CanUserAccessInvoiceAsync(invoiceId, userId))
+            {
+                TempData["Error"] = "Access denied";
+                return RedirectToAction(nameof(Index));
+            }
+
+            var invoice = await _context.Invoices
+                .Include(i => i.LineItems)
+                .FirstOrDefaultAsync(i => i.Id == invoiceId);
+
+            if (invoice == null)
+            {
+                TempData["Error"] = "Invoice not found";
+                return RedirectToAction(nameof(Index));
+            }
+
+            var amount = quantity * unitPrice;
+            var taxAmount = amount * (taxRate / 100);
+            var totalAmount = amount + taxAmount;
+
+            string? accountCode = null;
+            if (chartOfAccountId.HasValue && chartOfAccountId.Value != Guid.Empty)
+            {
+                var account = await _context.ChartOfAccounts.FindAsync(chartOfAccountId.Value);
+                accountCode = account?.Code;
+            }
+
+            var lineItem = new InvoiceLineItem
+            {
+                Id = Guid.NewGuid(),
+                InvoiceId = invoiceId,
+                LineNumber = (invoice.LineItems.Any() ? invoice.LineItems.Max(li => li.LineNumber) : 0) + 1,
+                Description = description,
+                Quantity = quantity,
+                UnitPrice = unitPrice,
+                Amount = amount,
+                TaxRate = taxRate,
+                TaxAmount = taxAmount,
+                TotalAmount = totalAmount,
+                ChartOfAccountId = (chartOfAccountId.HasValue && chartOfAccountId.Value != Guid.Empty) ? chartOfAccountId : null,
+                AccountCode = accountCode,
+                IsOcrExtracted = false,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            };
+
+            invoice.LineItems.Add(lineItem);
+
+            // Recalculate invoice totals
+            invoice.SubTotal = invoice.LineItems.Sum(li => li.Amount);
+            invoice.TaxAmount = invoice.LineItems.Sum(li => li.TaxAmount);
+            invoice.TotalAmount = invoice.LineItems.Sum(li => li.TotalAmount);
+            invoice.UpdatedAt = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = "Line item added successfully";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error adding line item");
+            TempData["Error"] = "An error occurred while adding the line item";
+        }
+
+        return RedirectToAction(nameof(Details), new { id = invoiceId });
+    }
+
+    // POST: Invoice/DeleteLineItem
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteLineItem(Guid lineItemId)
+    {
+        try
+        {
+            var lineItem = await _context.InvoiceLineItems
+                .Include(li => li.Invoice)
+                .ThenInclude(i => i!.LineItems)
+                .FirstOrDefaultAsync(li => li.Id == lineItemId);
+
+            if (lineItem == null)
+            {
+                TempData["Error"] = "Line item not found";
+                return RedirectToAction(nameof(Index));
+            }
+
+            var userId = GetCurrentUserId();
+            if (!await _invoiceService.CanUserAccessInvoiceAsync(lineItem.InvoiceId, userId))
+            {
+                TempData["Error"] = "Access denied";
+                return RedirectToAction(nameof(Index));
+            }
+
+            var invoice = lineItem.Invoice!;
+            var invoiceId = lineItem.InvoiceId;
+
+            _context.InvoiceLineItems.Remove(lineItem);
+
+            // Recalculate invoice totals
+            var remainingItems = invoice.LineItems.Where(li => li.Id != lineItemId).ToList();
+            invoice.SubTotal = remainingItems.Sum(li => li.Amount);
+            invoice.TaxAmount = remainingItems.Sum(li => li.TaxAmount);
+            invoice.TotalAmount = remainingItems.Sum(li => li.TotalAmount);
+            invoice.UpdatedAt = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = "Line item deleted";
+            return RedirectToAction(nameof(Details), new { id = invoiceId });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error deleting line item");
+            TempData["Error"] = "An error occurred while deleting the line item";
+            return RedirectToAction(nameof(Index));
+        }
+    }
+
     // POST: Invoice/AssignLineItemAccount
     [HttpPost]
     public async Task<IActionResult> AssignLineItemAccount([FromBody] AssignAccountRequest request)

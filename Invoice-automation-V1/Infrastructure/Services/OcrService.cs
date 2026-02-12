@@ -32,22 +32,28 @@ public class OcrService : IOcrService
 
     public async Task<OcrResultViewModel> ProcessInvoiceAsync(string filePath, string fileType)
     {
+        string? extractedText = null;
         try
         {
             _logger.LogInformation("Processing invoice file: {FilePath}", filePath);
 
             // Extract text from the file
-            var extractedText = await ExtractTextAsync(filePath, fileType);
+            extractedText = await ExtractTextAsync(filePath, fileType);
 
             if (string.IsNullOrWhiteSpace(extractedText))
             {
                 return new OcrResultViewModel
                 {
                     Success = false,
+                    ExtractedData = new OcrExtractedData { RawText = "[No text extracted]" },
                     ErrorMessage = "No text could be extracted from the file",
                     ConfidenceScore = 0
                 };
             }
+
+            _logger.LogInformation("OCR raw text ({Length} chars): {Text}",
+                extractedText.Length,
+                extractedText.Length > 500 ? extractedText.Substring(0, 500) + "..." : extractedText);
 
             // Parse the extracted text
             var extractedData = ParseInvoiceData(extractedText);
@@ -66,9 +72,15 @@ public class OcrService : IOcrService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error processing invoice with OCR");
+
+            // Still return ExtractedData with whatever raw text we got so it's persisted
             return new OcrResultViewModel
             {
                 Success = false,
+                ExtractedData = new OcrExtractedData
+                {
+                    RawText = extractedText ?? $"[OCR failed before text extraction: {ex.Message}]"
+                },
                 ErrorMessage = $"OCR processing failed: {ex.Message}",
                 ConfidenceScore = 0
             };
