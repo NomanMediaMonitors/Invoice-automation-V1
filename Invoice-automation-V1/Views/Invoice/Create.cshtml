@@ -67,11 +67,16 @@
                                 <h5 class="mb-0"><i class="bi bi-info-circle"></i> Invoice Details</h5>
                             </div>
                             <div class="card-body">
-                                <input type="hidden" asp-for="CompanyId" />
+                                <div class="mb-3">
+                                    <label asp-for="CompanyId" class="form-label">Company <span class="text-danger">*</span></label>
+                                    <select asp-for="CompanyId" class="form-select" asp-items="ViewBag.Companies" id="companySelect">
+                                    </select>
+                                    <span asp-validation-for="CompanyId" class="text-danger"></span>
+                                </div>
 
                                 <div class="mb-3">
                                     <label asp-for="VendorId" class="form-label">Vendor <span class="text-danger">*</span></label>
-                                    <select asp-for="VendorId" class="form-select" asp-items="ViewBag.Vendors">
+                                    <select asp-for="VendorId" class="form-select" asp-items="ViewBag.Vendors" id="vendorSelect">
                                         <option value="">-- Select Vendor --</option>
                                     </select>
                                     <span asp-validation-for="VendorId" class="text-danger"></span>
@@ -167,6 +172,34 @@
             const i = Math.floor(Math.log(bytes) / Math.log(k));
             return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
         }
+
+        // Reload vendors when company selection changes
+        document.getElementById('companySelect').addEventListener('change', function() {
+            var companyId = this.value;
+            var vendorSelect = document.getElementById('vendorSelect');
+
+            // Clear current vendors
+            vendorSelect.innerHTML = '<option value="">-- Select Vendor --</option>';
+
+            if (!companyId) return;
+
+            fetch('@Url.Action("GetVendorsByCompany", "Invoice")?companyId=' + companyId)
+                .then(function(response) {
+                    if (!response.ok) throw new Error('Failed to load vendors');
+                    return response.json();
+                })
+                .then(function(vendors) {
+                    vendors.forEach(function(vendor) {
+                        var option = document.createElement('option');
+                        option.value = vendor.id;
+                        option.textContent = vendor.name;
+                        vendorSelect.appendChild(option);
+                    });
+                })
+                .catch(function(error) {
+                    console.error('Error loading vendors:', error);
+                });
+        });
 
         // Auto-fill due date 30 days from invoice date
         document.querySelector('[name="InvoiceDate"]').addEventListener('change', function(e) {
