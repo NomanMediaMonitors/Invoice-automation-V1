@@ -567,6 +567,7 @@ public class InvoiceService : IInvoiceService
 
             invoice.IsOcrProcessed = true;
             invoice.OcrProcessedAt = DateTime.UtcNow;
+            invoice.UpdatedAt = DateTime.UtcNow;
 
             if (ocrResult.ExtractedData != null)
             {
@@ -620,6 +621,7 @@ public class InvoiceService : IInvoiceService
                 }
 
                 // Add OCR extracted line items
+                var newLineItems = new List<InvoiceLineItem>();
                 int lineNumber = invoice.LineItems.Count(li => !li.IsOcrExtracted) + 1;
                 foreach (var ocrLineItem in ocrResult.ExtractedData.LineItems)
                 {
@@ -641,13 +643,17 @@ public class InvoiceService : IInvoiceService
                         UpdatedAt = DateTime.UtcNow
                     };
 
-                    invoice.LineItems.Add(lineItem);
+                    // Explicitly add to DbSet to ensure EF tracks as Added (INSERT),
+                    // not Modified (UPDATE) which causes DbUpdateConcurrencyException
+                    _context.InvoiceLineItems.Add(lineItem);
+                    newLineItems.Add(lineItem);
                 }
 
-                // Recalculate totals from OCR data or line items
-                invoice.SubTotal = ocrResult.ExtractedData.SubTotal ?? invoice.LineItems.Sum(li => li.Amount);
-                invoice.TaxAmount = ocrResult.ExtractedData.TaxAmount ?? invoice.LineItems.Sum(li => li.TaxAmount);
-                invoice.TotalAmount = ocrResult.ExtractedData.TotalAmount ?? invoice.LineItems.Sum(li => li.TotalAmount);
+                // Recalculate totals including both existing and new line items
+                var allLineItems = invoice.LineItems.Where(li => !li.IsOcrExtracted).Concat(newLineItems).ToList();
+                invoice.SubTotal = ocrResult.ExtractedData.SubTotal ?? allLineItems.Sum(li => li.Amount);
+                invoice.TaxAmount = ocrResult.ExtractedData.TaxAmount ?? allLineItems.Sum(li => li.TaxAmount);
+                invoice.TotalAmount = ocrResult.ExtractedData.TotalAmount ?? allLineItems.Sum(li => li.TotalAmount);
 
                 await _context.SaveChangesAsync();
 
@@ -673,13 +679,25 @@ public class InvoiceService : IInvoiceService
             // Always persist the error state so it's visible in the UI
             try
             {
+                // Clear stale/failed entities from change tracker to avoid
+                // re-triggering the same DbUpdateConcurrencyException
+                foreach (var entry in _context.ChangeTracker.Entries().ToList())
+                {
+                    entry.State = EntityState.Detached;
+                }
+
                 if (invoice != null)
                 {
-                    invoice.IsOcrProcessed = true;
-                    invoice.OcrProcessedAt = DateTime.UtcNow;
-                    invoice.OcrErrorMessage = $"OCR processing failed: {ex.Message}";
-                    invoice.OcrConfidenceScore = 0;
-                    await _context.SaveChangesAsync();
+                    // Re-attach and update only the invoice with error state
+                    var freshInvoice = await _context.Invoices.FindAsync(invoice.Id);
+                    if (freshInvoice != null)
+                    {
+                        freshInvoice.IsOcrProcessed = true;
+                        freshInvoice.OcrProcessedAt = DateTime.UtcNow;
+                        freshInvoice.OcrErrorMessage = $"OCR processing failed: {ex.Message}";
+                        freshInvoice.OcrConfidenceScore = 0;
+                        await _context.SaveChangesAsync();
+                    }
                 }
             }
             catch (Exception saveEx)
