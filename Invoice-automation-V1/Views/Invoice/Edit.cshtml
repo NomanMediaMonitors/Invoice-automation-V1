@@ -19,7 +19,6 @@
 
             <form asp-action="Edit" method="post" enctype="multipart/form-data">
                 <input type="hidden" asp-for="Id" />
-                <input type="hidden" asp-for="CompanyId" />
                 <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
                 <div class="row">
@@ -30,8 +29,15 @@
                             </div>
                             <div class="card-body">
                                 <div class="mb-3">
+                                    <label asp-for="CompanyId" class="form-label">Company <span class="text-danger">*</span></label>
+                                    <select asp-for="CompanyId" class="form-select" asp-items="ViewBag.Companies" id="companySelect">
+                                    </select>
+                                    <span asp-validation-for="CompanyId" class="text-danger"></span>
+                                </div>
+
+                                <div class="mb-3">
                                     <label asp-for="VendorId" class="form-label">Vendor <span class="text-danger">*</span></label>
-                                    <select asp-for="VendorId" class="form-select" asp-items="ViewBag.Vendors"></select>
+                                    <select asp-for="VendorId" class="form-select" asp-items="ViewBag.Vendors" id="vendorSelect"></select>
                                     <span asp-validation-for="VendorId" class="text-danger"></span>
                                 </div>
 
@@ -125,6 +131,36 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        // Reload vendors when company selection changes
+        document.getElementById('companySelect').addEventListener('change', function() {
+            var companyId = this.value;
+            var vendorSelect = document.getElementById('vendorSelect');
+
+            // Clear current vendors
+            vendorSelect.innerHTML = '<option value="">-- Select Vendor --</option>';
+
+            if (!companyId) return;
+
+            fetch('@Url.Action("GetVendorsByCompany", "Invoice")?companyId=' + companyId)
+                .then(function(response) {
+                    if (!response.ok) throw new Error('Failed to load vendors');
+                    return response.json();
+                })
+                .then(function(vendors) {
+                    vendors.forEach(function(vendor) {
+                        var option = document.createElement('option');
+                        option.value = vendor.id;
+                        option.textContent = vendor.name;
+                        vendorSelect.appendChild(option);
+                    });
+                })
+                .catch(function(error) {
+                    console.error('Error loading vendors:', error);
+                });
+        });
+    </script>
 
     <style>
         .card-header {

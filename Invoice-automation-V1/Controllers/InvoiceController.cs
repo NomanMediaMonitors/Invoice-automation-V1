@@ -39,9 +39,13 @@ public class InvoiceController : Controller
     private async Task<Guid> GetDefaultCompanyIdAsync()
     {
         var userId = GetCurrentUserId();
+
+        // First check if the user has a default company set
         var userCompany = await _context.UserCompanies
+            .Include(uc => uc.Company)
             .Where(uc => uc.UserId == userId)
             .OrderByDescending(uc => uc.IsUserDefault)
+            .ThenByDescending(uc => uc.Company!.IsDefault)
             .ThenBy(uc => uc.CreatedAt)
             .FirstOrDefaultAsync();
 
@@ -454,6 +458,23 @@ public class InvoiceController : Controller
 
     private async Task PopulateDropdownsAsync(Guid companyId)
     {
+        var userId = GetCurrentUserId();
+
+        // Populate companies the user has access to
+        var companies = await _context.UserCompanies
+            .Include(uc => uc.Company)
+            .Where(uc => uc.UserId == userId && uc.Company!.IsActive)
+            .OrderByDescending(uc => uc.Company!.IsDefault)
+            .ThenBy(uc => uc.Company!.DisplayOrder)
+            .ThenBy(uc => uc.Company!.Name)
+            .Select(uc => new SelectListItem
+            {
+                Value = uc.CompanyId.ToString(),
+                Text = uc.Company!.Name,
+                Selected = uc.CompanyId == companyId
+            })
+            .ToListAsync();
+
         var vendors = await _context.Vendors
             .Where(v => v.CompanyId == companyId && v.IsActive)
             .OrderBy(v => v.Name)
@@ -474,8 +495,33 @@ public class InvoiceController : Controller
             })
             .ToListAsync();
 
+        ViewBag.Companies = companies;
         ViewBag.Vendors = vendors;
         ViewBag.ChartOfAccounts = accounts;
+    }
+
+    // API endpoint: returns vendors for a given company (used by AJAX on company change)
+    [HttpGet]
+    public async Task<IActionResult> GetVendorsByCompany(Guid companyId)
+    {
+        var userId = GetCurrentUserId();
+
+        // Verify user has access to the company
+        var hasAccess = await _context.UserCompanies
+            .AnyAsync(uc => uc.UserId == userId && uc.CompanyId == companyId);
+
+        if (!hasAccess)
+        {
+            return Forbid();
+        }
+
+        var vendors = await _context.Vendors
+            .Where(v => v.CompanyId == companyId && v.IsActive)
+            .OrderBy(v => v.Name)
+            .Select(v => new { v.Id, v.Name })
+            .ToListAsync();
+
+        return Json(vendors);
     }
 
     private async Task<FileUploadResult> SaveUploadedFileAsync(IFormFile file)
