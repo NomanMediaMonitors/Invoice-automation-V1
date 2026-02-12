@@ -215,6 +215,274 @@ namespace InvoiceAutomation.Migrations
                     b.ToTable("companies", (string)null);
                 });
 
+            modelBuilder.Entity("InvoiceAutomation.Core.Entities.Invoice", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("CHAR(36)")
+                        .HasColumnName("id");
+
+                    b.Property<string>("ApprovalNotes")
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar(1000)")
+                        .HasColumnName("approval_notes");
+
+                    b.Property<DateTime?>("ApprovedAt")
+                        .HasColumnType("DATETIME")
+                        .HasColumnName("approved_at");
+
+                    b.Property<Guid?>("ApprovedBy")
+                        .HasColumnType("CHAR(36)")
+                        .HasColumnName("approved_by");
+
+                    b.Property<Guid>("CompanyId")
+                        .HasColumnType("CHAR(36)")
+                        .HasColumnName("company_id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("DATETIME")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("CHAR(36)")
+                        .HasColumnName("created_by");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(10)
+                        .HasColumnType("varchar(10)")
+                        .HasDefaultValue("PKR")
+                        .HasColumnName("currency");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar(1000)")
+                        .HasColumnName("description");
+
+                    b.Property<DateTime?>("DueDate")
+                        .HasColumnType("DATE")
+                        .HasColumnName("due_date");
+
+                    b.Property<long?>("FileSize")
+                        .HasColumnType("bigint")
+                        .HasColumnName("file_size");
+
+                    b.Property<string>("FileStoragePath")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)")
+                        .HasColumnName("file_storage_path");
+
+                    b.Property<string>("FileType")
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)")
+                        .HasColumnName("file_type");
+
+                    b.Property<string>("FileUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)")
+                        .HasColumnName("file_url");
+
+                    b.Property<string>("IndraajVoucherNo")
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)")
+                        .HasColumnName("indraaj_voucher_no");
+
+                    b.Property<DateTime>("InvoiceDate")
+                        .HasColumnType("DATE")
+                        .HasColumnName("invoice_date");
+
+                    b.Property<string>("InvoiceNumber")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)")
+                        .HasColumnName("invoice_number");
+
+                    b.Property<bool>("IsOcrProcessed")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TINYINT(1)")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_ocr_processed");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("notes");
+
+                    b.Property<decimal?>("OcrConfidenceScore")
+                        .HasColumnType("DECIMAL(5,2)")
+                        .HasColumnName("ocr_confidence_score");
+
+                    b.Property<string>("OcrErrorMessage")
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar(1000)")
+                        .HasColumnName("ocr_error_message");
+
+                    b.Property<DateTime?>("OcrProcessedAt")
+                        .HasColumnType("DATETIME")
+                        .HasColumnName("ocr_processed_at");
+
+                    b.Property<string>("OcrRawData")
+                        .HasColumnType("LONGTEXT")
+                        .HasColumnName("ocr_raw_data");
+
+                    b.Property<string>("OriginalFileName")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)")
+                        .HasColumnName("original_file_name");
+
+                    b.Property<DateTime?>("PaidAt")
+                        .HasColumnType("DATETIME")
+                        .HasColumnName("paid_at");
+
+                    b.Property<Guid?>("PaidBy")
+                        .HasColumnType("CHAR(36)")
+                        .HasColumnName("paid_by");
+
+                    b.Property<string>("PaymentReference")
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)")
+                        .HasColumnName("payment_reference");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)")
+                        .HasColumnName("status");
+
+                    b.Property<decimal>("SubTotal")
+                        .HasColumnType("DECIMAL(18,2)")
+                        .HasColumnName("sub_total");
+
+                    b.Property<DateTime?>("SyncedToIndraajAt")
+                        .HasColumnType("DATETIME")
+                        .HasColumnName("synced_to_indraaj_at");
+
+                    b.Property<decimal>("TaxAmount")
+                        .HasColumnType("DECIMAL(18,2)")
+                        .HasColumnName("tax_amount");
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasColumnType("DECIMAL(18,2)")
+                        .HasColumnName("total_amount");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("DATETIME")
+                        .HasColumnName("updated_at")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("CHAR(36)")
+                        .HasColumnName("updated_by");
+
+                    b.Property<Guid>("VendorId")
+                        .HasColumnType("CHAR(36)")
+                        .HasColumnName("vendor_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DueDate");
+
+                    b.HasIndex("InvoiceDate");
+
+                    b.HasIndex("Status");
+
+                    b.HasIndex("VendorId");
+
+                    b.HasIndex("CompanyId", "InvoiceNumber")
+                        .IsUnique();
+
+                    b.ToTable("invoices", (string)null);
+                });
+
+            modelBuilder.Entity("InvoiceAutomation.Core.Entities.InvoiceLineItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("CHAR(36)")
+                        .HasColumnName("id");
+
+                    b.Property<string>("AccountCode")
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)")
+                        .HasColumnName("account_code");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("DECIMAL(18,2)")
+                        .HasColumnName("amount");
+
+                    b.Property<Guid?>("ChartOfAccountId")
+                        .HasColumnType("CHAR(36)")
+                        .HasColumnName("chart_of_account_id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("DATETIME")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)")
+                        .HasColumnName("description");
+
+                    b.Property<Guid>("InvoiceId")
+                        .HasColumnType("CHAR(36)")
+                        .HasColumnName("invoice_id");
+
+                    b.Property<bool>("IsOcrExtracted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TINYINT(1)")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_ocr_extracted");
+
+                    b.Property<int>("LineNumber")
+                        .HasColumnType("int")
+                        .HasColumnName("line_number");
+
+                    b.Property<decimal?>("OcrConfidenceScore")
+                        .HasColumnType("DECIMAL(5,2)")
+                        .HasColumnName("ocr_confidence_score");
+
+                    b.Property<decimal>("Quantity")
+                        .HasColumnType("DECIMAL(18,4)")
+                        .HasColumnName("quantity");
+
+                    b.Property<decimal>("TaxAmount")
+                        .HasColumnType("DECIMAL(18,2)")
+                        .HasColumnName("tax_amount");
+
+                    b.Property<decimal>("TaxRate")
+                        .HasColumnType("DECIMAL(5,2)")
+                        .HasColumnName("tax_rate");
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasColumnType("DECIMAL(18,2)")
+                        .HasColumnName("total_amount");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasColumnType("DECIMAL(18,2)")
+                        .HasColumnName("unit_price");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("DATETIME")
+                        .HasColumnName("updated_at")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ChartOfAccountId");
+
+                    b.HasIndex("InvoiceId", "LineNumber")
+                        .IsUnique();
+
+                    b.ToTable("invoice_line_items", (string)null);
+                });
+
             modelBuilder.Entity("InvoiceAutomation.Core.Entities.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -600,6 +868,43 @@ namespace InvoiceAutomation.Migrations
                     b.Navigation("Company");
                 });
 
+            modelBuilder.Entity("InvoiceAutomation.Core.Entities.Invoice", b =>
+                {
+                    b.HasOne("InvoiceAutomation.Core.Entities.Company", "Company")
+                        .WithMany()
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("InvoiceAutomation.Core.Entities.Vendor", "Vendor")
+                        .WithMany()
+                        .HasForeignKey("VendorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Company");
+
+                    b.Navigation("Vendor");
+                });
+
+            modelBuilder.Entity("InvoiceAutomation.Core.Entities.InvoiceLineItem", b =>
+                {
+                    b.HasOne("InvoiceAutomation.Core.Entities.ChartOfAccount", "ChartOfAccount")
+                        .WithMany()
+                        .HasForeignKey("ChartOfAccountId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("InvoiceAutomation.Core.Entities.Invoice", "Invoice")
+                        .WithMany("LineItems")
+                        .HasForeignKey("InvoiceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ChartOfAccount");
+
+                    b.Navigation("Invoice");
+                });
+
             modelBuilder.Entity("InvoiceAutomation.Core.Entities.UserCompany", b =>
                 {
                     b.HasOne("InvoiceAutomation.Core.Entities.Company", "Company")
@@ -650,6 +955,11 @@ namespace InvoiceAutomation.Migrations
                     b.Navigation("ChartOfAccounts");
 
                     b.Navigation("UserCompanies");
+                });
+
+            modelBuilder.Entity("InvoiceAutomation.Core.Entities.Invoice", b =>
+                {
+                    b.Navigation("LineItems");
                 });
 #pragma warning restore 612, 618
         }
