@@ -231,12 +231,15 @@ public class OcrService : IOcrService
         try
         {
             // Extract Invoice Number - Multiple patterns
+            // Allows alphanumeric plus common separators: - / . _
             var invoiceNumberPatterns = new[]
             {
-                @"Invoice\s*#?\s*:?\s*([A-Z0-9-]+)",
-                @"Inv\s*#?\s*:?\s*([A-Z0-9-]+)",
-                @"Invoice\s+Number\s*:?\s*([A-Z0-9-]+)",
-                @"Bill\s+No\s*:?\s*([A-Z0-9-]+)"
+                @"Invoice\s*No\.?\s*:?\s*([A-Z0-9][A-Z0-9\-/._]+)",
+                @"Invoice\s*#?\s*:?\s*([A-Z0-9][A-Z0-9\-/._]+)",
+                @"Inv\.?\s*#?\s*:?\s*([A-Z0-9][A-Z0-9\-/._]+)",
+                @"Invoice\s+Number\s*:?\s*([A-Z0-9][A-Z0-9\-/._]+)",
+                @"Bill\s+No\.?\s*:?\s*([A-Z0-9][A-Z0-9\-/._]+)",
+                @"Ref(?:erence)?\s*(?:No\.?)?\s*:?\s*([A-Z0-9][A-Z0-9\-/._]+)"
             };
 
             foreach (var pattern in invoiceNumberPatterns)
@@ -244,23 +247,27 @@ public class OcrService : IOcrService
                 var match = Regex.Match(extractedText, pattern, RegexOptions.IgnoreCase);
                 if (match.Success)
                 {
-                    data.InvoiceNumber = match.Groups[1].Value.Trim();
+                    data.InvoiceNumber = match.Groups[1].Value.Trim().TrimEnd('.');
                     break;
                 }
             }
 
-            // Extract Invoice Date - Multiple date formats
+            // Extract Invoice Date - Multiple date formats including dd-MMM-yyyy
             var datePatterns = new[]
             {
+                @"Invoice\s+Date\s*:?\s*(\d{1,2}[-/]\w{3,9}[-/]\d{2,4})",
                 @"Invoice\s+Date\s*:?\s*(\d{1,2}[-/]\d{1,2}[-/]\d{2,4})",
-                @"Date\s*:?\s*(\d{1,2}[-/]\d{1,2}[-/]\d{2,4})",
+                @"(?:^|\s)Date\s*:?\s*(\d{1,2}[-/]\w{3,9}[-/]\d{2,4})",
+                @"(?:^|\s)Date\s*:?\s*(\d{1,2}[-/]\d{1,2}[-/]\d{2,4})",
+                @"Dated\s*:?\s*(\d{1,2}[-/]\w{3,9}[-/]\d{2,4})",
                 @"Dated\s*:?\s*(\d{1,2}[-/]\d{1,2}[-/]\d{2,4})",
+                @"(\d{1,2}[-/]\w{3,9}[-/]\d{2,4})",
                 @"(\d{1,2}[-/]\d{1,2}[-/]\d{2,4})"
             };
 
             foreach (var pattern in datePatterns)
             {
-                var match = Regex.Match(extractedText, pattern, RegexOptions.IgnoreCase);
+                var match = Regex.Match(extractedText, pattern, RegexOptions.IgnoreCase | RegexOptions.Multiline);
                 if (match.Success && DateTime.TryParse(match.Groups[1].Value, out var invDate))
                 {
                     data.InvoiceDate = invDate;
@@ -269,18 +276,34 @@ public class OcrService : IOcrService
             }
 
             // Extract Due Date
-            var dueDateMatch = Regex.Match(extractedText, @"Due\s+Date\s*:?\s*(\d{1,2}[-/]\d{1,2}[-/]\d{2,4})", RegexOptions.IgnoreCase);
-            if (dueDateMatch.Success && DateTime.TryParse(dueDateMatch.Groups[1].Value, out var dDate))
+            var dueDatePatterns = new[]
             {
-                data.DueDate = dDate;
+                @"Due\s+Date\s*:?\s*(\d{1,2}[-/]\w{3,9}[-/]\d{2,4})",
+                @"Due\s+Date\s*:?\s*(\d{1,2}[-/]\d{1,2}[-/]\d{2,4})",
+                @"Payment\s+Due\s*:?\s*(\d{1,2}[-/]\w{3,9}[-/]\d{2,4})"
+            };
+
+            foreach (var pattern in dueDatePatterns)
+            {
+                var match = Regex.Match(extractedText, pattern, RegexOptions.IgnoreCase);
+                if (match.Success && DateTime.TryParse(match.Groups[1].Value, out var dDate))
+                {
+                    data.DueDate = dDate;
+                    break;
+                }
             }
 
-            // Extract Vendor Name
+            // Extract NTN Number (Pakistani Tax ID)
+            var ntnMatch = Regex.Match(extractedText, @"NTN\s*(?:No\.?|Number)?\s*:?\s*([0-9][\d\-]+)", RegexOptions.IgnoreCase);
+
+            // Extract Vendor Name - try multiple strategies
             var vendorPatterns = new[]
             {
                 @"From\s*:?\s*\n?\s*([^\n]+)",
                 @"Vendor\s*:?\s*([^\n]+)",
-                @"Supplier\s*:?\s*([^\n]+)"
+                @"Supplier\s*:?\s*([^\n]+)",
+                @"Company\s*:?\s*([^\n]+)",
+                @"M/[Ss]\.?\s*([^\n,]+)"
             };
 
             foreach (var pattern in vendorPatterns)
@@ -293,12 +316,31 @@ public class OcrService : IOcrService
                 }
             }
 
-            // Extract Totals with various formats
+            // If no vendor name found via label, try to extract from the first meaningful line
+            // (many invoices have the company/vendor name as the first or second line)
+            if (string.IsNullOrWhiteSpace(data.VendorName))
+            {
+                var lines = extractedText.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+                foreach (var line in lines.Take(5))
+                {
+                    var trimmed = line.Trim();
+                    // Look for a line that looks like a company name (has letters, not just numbers/dates)
+                    if (trimmed.Length >= 3 && trimmed.Length <= 100 &&
+                        Regex.IsMatch(trimmed, @"[A-Za-z]{2,}") &&
+                        !Regex.IsMatch(trimmed, @"^\d") &&
+                        !Regex.IsMatch(trimmed, @"(Date|Invoice|NTN|Tax|Page|Dear|Please)", RegexOptions.IgnoreCase))
+                    {
+                        data.VendorName = trimmed;
+                        break;
+                    }
+                }
+            }
+
+            // Extract Totals with various formats including PKR with spaces
             var amountPatterns = new[]
             {
                 @"Subtotal\s*:?\s*(?:Rs\.?|PKR)?\s*([\d,]+\.?\d*)",
-                @"Sub\s+Total\s*:?\s*(?:Rs\.?|PKR)?\s*([\d,]+\.?\d*)",
-                @"Amount\s*:?\s*(?:Rs\.?|PKR)?\s*([\d,]+\.?\d*)"
+                @"Sub[\s-]*Total\s*:?\s*(?:Rs\.?|PKR)?\s*([\d,]+\.?\d*)"
             };
 
             foreach (var pattern in amountPatterns)
@@ -311,11 +353,14 @@ public class OcrService : IOcrService
                 }
             }
 
+            // Tax extraction - also extract tax rate if present (e.g. "Tax 6%")
             var taxPatterns = new[]
             {
-                @"Tax\s*:?\s*(?:Rs\.?|PKR)?\s*([\d,]+\.?\d*)",
-                @"GST\s*:?\s*(?:Rs\.?|PKR)?\s*([\d,]+\.?\d*)",
-                @"VAT\s*:?\s*(?:Rs\.?|PKR)?\s*([\d,]+\.?\d*)"
+                @"Tax\s*\d*%?\s*:?\s*(?:Rs\.?|PKR)?\s*([\d,]+\.?\d*)",
+                @"GST\s*\d*%?\s*:?\s*(?:Rs\.?|PKR)?\s*([\d,]+\.?\d*)",
+                @"VAT\s*\d*%?\s*:?\s*(?:Rs\.?|PKR)?\s*([\d,]+\.?\d*)",
+                @"(?:Rs\.?|PKR)\s*([\d,]+\.?\d*)\s*(?:tax|gst)",
+                @"Tax\s*(?:Rs\.?|PKR)\s*([\d,]+\.?\d*)"
             };
 
             foreach (var pattern in taxPatterns)
@@ -328,20 +373,56 @@ public class OcrService : IOcrService
                 }
             }
 
+            // Total amount - Grant Total, Grand Total, Total Amount, Net Amount
             var totalPatterns = new[]
             {
+                @"Gr[ae]nt?\s+Total\s*(?:Amount)?\s*:?\s*(?:Rs\.?|PKR)?\s*([\d,]+\.?\d*)",
+                @"Grand\s+Total\s*(?:Amount)?\s*:?\s*(?:Rs\.?|PKR)?\s*([\d,]+\.?\d*)",
                 @"Total\s+Amount\s*:?\s*(?:Rs\.?|PKR)?\s*([\d,]+\.?\d*)",
-                @"Grand\s+Total\s*:?\s*(?:Rs\.?|PKR)?\s*([\d,]+\.?\d*)",
-                @"Total\s*:?\s*(?:Rs\.?|PKR)?\s*([\d,]+\.?\d*)",
-                @"Amount\s+Due\s*:?\s*(?:Rs\.?|PKR)?\s*([\d,]+\.?\d*)"
+                @"Net\s+(?:Amount|Total)\s*:?\s*(?:Rs\.?|PKR)?\s*([\d,]+\.?\d*)",
+                @"Amount\s+(?:With|Inc(?:l|luding)?)\s+Tax\s*:?\s*(?:Rs\.?|PKR)?\s*([\d,]+\.?\d*)",
+                @"Amount\s+Due\s*:?\s*(?:Rs\.?|PKR)?\s*([\d,]+\.?\d*)",
+                @"(?:^|\n)\s*Total\s*:?\s*(?:Rs\.?|PKR)?\s*([\d,]+\.?\d*)"
             };
 
             foreach (var pattern in totalPatterns)
             {
-                var match = Regex.Match(extractedText, pattern, RegexOptions.IgnoreCase);
-                if (match.Success && decimal.TryParse(match.Groups[1].Value.Replace(",", ""), out var total))
+                var match = Regex.Match(extractedText, pattern, RegexOptions.IgnoreCase | RegexOptions.Multiline);
+                if (match.Success && decimal.TryParse(match.Groups[1].Value.Replace(",", ""), out var total) && total > 0)
                 {
-                    data.TotalAmount = total;
+                    // If we find multiple total amounts across pages, sum them
+                    // (multi-page invoices like Rent & Ride have separate Grant Total per page)
+                    if (data.TotalAmount.HasValue)
+                    {
+                        // Check if this is a different total on another page
+                        var allMatches = Regex.Matches(extractedText, pattern, RegexOptions.IgnoreCase | RegexOptions.Multiline);
+                        decimal sum = 0;
+                        foreach (Match m in allMatches)
+                        {
+                            if (decimal.TryParse(m.Groups[1].Value.Replace(",", ""), out var val) && val > 0)
+                            {
+                                sum += val;
+                            }
+                        }
+                        if (sum > data.TotalAmount.Value)
+                        {
+                            data.TotalAmount = sum;
+                        }
+                    }
+                    else
+                    {
+                        // Sum all occurrences of this pattern (handles multi-page totals)
+                        var allMatches = Regex.Matches(extractedText, pattern, RegexOptions.IgnoreCase | RegexOptions.Multiline);
+                        decimal sum = 0;
+                        foreach (Match m in allMatches)
+                        {
+                            if (decimal.TryParse(m.Groups[1].Value.Replace(",", ""), out var val) && val > 0)
+                            {
+                                sum += val;
+                            }
+                        }
+                        data.TotalAmount = sum;
+                    }
                     break;
                 }
             }
@@ -349,8 +430,18 @@ public class OcrService : IOcrService
             // Extract Line Items
             data.LineItems = ExtractLineItems(extractedText);
 
-            _logger.LogInformation("Parsed invoice data: {InvoiceNumber}, Total: {Total}",
-                data.InvoiceNumber ?? "N/A", data.TotalAmount);
+            // If we have line items but no subtotal, calculate it
+            if (!data.SubTotal.HasValue && data.LineItems.Any())
+            {
+                data.SubTotal = data.LineItems.Sum(li => li.Amount);
+            }
+
+            _logger.LogInformation("Parsed invoice data: InvoiceNo={InvoiceNumber}, Date={Date}, Vendor={Vendor}, Total={Total}, LineItems={LineItemCount}",
+                data.InvoiceNumber ?? "N/A",
+                data.InvoiceDate?.ToString("yyyy-MM-dd") ?? "N/A",
+                data.VendorName ?? "N/A",
+                data.TotalAmount,
+                data.LineItems.Count);
         }
         catch (Exception ex)
         {
@@ -366,51 +457,150 @@ public class OcrService : IOcrService
 
         try
         {
-            // Try to find table-like structure with items
             var lines = extractedText.Split('\n');
             bool inItemsSection = false;
 
             foreach (var line in lines)
             {
-                // Detect start of items section
-                if (Regex.IsMatch(line, @"(Item|Description|Product|S\.?No)", RegexOptions.IgnoreCase))
+                var trimmedLine = line.Trim();
+
+                // Detect start of items section (table header row)
+                if (Regex.IsMatch(trimmedLine, @"(S\.?\s*No|Item|Description|Product|Vehicle\s+Model)", RegexOptions.IgnoreCase)
+                    && Regex.IsMatch(trimmedLine, @"(Amount|Price|Rent|Total|Rate)", RegexOptions.IgnoreCase))
                 {
                     inItemsSection = true;
                     continue;
                 }
 
                 // Detect end of items section
-                if (Regex.IsMatch(line, @"(Subtotal|Total|Tax|Amount Due)", RegexOptions.IgnoreCase))
+                if (inItemsSection && Regex.IsMatch(trimmedLine, @"(Gr[ae]nt?\s+Total|Grand\s+Total|Subtotal|Sub\s+Total|Amount\s+Due)", RegexOptions.IgnoreCase))
                 {
                     inItemsSection = false;
-                    break;
+                    continue;
                 }
 
-                if (inItemsSection && !string.IsNullOrWhiteSpace(line))
+                if (inItemsSection && !string.IsNullOrWhiteSpace(trimmedLine))
                 {
-                    // Try to extract: Description, Quantity, Unit Price, Amount
-                    var match = Regex.Match(line, @"([^\d]+?)\s+(\d+(?:\.\d+)?)\s+([\d,]+(?:\.\d+)?)\s+([\d,]+(?:\.\d+)?)");
-
-                    if (match.Success && match.Groups.Count >= 5)
+                    // Strategy 1: Line has PKR amounts — extract description and last PKR amount as total
+                    var pkrAmounts = Regex.Matches(trimmedLine, @"PKR\s*([\d,]+\.?\d*)", RegexOptions.IgnoreCase);
+                    if (pkrAmounts.Count > 0)
                     {
-                        var description = match.Groups[1].Value.Trim();
+                        // Get the description (text before the first number or PKR)
+                        var descMatch = Regex.Match(trimmedLine, @"^\d*\s*(.+?)(?:\s+\d+\s+PKR|\s+PKR|\s+\d[\d,]*\.\d)", RegexOptions.IgnoreCase);
+                        var description = descMatch.Success ? descMatch.Groups[1].Value.Trim() : trimmedLine;
 
-                        // Skip if it looks like a header
-                        if (description.Length < 3 || Regex.IsMatch(description, @"^(Item|Desc|Product|Qty)", RegexOptions.IgnoreCase))
+                        // Clean up description - remove leading serial numbers
+                        description = Regex.Replace(description, @"^\d+\s+", "").Trim();
+
+                        if (description.Length < 2) continue;
+
+                        // Last PKR amount is typically the line total (Amount With Tax)
+                        var lastAmount = pkrAmounts[pkrAmounts.Count - 1];
+                        if (decimal.TryParse(lastAmount.Groups[1].Value.Replace(",", ""), out var amount) && amount > 0)
+                        {
+                            decimal quantity = 1;
+                            decimal unitPrice = amount;
+
+                            // Try to extract quantity (often a standalone number like Days)
+                            var qtyMatch = Regex.Match(trimmedLine, @"\b(\d+)\s+PKR", RegexOptions.IgnoreCase);
+                            if (qtyMatch.Success && decimal.TryParse(qtyMatch.Groups[1].Value, out var qty) && qty > 0 && qty < 10000)
+                            {
+                                quantity = qty;
+                            }
+
+                            // If there's an "Agreed Rent" or unit price PKR amount and a total, compute unit price
+                            if (pkrAmounts.Count >= 2)
+                            {
+                                var firstPkr = pkrAmounts[0];
+                                if (decimal.TryParse(firstPkr.Groups[1].Value.Replace(",", ""), out var firstAmount) && firstAmount > 0)
+                                {
+                                    unitPrice = firstAmount;
+                                }
+                            }
+
+                            // Extract tax amount if present in line
+                            decimal taxAmount = 0;
+                            decimal taxRate = 0;
+                            var taxMatch = Regex.Match(trimmedLine, @"Tax\s*(\d+)%?\s*(?:Rs\.?|PKR)?\s*([\d,]+\.?\d*)", RegexOptions.IgnoreCase);
+                            if (!taxMatch.Success)
+                            {
+                                // Look for a PKR amount that looks like tax (second to last)
+                                if (pkrAmounts.Count >= 3)
+                                {
+                                    var taxPkr = pkrAmounts[pkrAmounts.Count - 2];
+                                    if (decimal.TryParse(taxPkr.Groups[1].Value.Replace(",", ""), out var possibleTax))
+                                    {
+                                        taxAmount = possibleTax;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                if (decimal.TryParse(taxMatch.Groups[1].Value, out var rate)) taxRate = rate;
+                                if (decimal.TryParse(taxMatch.Groups[2].Value.Replace(",", ""), out var tAmt)) taxAmount = tAmt;
+                            }
+
+                            lineItems.Add(new OcrLineItem
+                            {
+                                Description = description,
+                                Quantity = quantity,
+                                UnitPrice = unitPrice,
+                                Amount = amount,
+                                ConfidenceScore = 80.0m
+                            });
                             continue;
+                        }
+                    }
 
-                        if (decimal.TryParse(match.Groups[2].Value, out var qty) &&
-                            decimal.TryParse(match.Groups[3].Value.Replace(",", ""), out var unitPrice) &&
-                            decimal.TryParse(match.Groups[4].Value.Replace(",", ""), out var amount))
+                    // Strategy 2: Simple format — Description then Amount (no PKR prefix)
+                    // e.g. "Suzuki Alto AGS - BZZ286    Car Depreciation    PKR 14,470.00"
+                    // or "Some description   14,470.00"
+                    var simpleMatch = Regex.Match(trimmedLine, @"^\d*\s*(.+?)\s+(?:Rs\.?|PKR)?\s*([\d,]+\.\d{2})\s*$", RegexOptions.IgnoreCase);
+                    if (simpleMatch.Success)
+                    {
+                        var description = simpleMatch.Groups[1].Value.Trim();
+                        description = Regex.Replace(description, @"^\d+\s+", "").Trim();
+
+                        if (description.Length >= 2 &&
+                            !Regex.IsMatch(description, @"^(Item|Desc|Product|Qty|S\.?No|Vehicle)", RegexOptions.IgnoreCase) &&
+                            decimal.TryParse(simpleMatch.Groups[2].Value.Replace(",", ""), out var amount) && amount > 0)
                         {
                             lineItems.Add(new OcrLineItem
                             {
                                 Description = description,
-                                Quantity = qty,
-                                UnitPrice = unitPrice,
+                                Quantity = 1,
+                                UnitPrice = amount,
                                 Amount = amount,
-                                ConfidenceScore = 75.0m // Base confidence for extracted items
+                                ConfidenceScore = 70.0m
                             });
+                            continue;
+                        }
+                    }
+
+                    // Strategy 3: Original pattern — Description, Qty, UnitPrice, Amount (no currency prefix)
+                    var tableMatch = Regex.Match(trimmedLine, @"([^\d]+?)\s+(\d+(?:\.\d+)?)\s+([\d,]+(?:\.\d+)?)\s+([\d,]+(?:\.\d+)?)");
+                    if (tableMatch.Success && tableMatch.Groups.Count >= 5)
+                    {
+                        var description = tableMatch.Groups[1].Value.Trim();
+                        description = Regex.Replace(description, @"^\d+\s+", "").Trim();
+
+                        if (description.Length >= 3 &&
+                            !Regex.IsMatch(description, @"^(Item|Desc|Product|Qty|S\.?No)", RegexOptions.IgnoreCase))
+                        {
+                            if (decimal.TryParse(tableMatch.Groups[2].Value, out var qty) &&
+                                decimal.TryParse(tableMatch.Groups[3].Value.Replace(",", ""), out var unitPrice) &&
+                                decimal.TryParse(tableMatch.Groups[4].Value.Replace(",", ""), out var amount) &&
+                                amount > 0)
+                            {
+                                lineItems.Add(new OcrLineItem
+                                {
+                                    Description = description,
+                                    Quantity = qty,
+                                    UnitPrice = unitPrice,
+                                    Amount = amount,
+                                    ConfidenceScore = 75.0m
+                                });
+                            }
                         }
                     }
                 }

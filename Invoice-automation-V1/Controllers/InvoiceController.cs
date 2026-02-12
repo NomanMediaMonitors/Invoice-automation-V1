@@ -187,6 +187,9 @@ public class InvoiceController : Controller
             return RedirectToAction(nameof(Index));
         }
 
+        // Populate chart of accounts for inline assignment
+        await PopulateDropdownsAsync(viewModel.CompanyId);
+
         return View(viewModel);
     }
 
@@ -500,6 +503,56 @@ public class InvoiceController : Controller
         ViewBag.ChartOfAccounts = accounts;
     }
 
+    // POST: Invoice/AssignLineItemAccount
+    [HttpPost]
+    public async Task<IActionResult> AssignLineItemAccount([FromBody] AssignAccountRequest request)
+    {
+        try
+        {
+            var lineItem = await _context.InvoiceLineItems
+                .Include(li => li.Invoice)
+                .FirstOrDefaultAsync(li => li.Id == request.LineItemId);
+
+            if (lineItem == null)
+            {
+                return Json(new { success = false, message = "Line item not found" });
+            }
+
+            var userId = GetCurrentUserId();
+            if (!await _invoiceService.CanUserAccessInvoiceAsync(lineItem.InvoiceId, userId))
+            {
+                return Json(new { success = false, message = "Access denied" });
+            }
+
+            if (request.ChartOfAccountId.HasValue && request.ChartOfAccountId.Value != Guid.Empty)
+            {
+                var account = await _context.ChartOfAccounts.FindAsync(request.ChartOfAccountId.Value);
+                if (account == null)
+                {
+                    return Json(new { success = false, message = "Account not found" });
+                }
+
+                lineItem.ChartOfAccountId = account.Id;
+                lineItem.AccountCode = account.Code;
+            }
+            else
+            {
+                lineItem.ChartOfAccountId = null;
+                lineItem.AccountCode = null;
+            }
+
+            lineItem.UpdatedAt = DateTime.UtcNow;
+            await _context.SaveChangesAsync();
+
+            return Json(new { success = true });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error assigning account to line item");
+            return Json(new { success = false, message = "An error occurred" });
+        }
+    }
+
     // API endpoint: returns vendors for a given company (used by AJAX on company change)
     [HttpGet]
     public async Task<IActionResult> GetVendorsByCompany(Guid companyId)
@@ -610,5 +663,11 @@ public class InvoiceController : Controller
         public string? FileType { get; set; }
         public long? FileSize { get; set; }
         public string? ErrorMessage { get; set; }
+    }
+
+    public class AssignAccountRequest
+    {
+        public Guid LineItemId { get; set; }
+        public Guid? ChartOfAccountId { get; set; }
     }
 }

@@ -567,17 +567,19 @@ public class InvoiceService : IInvoiceService
             invoice.IsOcrProcessed = true;
             invoice.OcrProcessedAt = DateTime.UtcNow;
 
-            if (ocrResult.Success && ocrResult.ExtractedData != null)
+            if (ocrResult.ExtractedData != null)
             {
                 invoice.OcrConfidenceScore = ocrResult.ConfidenceScore;
                 invoice.OcrRawData = ocrResult.ExtractedData.RawText;
+                invoice.OcrErrorMessage = ocrResult.ErrorMessage;
 
-                // Update invoice fields if not already set
-                if (string.IsNullOrWhiteSpace(invoice.InvoiceNumber) && !string.IsNullOrWhiteSpace(ocrResult.ExtractedData.InvoiceNumber))
+                // Always update invoice number from OCR if extracted
+                if (!string.IsNullOrWhiteSpace(ocrResult.ExtractedData.InvoiceNumber))
                 {
                     invoice.InvoiceNumber = ocrResult.ExtractedData.InvoiceNumber;
                 }
 
+                // Always update dates from OCR if extracted
                 if (ocrResult.ExtractedData.InvoiceDate.HasValue)
                 {
                     invoice.InvoiceDate = ocrResult.ExtractedData.InvoiceDate.Value;
@@ -588,8 +590,32 @@ public class InvoiceService : IInvoiceService
                     invoice.DueDate = ocrResult.ExtractedData.DueDate.Value;
                 }
 
+                // Try to match vendor by name from OCR text
+                if (!string.IsNullOrWhiteSpace(ocrResult.ExtractedData.VendorName))
+                {
+                    var matchedVendor = await _context.Vendors
+                        .Where(v => v.CompanyId == invoice.CompanyId && v.IsActive)
+                        .FirstOrDefaultAsync(v =>
+                            v.Name.Contains(ocrResult.ExtractedData.VendorName) ||
+                            ocrResult.ExtractedData.VendorName.Contains(v.Name));
+
+                    if (matchedVendor != null)
+                    {
+                        invoice.VendorId = matchedVendor.Id;
+                        _logger.LogInformation("Matched vendor '{VendorName}' (Id: {VendorId}) from OCR text",
+                            matchedVendor.Name, matchedVendor.Id);
+                    }
+                }
+
+                // Clear existing OCR-extracted line items before adding new ones
+                var ocrLineItems = invoice.LineItems.Where(li => li.IsOcrExtracted).ToList();
+                if (ocrLineItems.Any())
+                {
+                    _context.InvoiceLineItems.RemoveRange(ocrLineItems);
+                }
+
                 // Add OCR extracted line items
-                int lineNumber = invoice.LineItems.Count + 1;
+                int lineNumber = invoice.LineItems.Count(li => !li.IsOcrExtracted) + 1;
                 foreach (var ocrLineItem in ocrResult.ExtractedData.LineItems)
                 {
                     var lineItem = new InvoiceLineItem
@@ -613,14 +639,18 @@ public class InvoiceService : IInvoiceService
                     invoice.LineItems.Add(lineItem);
                 }
 
-                // Recalculate totals
+                // Recalculate totals from OCR data or line items
                 invoice.SubTotal = ocrResult.ExtractedData.SubTotal ?? invoice.LineItems.Sum(li => li.Amount);
                 invoice.TaxAmount = ocrResult.ExtractedData.TaxAmount ?? invoice.LineItems.Sum(li => li.TaxAmount);
                 invoice.TotalAmount = ocrResult.ExtractedData.TotalAmount ?? invoice.LineItems.Sum(li => li.TotalAmount);
 
                 await _context.SaveChangesAsync();
 
-                return (true, $"OCR processing completed successfully. Confidence: {ocrResult.ConfidenceScore:F2}%");
+                var message = ocrResult.Success
+                    ? $"OCR processing completed successfully. Confidence: {ocrResult.ConfidenceScore:F2}%"
+                    : $"OCR extracted partial data (Confidence: {ocrResult.ConfidenceScore:F2}%). {ocrResult.ErrorMessage}";
+
+                return (true, message);
             }
             else
             {

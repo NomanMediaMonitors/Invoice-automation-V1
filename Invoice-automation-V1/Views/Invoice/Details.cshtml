@@ -7,6 +7,7 @@
     var canSync = (Model.Status == "Approved" || Model.Status == "Paid") && !Model.SyncedToIndraajAt.HasValue;
 }
 
+@Html.AntiForgeryToken()
 <div class="container-fluid py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="mb-0">
@@ -91,8 +92,12 @@
 
             <!-- Line Items Card -->
             <div class="card mb-4">
-                <div class="card-header">
+                <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0"><i class="bi bi-list-ul"></i> Line Items</h5>
+                    @if (Model.LineItems.Any() && canEdit)
+                    {
+                        <small class="text-muted">Assign chart of accounts to categorize expenses</small>
+                    }
                 </div>
                 <div class="card-body">
                     @if (Model.LineItems.Any())
@@ -103,7 +108,7 @@
                                     <tr>
                                         <th>#</th>
                                         <th>Description</th>
-                                        <th>Account Code</th>
+                                        <th>Account</th>
                                         <th class="text-end">Qty</th>
                                         <th class="text-end">Unit Price</th>
                                         <th class="text-end">Amount</th>
@@ -124,9 +129,31 @@
                                                 }
                                             </td>
                                             <td>
-                                                @if (!string.IsNullOrEmpty(item.AccountCode))
+                                                @if (canEdit)
                                                 {
-                                                    <small class="text-muted">@item.AccountCode</small>
+                                                    <select class="form-select form-select-sm account-select"
+                                                            data-line-item-id="@item.Id"
+                                                            style="min-width: 180px;">
+                                                        <option value="">-- Select --</option>
+                                                        @if (ViewBag.ChartOfAccounts != null)
+                                                        {
+                                                            @foreach (var account in (List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>)ViewBag.ChartOfAccounts)
+                                                            {
+                                                                <option value="@account.Value"
+                                                                        selected="@(item.ChartOfAccountId?.ToString() == account.Value)">
+                                                                    @account.Text
+                                                                </option>
+                                                            }
+                                                        }
+                                                    </select>
+                                                }
+                                                else if (!string.IsNullOrEmpty(item.AccountCode))
+                                                {
+                                                    <small class="text-muted">@item.AccountCode - @item.AccountName</small>
+                                                }
+                                                else
+                                                {
+                                                    <small class="text-muted">Not assigned</small>
                                                 }
                                             </td>
                                             <td class="text-end">@item.Quantity.ToString("N2")</td>
@@ -230,12 +257,12 @@
                         </form>
                     }
 
-                    @if (!Model.IsOcrProcessed && !string.IsNullOrEmpty(Model.FileUrl))
+                    @if (!string.IsNullOrEmpty(Model.FileUrl))
                     {
                         <form asp-action="ProcessOcr" method="post" class="mb-2">
                             <input type="hidden" name="id" value="@Model.Id" />
                             <button type="submit" class="btn btn-warning w-100">
-                                <i class="bi bi-magic"></i> Process with OCR
+                                <i class="bi bi-magic"></i> @(Model.IsOcrProcessed ? "Re-process with OCR" : "Process with OCR")
                             </button>
                         </form>
                     }
@@ -285,6 +312,12 @@
                                      aria-valuemax="100">
                                     @Model.OcrConfidenceScore.Value.ToString("N0")%
                                 </div>
+                            </div>
+                        }
+                        @if (!string.IsNullOrEmpty(Model.OcrErrorMessage))
+                        {
+                            <div class="alert alert-warning mt-2 mb-0 py-1 px-2 small">
+                                <i class="bi bi-exclamation-triangle"></i> @Model.OcrErrorMessage
                             </div>
                         }
                     </div>
@@ -382,6 +415,42 @@
     </div>
 </div>
 
+@section Scripts {
+    <script>
+        // Inline chart of accounts assignment for line items
+        document.querySelectorAll('.account-select').forEach(function(select) {
+            select.addEventListener('change', function() {
+                var lineItemId = this.dataset.lineItemId;
+                var chartOfAccountId = this.value;
+
+                fetch('@Url.Action("AssignLineItemAccount", "Invoice")', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+                    },
+                    body: JSON.stringify({
+                        lineItemId: lineItemId,
+                        chartOfAccountId: chartOfAccountId || null
+                    })
+                })
+                .then(function(response) { return response.json(); })
+                .then(function(data) {
+                    if (data.success) {
+                        select.classList.add('border-success');
+                        setTimeout(function() { select.classList.remove('border-success'); }, 2000);
+                    } else {
+                        alert('Failed to assign account: ' + (data.message || 'Unknown error'));
+                    }
+                })
+                .catch(function(error) {
+                    console.error('Error assigning account:', error);
+                });
+            });
+        });
+    </script>
+}
+
 <style>
     .card-header {
         background-color: #f8f9fa;
@@ -391,5 +460,11 @@
     .table-bordered th,
     .table-bordered td {
         vertical-align: middle;
+    }
+
+    .account-select.border-success {
+        border-color: #198754 !important;
+        box-shadow: 0 0 0 0.15rem rgba(25, 135, 84, 0.25);
+        transition: border-color 0.3s, box-shadow 0.3s;
     }
 </style>
