@@ -1,3 +1,4 @@
+using InvoiceAutomation.Core.Configuration;
 using InvoiceAutomation.Core.Interfaces;
 using InvoiceAutomation.Core.Services;
 using InvoiceAutomation.Infrastructure.Data;
@@ -15,6 +16,9 @@ builder.Services.AddControllersWithViews();
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+
+// Configure Tesseract OCR Settings
+builder.Services.Configure<TesseractSettings>(builder.Configuration.GetSection("Tesseract"));
 
 // Configure Cookie Authentication
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)

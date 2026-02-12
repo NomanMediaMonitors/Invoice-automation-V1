@@ -1,17 +1,31 @@
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.Text.RegularExpressions;
+using Docnet.Core;
+using Docnet.Core.Models;
 using Invoice_automation_V1.ViewModels;
+using InvoiceAutomation.Core.Configuration;
 using InvoiceAutomation.Core.Interfaces;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Tesseract;
 
 namespace InvoiceAutomation.Infrastructure.Services;
 
 public class OcrService : IOcrService
 {
     private readonly ILogger<OcrService> _logger;
+    private readonly TesseractSettings _tesseractSettings;
+    private readonly IWebHostEnvironment _environment;
 
-    public OcrService(ILogger<OcrService> logger)
+    public OcrService(
+        ILogger<OcrService> logger,
+        IOptions<TesseractSettings> tesseractSettings,
+        IWebHostEnvironment environment)
     {
         _logger = logger;
+        _tesseractSettings = tesseractSettings.Value;
+        _environment = environment;
     }
 
     public async Task<OcrResultViewModel> ProcessInvoiceAsync(string filePath, string fileType)
@@ -61,45 +75,148 @@ public class OcrService : IOcrService
 
     public async Task<string> ExtractTextAsync(string filePath, string fileType)
     {
-        // TODO: Implement actual OCR integration (Tesseract, Google Vision API, Azure Computer Vision, etc.)
-        // For now, return a mock extracted text for demonstration
+        try
+        {
+            _logger.LogInformation("Extracting text from {FileType} file using Tesseract OCR", fileType);
 
-        await Task.Delay(1000); // Simulate OCR processing time
+            // Get the tessdata path
+            var tessDataPath = Path.Combine(_environment.ContentRootPath, _tesseractSettings.DataPath);
 
-        _logger.LogInformation("Simulating OCR text extraction from {FileType}", fileType);
+            if (!Directory.Exists(tessDataPath))
+            {
+                _logger.LogError("Tessdata directory not found at: {TessDataPath}", tessDataPath);
+                throw new DirectoryNotFoundException($"Tessdata directory not found at: {tessDataPath}");
+            }
 
-        // Mock extracted text that looks like a typical invoice
-        return @"
-            INVOICE
+            _logger.LogInformation("Using tessdata path: {TessDataPath}", tessDataPath);
 
-            Invoice Number: INV-2024-001
-            Invoice Date: 2024-12-15
-            Due Date: 2025-01-15
+            string extractedText = string.Empty;
 
-            Bill To:
-            ABC Company Ltd.
-            123 Business Street
-            Karachi, Pakistan
+            // Handle different file types
+            if (fileType.Equals("pdf", StringComparison.OrdinalIgnoreCase))
+            {
+                extractedText = await ExtractTextFromPdfAsync(filePath, tessDataPath);
+            }
+            else if (IsImageFile(fileType))
+            {
+                extractedText = await ExtractTextFromImageAsync(filePath, tessDataPath);
+            }
+            else
+            {
+                throw new NotSupportedException($"File type '{fileType}' is not supported for OCR");
+            }
 
-            From:
-            XYZ Supplier Inc.
-            456 Vendor Road
-            Lahore, Pakistan
+            _logger.LogInformation("Successfully extracted {Length} characters of text", extractedText?.Length ?? 0);
 
-            ITEMS:
-            Item Description              Qty    Unit Price    Amount
-            Office Supplies               10     1,500.00      15,000.00
-            Computer Equipment            2      50,000.00     100,000.00
-            Software License              1      25,000.00     25,000.00
+            return extractedText;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error extracting text from file");
+            throw;
+        }
+    }
 
-            Subtotal:                                         140,000.00
-            Tax (17%):                                         23,800.00
-            Total Amount:                                     163,800.00
+    private async Task<string> ExtractTextFromImageAsync(string imagePath, string tessDataPath)
+    {
+        return await Task.Run(() =>
+        {
+            try
+            {
+                using var engine = new TesseractEngine(tessDataPath, _tesseractSettings.Language, EngineMode.Default);
+                using var img = Pix.LoadFromFile(imagePath);
+                using var page = engine.Process(img);
 
-            Payment Terms: Net 30 Days
-            Bank Details: Standard Chartered Bank
-            Account: 1234567890
-        ";
+                var text = page.GetText();
+                var confidence = page.GetMeanConfidence();
+
+                _logger.LogInformation("OCR completed with mean confidence: {Confidence:P}", confidence);
+
+                return text;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error during Tesseract OCR processing for image");
+                throw;
+            }
+        });
+    }
+
+    private async Task<string> ExtractTextFromPdfAsync(string pdfPath, string tessDataPath)
+    {
+        return await Task.Run(() =>
+        {
+            var extractedText = new System.Text.StringBuilder();
+
+            try
+            {
+                using var library = DocLib.Instance;
+                using var docReader = library.GetDocReader(pdfPath, new PageDimensions(1080, 1920));
+
+                _logger.LogInformation("PDF has {PageCount} pages", docReader.GetPageCount());
+
+                // Process each page (limit to first 10 pages for performance)
+                int pagesToProcess = Math.Min(docReader.GetPageCount(), 10);
+
+                for (int i = 0; i < pagesToProcess; i++)
+                {
+                    _logger.LogInformation("Processing PDF page {PageNumber}", i + 1);
+
+                    using var pageReader = docReader.GetPageReader(i);
+                    var rawBytes = pageReader.GetImage();
+                    var width = pageReader.GetPageWidth();
+                    var height = pageReader.GetPageHeight();
+
+                    // Convert PDF page to image bytes
+                    using var ms = new MemoryStream();
+                    using (var bitmap = new Bitmap(width, height, PixelFormat.Format32bppArgb))
+                    {
+                        var bitmapData = bitmap.LockBits(
+                            new Rectangle(0, 0, width, height),
+                            ImageLockMode.WriteOnly,
+                            bitmap.PixelFormat);
+
+                        unsafe
+                        {
+                            var ptr = (byte*)bitmapData.Scan0;
+                            for (int j = 0; j < rawBytes.Length; j++)
+                            {
+                                ptr[j] = rawBytes[j];
+                            }
+                        }
+
+                        bitmap.UnlockBits(bitmapData);
+                        bitmap.Save(ms, ImageFormat.Png);
+                    }
+
+                    ms.Position = 0;
+
+                    // Perform OCR on the page image
+                    using var engine = new TesseractEngine(tessDataPath, _tesseractSettings.Language, EngineMode.Default);
+                    using var img = Pix.LoadFromMemory(ms.ToArray());
+                    using var page = engine.Process(img);
+
+                    var pageText = page.GetText();
+                    extractedText.AppendLine(pageText);
+                    extractedText.AppendLine(); // Add spacing between pages
+
+                    _logger.LogInformation("Extracted {Length} characters from page {PageNumber}", pageText?.Length ?? 0, i + 1);
+                }
+
+                return extractedText.ToString();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error during PDF OCR processing");
+                throw;
+            }
+        });
+    }
+
+    private bool IsImageFile(string fileType)
+    {
+        var imageExtensions = new[] { "jpg", "jpeg", "png", "tif", "tiff", "bmp" };
+        return imageExtensions.Contains(fileType.ToLowerInvariant());
     }
 
     public OcrExtractedData ParseInvoiceData(string extractedText)
@@ -111,57 +228,127 @@ public class OcrService : IOcrService
 
         try
         {
-            // Extract Invoice Number
-            var invoiceNumberMatch = Regex.Match(extractedText, @"Invoice\s+Number[:|\s]+([A-Z0-9-]+)", RegexOptions.IgnoreCase);
-            if (invoiceNumberMatch.Success)
+            // Extract Invoice Number - Multiple patterns
+            var invoiceNumberPatterns = new[]
             {
-                data.InvoiceNumber = invoiceNumberMatch.Groups[1].Value.Trim();
+                @"Invoice\s*#?\s*:?\s*([A-Z0-9-]+)",
+                @"Inv\s*#?\s*:?\s*([A-Z0-9-]+)",
+                @"Invoice\s+Number\s*:?\s*([A-Z0-9-]+)",
+                @"Bill\s+No\s*:?\s*([A-Z0-9-]+)"
+            };
+
+            foreach (var pattern in invoiceNumberPatterns)
+            {
+                var match = Regex.Match(extractedText, pattern, RegexOptions.IgnoreCase);
+                if (match.Success)
+                {
+                    data.InvoiceNumber = match.Groups[1].Value.Trim();
+                    break;
+                }
             }
 
-            // Extract Invoice Date
-            var invoiceDateMatch = Regex.Match(extractedText, @"Invoice\s+Date[:|\s]+(\d{4}-\d{2}-\d{2})", RegexOptions.IgnoreCase);
-            if (invoiceDateMatch.Success && DateTime.TryParse(invoiceDateMatch.Groups[1].Value, out var invDate))
+            // Extract Invoice Date - Multiple date formats
+            var datePatterns = new[]
             {
-                data.InvoiceDate = invDate;
+                @"Invoice\s+Date\s*:?\s*(\d{1,2}[-/]\d{1,2}[-/]\d{2,4})",
+                @"Date\s*:?\s*(\d{1,2}[-/]\d{1,2}[-/]\d{2,4})",
+                @"Dated\s*:?\s*(\d{1,2}[-/]\d{1,2}[-/]\d{2,4})",
+                @"(\d{1,2}[-/]\d{1,2}[-/]\d{2,4})"
+            };
+
+            foreach (var pattern in datePatterns)
+            {
+                var match = Regex.Match(extractedText, pattern, RegexOptions.IgnoreCase);
+                if (match.Success && DateTime.TryParse(match.Groups[1].Value, out var invDate))
+                {
+                    data.InvoiceDate = invDate;
+                    break;
+                }
             }
 
             // Extract Due Date
-            var dueDateMatch = Regex.Match(extractedText, @"Due\s+Date[:|\s]+(\d{4}-\d{2}-\d{2})", RegexOptions.IgnoreCase);
+            var dueDateMatch = Regex.Match(extractedText, @"Due\s+Date\s*:?\s*(\d{1,2}[-/]\d{1,2}[-/]\d{2,4})", RegexOptions.IgnoreCase);
             if (dueDateMatch.Success && DateTime.TryParse(dueDateMatch.Groups[1].Value, out var dDate))
             {
                 data.DueDate = dDate;
             }
 
-            // Extract Vendor Name (from "From:" section)
-            var vendorMatch = Regex.Match(extractedText, @"From:\s*\n\s*([^\n]+)", RegexOptions.IgnoreCase);
-            if (vendorMatch.Success)
+            // Extract Vendor Name
+            var vendorPatterns = new[]
             {
-                data.VendorName = vendorMatch.Groups[1].Value.Trim();
+                @"From\s*:?\s*\n?\s*([^\n]+)",
+                @"Vendor\s*:?\s*([^\n]+)",
+                @"Supplier\s*:?\s*([^\n]+)"
+            };
+
+            foreach (var pattern in vendorPatterns)
+            {
+                var match = Regex.Match(extractedText, pattern, RegexOptions.IgnoreCase);
+                if (match.Success)
+                {
+                    data.VendorName = match.Groups[1].Value.Trim();
+                    break;
+                }
             }
 
-            // Extract Totals
-            var subtotalMatch = Regex.Match(extractedText, @"Subtotal[:|\s]+([\d,]+\.?\d*)", RegexOptions.IgnoreCase);
-            if (subtotalMatch.Success && decimal.TryParse(subtotalMatch.Groups[1].Value.Replace(",", ""), out var subtotal))
+            // Extract Totals with various formats
+            var amountPatterns = new[]
             {
-                data.SubTotal = subtotal;
+                @"Subtotal\s*:?\s*(?:Rs\.?|PKR)?\s*([\d,]+\.?\d*)",
+                @"Sub\s+Total\s*:?\s*(?:Rs\.?|PKR)?\s*([\d,]+\.?\d*)",
+                @"Amount\s*:?\s*(?:Rs\.?|PKR)?\s*([\d,]+\.?\d*)"
+            };
+
+            foreach (var pattern in amountPatterns)
+            {
+                var match = Regex.Match(extractedText, pattern, RegexOptions.IgnoreCase);
+                if (match.Success && decimal.TryParse(match.Groups[1].Value.Replace(",", ""), out var subtotal))
+                {
+                    data.SubTotal = subtotal;
+                    break;
+                }
             }
 
-            var taxMatch = Regex.Match(extractedText, @"Tax[^:]*[:|\s]+([\d,]+\.?\d*)", RegexOptions.IgnoreCase);
-            if (taxMatch.Success && decimal.TryParse(taxMatch.Groups[1].Value.Replace(",", ""), out var tax))
+            var taxPatterns = new[]
             {
-                data.TaxAmount = tax;
+                @"Tax\s*:?\s*(?:Rs\.?|PKR)?\s*([\d,]+\.?\d*)",
+                @"GST\s*:?\s*(?:Rs\.?|PKR)?\s*([\d,]+\.?\d*)",
+                @"VAT\s*:?\s*(?:Rs\.?|PKR)?\s*([\d,]+\.?\d*)"
+            };
+
+            foreach (var pattern in taxPatterns)
+            {
+                var match = Regex.Match(extractedText, pattern, RegexOptions.IgnoreCase);
+                if (match.Success && decimal.TryParse(match.Groups[1].Value.Replace(",", ""), out var tax))
+                {
+                    data.TaxAmount = tax;
+                    break;
+                }
             }
 
-            var totalMatch = Regex.Match(extractedText, @"Total\s+Amount[:|\s]+([\d,]+\.?\d*)", RegexOptions.IgnoreCase);
-            if (totalMatch.Success && decimal.TryParse(totalMatch.Groups[1].Value.Replace(",", ""), out var total))
+            var totalPatterns = new[]
             {
-                data.TotalAmount = total;
+                @"Total\s+Amount\s*:?\s*(?:Rs\.?|PKR)?\s*([\d,]+\.?\d*)",
+                @"Grand\s+Total\s*:?\s*(?:Rs\.?|PKR)?\s*([\d,]+\.?\d*)",
+                @"Total\s*:?\s*(?:Rs\.?|PKR)?\s*([\d,]+\.?\d*)",
+                @"Amount\s+Due\s*:?\s*(?:Rs\.?|PKR)?\s*([\d,]+\.?\d*)"
+            };
+
+            foreach (var pattern in totalPatterns)
+            {
+                var match = Regex.Match(extractedText, pattern, RegexOptions.IgnoreCase);
+                if (match.Success && decimal.TryParse(match.Groups[1].Value.Replace(",", ""), out var total))
+                {
+                    data.TotalAmount = total;
+                    break;
+                }
             }
 
             // Extract Line Items
             data.LineItems = ExtractLineItems(extractedText);
 
-            _logger.LogInformation("Parsed invoice data: {InvoiceNumber}", data.InvoiceNumber);
+            _logger.LogInformation("Parsed invoice data: {InvoiceNumber}, Total: {Total}",
+                data.InvoiceNumber ?? "N/A", data.TotalAmount);
         }
         catch (Exception ex)
         {
@@ -177,23 +364,37 @@ public class OcrService : IOcrService
 
         try
         {
-            // Find the items section
-            var itemsMatch = Regex.Match(extractedText, @"ITEMS:(.*?)(?:Subtotal|Total)", RegexOptions.Singleline | RegexOptions.IgnoreCase);
-            if (itemsMatch.Success)
+            // Try to find table-like structure with items
+            var lines = extractedText.Split('\n');
+            bool inItemsSection = false;
+
+            foreach (var line in lines)
             {
-                var itemsSection = itemsMatch.Groups[1].Value;
-
-                // Match line items (Description, Qty, Unit Price, Amount)
-                var itemMatches = Regex.Matches(itemsSection, @"([^\n]+?)\s+(\d+)\s+([\d,]+\.?\d*)\s+([\d,]+\.?\d*)");
-
-                foreach (Match match in itemMatches)
+                // Detect start of items section
+                if (Regex.IsMatch(line, @"(Item|Description|Product|S\.?No)", RegexOptions.IgnoreCase))
                 {
-                    if (match.Groups.Count >= 5)
+                    inItemsSection = true;
+                    continue;
+                }
+
+                // Detect end of items section
+                if (Regex.IsMatch(line, @"(Subtotal|Total|Tax|Amount Due)", RegexOptions.IgnoreCase))
+                {
+                    inItemsSection = false;
+                    break;
+                }
+
+                if (inItemsSection && !string.IsNullOrWhiteSpace(line))
+                {
+                    // Try to extract: Description, Quantity, Unit Price, Amount
+                    var match = Regex.Match(line, @"([^\d]+?)\s+(\d+(?:\.\d+)?)\s+([\d,]+(?:\.\d+)?)\s+([\d,]+(?:\.\d+)?)");
+
+                    if (match.Success && match.Groups.Count >= 5)
                     {
                         var description = match.Groups[1].Value.Trim();
 
-                        // Skip header row
-                        if (description.Contains("Description") || description.Contains("Item") || description.Contains("Qty"))
+                        // Skip if it looks like a header
+                        if (description.Length < 3 || Regex.IsMatch(description, @"^(Item|Desc|Product|Qty)", RegexOptions.IgnoreCase))
                             continue;
 
                         if (decimal.TryParse(match.Groups[2].Value, out var qty) &&
@@ -206,12 +407,14 @@ public class OcrService : IOcrService
                                 Quantity = qty,
                                 UnitPrice = unitPrice,
                                 Amount = amount,
-                                ConfidenceScore = 85.0m // Mock confidence score
+                                ConfidenceScore = 75.0m // Base confidence for extracted items
                             });
                         }
                     }
                 }
             }
+
+            _logger.LogInformation("Extracted {Count} line items", lineItems.Count);
         }
         catch (Exception ex)
         {
