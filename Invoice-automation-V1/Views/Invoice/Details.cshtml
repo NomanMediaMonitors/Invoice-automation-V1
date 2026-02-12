@@ -94,12 +94,67 @@
             <div class="card mb-4">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0"><i class="bi bi-list-ul"></i> Line Items</h5>
-                    @if (Model.LineItems.Any() && canEdit)
+                    @if (canEdit)
                     {
-                        <small class="text-muted">Assign chart of accounts to categorize expenses</small>
+                        <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="collapse" data-bs-target="#addLineItemForm">
+                            <i class="bi bi-plus-circle"></i> Add Line Item
+                        </button>
                     }
                 </div>
                 <div class="card-body">
+                    @if (canEdit)
+                    {
+                        <!-- Add Line Item Form (collapsible) -->
+                        <div class="collapse mb-3" id="addLineItemForm">
+                            <div class="card card-body bg-light">
+                                <form asp-action="AddLineItem" method="post">
+                                    <input type="hidden" name="invoiceId" value="@Model.Id" />
+                                    <div class="row g-2">
+                                        <div class="col-md-3">
+                                            <label class="form-label form-label-sm">Description <span class="text-danger">*</span></label>
+                                            <input type="text" name="description" class="form-control form-control-sm" required placeholder="Item description">
+                                        </div>
+                                        <div class="col-md-1">
+                                            <label class="form-label form-label-sm">Qty <span class="text-danger">*</span></label>
+                                            <input type="number" name="quantity" class="form-control form-control-sm" value="1" min="0.01" step="0.01" required id="newQty">
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label class="form-label form-label-sm">Unit Price <span class="text-danger">*</span></label>
+                                            <input type="number" name="unitPrice" class="form-control form-control-sm" min="0.01" step="0.01" required placeholder="0.00" id="newPrice">
+                                        </div>
+                                        <div class="col-md-1">
+                                            <label class="form-label form-label-sm">Tax %</label>
+                                            <input type="number" name="taxRate" class="form-control form-control-sm" value="0" min="0" max="100" step="0.01" id="newTaxRate">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="form-label form-label-sm">Account</label>
+                                            <select name="chartOfAccountId" class="form-select form-select-sm">
+                                                <option value="">-- Select --</option>
+                                                @if (ViewBag.ChartOfAccounts != null)
+                                                {
+                                                    @foreach (var account in (List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>)ViewBag.ChartOfAccounts)
+                                                    {
+                                                        <option value="@account.Value">@account.Text</option>
+                                                    }
+                                                }
+                                            </select>
+                                        </div>
+                                        <div class="col-md-2 d-flex align-items-end">
+                                            <button type="submit" class="btn btn-primary btn-sm w-100">
+                                                <i class="bi bi-plus"></i> Add
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="row g-2 mt-1">
+                                        <div class="col-md-12">
+                                            <small class="text-muted" id="lineItemPreview"></small>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    }
+
                     @if (Model.LineItems.Any())
                     {
                         <div class="table-responsive">
@@ -114,6 +169,10 @@
                                         <th class="text-end">Amount</th>
                                         <th class="text-end">Tax</th>
                                         <th class="text-end">Total</th>
+                                        @if (canEdit)
+                                        {
+                                            <th style="width: 50px;"></th>
+                                        }
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -161,20 +220,32 @@
                                             <td class="text-end">@Model.Currency @item.Amount.ToString("N2")</td>
                                             <td class="text-end">@Model.Currency @item.TaxAmount.ToString("N2")</td>
                                             <td class="text-end fw-bold">@Model.Currency @item.TotalAmount.ToString("N2")</td>
+                                            @if (canEdit)
+                                            {
+                                                <td class="text-center">
+                                                    <form asp-action="DeleteLineItem" method="post" class="d-inline"
+                                                          onsubmit="return confirm('Delete this line item?')">
+                                                        <input type="hidden" name="lineItemId" value="@item.Id" />
+                                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete">
+                                                            <i class="bi bi-trash"></i>
+                                                        </button>
+                                                    </form>
+                                                </td>
+                                            }
                                         </tr>
                                     }
                                 </tbody>
                                 <tfoot class="table-light">
                                     <tr>
-                                        <td colspan="7" class="text-end"><strong>Subtotal:</strong></td>
+                                        <td colspan="@(canEdit ? 8 : 7)" class="text-end"><strong>Subtotal:</strong></td>
                                         <td class="text-end fw-bold">@Model.Currency @Model.SubTotal.ToString("N2")</td>
                                     </tr>
                                     <tr>
-                                        <td colspan="7" class="text-end"><strong>Tax:</strong></td>
+                                        <td colspan="@(canEdit ? 8 : 7)" class="text-end"><strong>Tax:</strong></td>
                                         <td class="text-end fw-bold">@Model.Currency @Model.TaxAmount.ToString("N2")</td>
                                     </tr>
                                     <tr class="table-primary">
-                                        <td colspan="7" class="text-end"><strong>Total Amount:</strong></td>
+                                        <td colspan="@(canEdit ? 8 : 7)" class="text-end"><strong>Total Amount:</strong></td>
                                         <td class="text-end fw-bold fs-5">@Model.Currency @Model.TotalAmount.ToString("N2")</td>
                                     </tr>
                                 </tfoot>
@@ -185,7 +256,7 @@
                     {
                         <div class="text-center py-4 text-muted">
                             <i class="bi bi-inbox display-4"></i>
-                            <p class="mt-2">No line items added yet</p>
+                            <p class="mt-2">No line items yet. @(canEdit ? "Click \"Add Line Item\" above or run OCR to extract them." : "")</p>
                         </div>
                     }
                 </div>
@@ -417,6 +488,30 @@
 
 @section Scripts {
     <script>
+        // Live preview for add line item form
+        var qtyEl = document.getElementById('newQty');
+        var priceEl = document.getElementById('newPrice');
+        var taxRateEl = document.getElementById('newTaxRate');
+        var previewEl = document.getElementById('lineItemPreview');
+
+        function updatePreview() {
+            if (!qtyEl || !priceEl || !previewEl) return;
+            var qty = parseFloat(qtyEl.value) || 0;
+            var price = parseFloat(priceEl.value) || 0;
+            var taxRate = parseFloat(taxRateEl.value) || 0;
+            var amount = qty * price;
+            var tax = amount * (taxRate / 100);
+            var total = amount + tax;
+            if (amount > 0) {
+                previewEl.textContent = 'Amount: ' + amount.toFixed(2) + ' | Tax: ' + tax.toFixed(2) + ' | Total: ' + total.toFixed(2);
+            } else {
+                previewEl.textContent = '';
+            }
+        }
+        if (qtyEl) qtyEl.addEventListener('input', updatePreview);
+        if (priceEl) priceEl.addEventListener('input', updatePreview);
+        if (taxRateEl) taxRateEl.addEventListener('input', updatePreview);
+
         // Inline chart of accounts assignment for line items
         document.querySelectorAll('.account-select').forEach(function(select) {
             select.addEventListener('change', function() {

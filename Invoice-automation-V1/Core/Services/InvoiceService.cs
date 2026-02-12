@@ -545,9 +545,10 @@ public class InvoiceService : IInvoiceService
 
     public async Task<(bool Success, string Message)> ProcessOcrAsync(Guid invoiceId)
     {
+        Invoice? invoice = null;
         try
         {
-            var invoice = await _context.Invoices
+            invoice = await _context.Invoices
                 .Include(i => i.LineItems)
                 .FirstOrDefaultAsync(i => i.Id == invoiceId);
 
@@ -593,17 +594,21 @@ public class InvoiceService : IInvoiceService
                 // Try to match vendor by name from OCR text
                 if (!string.IsNullOrWhiteSpace(ocrResult.ExtractedData.VendorName))
                 {
+                    var vendorName = ocrResult.ExtractedData.VendorName;
                     var matchedVendor = await _context.Vendors
                         .Where(v => v.CompanyId == invoice.CompanyId && v.IsActive)
-                        .FirstOrDefaultAsync(v =>
-                            v.Name.Contains(ocrResult.ExtractedData.VendorName) ||
-                            ocrResult.ExtractedData.VendorName.Contains(v.Name));
+                        .ToListAsync();
 
-                    if (matchedVendor != null)
+                    // Do matching in memory for case-insensitive partial matching
+                    var matched = matchedVendor.FirstOrDefault(v =>
+                        v.Name.Contains(vendorName, StringComparison.OrdinalIgnoreCase) ||
+                        vendorName.Contains(v.Name, StringComparison.OrdinalIgnoreCase));
+
+                    if (matched != null)
                     {
-                        invoice.VendorId = matchedVendor.Id;
+                        invoice.VendorId = matched.Id;
                         _logger.LogInformation("Matched vendor '{VendorName}' (Id: {VendorId}) from OCR text",
-                            matchedVendor.Name, matchedVendor.Id);
+                            matched.Name, matched.Id);
                     }
                 }
 
@@ -664,6 +669,24 @@ public class InvoiceService : IInvoiceService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error processing invoice with OCR");
+
+            // Always persist the error state so it's visible in the UI
+            try
+            {
+                if (invoice != null)
+                {
+                    invoice.IsOcrProcessed = true;
+                    invoice.OcrProcessedAt = DateTime.UtcNow;
+                    invoice.OcrErrorMessage = $"OCR processing failed: {ex.Message}";
+                    invoice.OcrConfidenceScore = 0;
+                    await _context.SaveChangesAsync();
+                }
+            }
+            catch (Exception saveEx)
+            {
+                _logger.LogError(saveEx, "Failed to save OCR error state");
+            }
+
             return (false, $"Error processing OCR: {ex.Message}");
         }
     }
