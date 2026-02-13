@@ -36,29 +36,54 @@ public class VendorController : Controller
         return Guid.Parse(userIdClaim!);
     }
 
+    private async Task<Guid> GetDefaultCompanyIdAsync()
+    {
+        var userId = GetCurrentUserId();
+        var userCompany = await _context.UserCompanies
+            .Include(uc => uc.Company)
+            .Where(uc => uc.UserId == userId)
+            .OrderByDescending(uc => uc.IsUserDefault)
+            .ThenByDescending(uc => uc.Company!.IsDefault)
+            .ThenBy(uc => uc.CreatedAt)
+            .FirstOrDefaultAsync();
+        return userCompany?.CompanyId ?? Guid.Empty;
+    }
+
     // GET: Vendor?companyId=xxx
-    public async Task<IActionResult> Index(Guid companyId)
+    public async Task<IActionResult> Index(Guid? companyId)
     {
         try
         {
             var currentUserId = GetCurrentUserId();
 
+            // If no companyId provided, use the user's default company
+            var resolvedCompanyId = companyId ?? Guid.Empty;
+            if (resolvedCompanyId == Guid.Empty)
+            {
+                resolvedCompanyId = await GetDefaultCompanyIdAsync();
+                if (resolvedCompanyId == Guid.Empty)
+                {
+                    TempData["ErrorMessage"] = "Please set up a company first.";
+                    return RedirectToAction("Index", "Company");
+                }
+            }
+
             // Check if user has access to this company
-            var userCompany = await _companyService.GetUserCompanyAsync(currentUserId, companyId);
+            var userCompany = await _companyService.GetUserCompanyAsync(currentUserId, resolvedCompanyId);
             if (userCompany == null)
             {
                 return NotFound();
             }
 
-            var company = await _companyService.GetByIdAsync(companyId);
+            var company = await _companyService.GetByIdAsync(resolvedCompanyId);
             if (company == null)
             {
                 return NotFound();
             }
 
-            var vendors = await _vendorService.GetCompanyVendorsAsync(companyId);
+            var vendors = await _vendorService.GetCompanyVendorsAsync(resolvedCompanyId);
 
-            ViewBag.CompanyId = companyId;
+            ViewBag.CompanyId = resolvedCompanyId;
             ViewBag.CompanyName = company.Name;
             ViewBag.UserRole = userCompany.Role;
 
