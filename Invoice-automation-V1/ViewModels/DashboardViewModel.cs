@@ -6,6 +6,7 @@ namespace Invoice_automation_V1.ViewModels
         public List<RecentActivityItem> RecentActivities { get; set; } = new();
         public string UserFullName { get; set; } = string.Empty;
         public bool HasAnyCompanies { get; set; }
+        public Guid DefaultCompanyId { get; set; }
     }
 
     public class DashboardStats

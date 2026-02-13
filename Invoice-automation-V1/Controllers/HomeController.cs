@@ -57,6 +57,7 @@ namespace Invoice_automation_V1.Controllers
                 .ToListAsync();
 
             viewModel.HasAnyCompanies = userCompanyIds.Any();
+            viewModel.DefaultCompanyId = userCompanyIds.FirstOrDefault();
 
             if (viewModel.HasAnyCompanies)
             {

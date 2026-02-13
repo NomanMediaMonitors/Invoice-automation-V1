@@ -55,7 +55,7 @@
         </div>
 
         <div class="col-md-6 col-lg-3">
-            <a asp-controller="Vendor" asp-action="Index" class="text-decoration-none">
+            <a asp-controller="Vendor" asp-action="Index" asp-route-companyId="@Model.DefaultCompanyId" class="text-decoration-none">
                 <div class="stat-card clickable">
                     <div class="stat-card-header">
                         <div class="stat-card-icon" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
@@ -77,43 +77,47 @@
         </div>
 
         <div class="col-md-6 col-lg-3">
-            <div class="stat-card">
-                <div class="stat-card-header">
-                    <div class="stat-card-icon" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
-                        <i class="bi bi-receipt"></i>
-                    </div>
-                    @if (Model.Stats.InvoicesTrend != 0)
-                    {
-                        <div class="stat-card-trend @(Model.Stats.InvoicesTrend > 0 ? "trend-up" : "trend-down")">
-                            <i class="bi bi-arrow-@(Model.Stats.InvoicesTrend > 0 ? "up" : "down")"></i>
-                            @Math.Abs(Model.Stats.InvoicesTrend)%
+            <a asp-controller="Invoice" asp-action="Index" class="text-decoration-none">
+                <div class="stat-card clickable">
+                    <div class="stat-card-header">
+                        <div class="stat-card-icon" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                            <i class="bi bi-receipt"></i>
                         </div>
-                    }
+                        @if (Model.Stats.InvoicesTrend != 0)
+                        {
+                            <div class="stat-card-trend @(Model.Stats.InvoicesTrend > 0 ? "trend-up" : "trend-down")">
+                                <i class="bi bi-arrow-@(Model.Stats.InvoicesTrend > 0 ? "up" : "down")"></i>
+                                @Math.Abs(Model.Stats.InvoicesTrend)%
+                            </div>
+                        }
+                    </div>
+                    <div class="stat-card-value">@Model.Stats.TotalInvoices</div>
+                    <div class="stat-card-label">Total Invoices</div>
+                    <div class="stat-card-footer">Click to view all</div>
                 </div>
-                <div class="stat-card-value">@Model.Stats.TotalInvoices</div>
-                <div class="stat-card-label">Total Invoices</div>
-                <div class="stat-card-footer text-muted">Coming soon</div>
-            </div>
+            </a>
         </div>
 
         <div class="col-md-6 col-lg-3">
-            <div class="stat-card">
-                <div class="stat-card-header">
-                    <div class="stat-card-icon" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
-                        <i class="bi bi-check-circle"></i>
-                    </div>
-                    @if (Model.Stats.ApprovedTrend != 0)
-                    {
-                        <div class="stat-card-trend @(Model.Stats.ApprovedTrend > 0 ? "trend-up" : "trend-down")">
-                            <i class="bi bi-arrow-@(Model.Stats.ApprovedTrend > 0 ? "up" : "down")"></i>
-                            @Math.Abs(Model.Stats.ApprovedTrend)%
+            <a asp-controller="Invoice" asp-action="Index" asp-route-status="Approved" class="text-decoration-none">
+                <div class="stat-card clickable">
+                    <div class="stat-card-header">
+                        <div class="stat-card-icon" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                            <i class="bi bi-check-circle"></i>
                         </div>
-                    }
+                        @if (Model.Stats.ApprovedTrend != 0)
+                        {
+                            <div class="stat-card-trend @(Model.Stats.ApprovedTrend > 0 ? "trend-up" : "trend-down")">
+                                <i class="bi bi-arrow-@(Model.Stats.ApprovedTrend > 0 ? "up" : "down")"></i>
+                                @Math.Abs(Model.Stats.ApprovedTrend)%
+                            </div>
+                        }
+                    </div>
+                    <div class="stat-card-value">@Model.Stats.ApprovedInvoices</div>
+                    <div class="stat-card-label">Approved</div>
+                    <div class="stat-card-footer">Click to view approved</div>
                 </div>
-                <div class="stat-card-value">@Model.Stats.ApprovedInvoices</div>
-                <div class="stat-card-label">Approved</div>
-                <div class="stat-card-footer text-muted">Coming soon</div>
-            </div>
+            </a>
         </div>
     </div>
 
@@ -137,14 +141,14 @@
                         </a>
                         @if (Model.HasAnyCompanies)
                         {
-                            <a asp-controller="Vendor" asp-action="Create" class="btn btn-outline-success text-start d-flex align-items-center">
+                            <a asp-controller="Vendor" asp-action="Create" asp-route-companyId="@Model.DefaultCompanyId" class="btn btn-outline-success text-start d-flex align-items-center">
                                 <i class="bi bi-truck me-2"></i>
                                 <div>
                                     <div class="fw-bold">Add Vendor</div>
                                     <small class="text-muted d-block">Register new supplier</small>
                                 </div>
                             </a>
-                            <a asp-controller="Employee" asp-action="Invite" class="btn btn-outline-info text-start d-flex align-items-center">
+                            <a asp-controller="Employee" asp-action="Invite" asp-route-companyId="@Model.DefaultCompanyId" class="btn btn-outline-info text-start d-flex align-items-center">
                                 <i class="bi bi-person-plus me-2"></i>
                                 <div>
                                     <div class="fw-bold">Invite Team Member</div>
