@@ -1,7 +1,11 @@
 using InvoiceAutomation.Core.DTOs.Vendor;
+using InvoiceAutomation.Core.Entities;
 using InvoiceAutomation.Core.Interfaces;
+using InvoiceAutomation.Infrastructure.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace InvoiceAutomation.Controllers;
@@ -11,15 +15,18 @@ public class VendorController : Controller
 {
     private readonly IVendorService _vendorService;
     private readonly ICompanyService _companyService;
+    private readonly ApplicationDbContext _context;
     private readonly ILogger<VendorController> _logger;
 
     public VendorController(
         IVendorService vendorService,
         ICompanyService companyService,
+        ApplicationDbContext context,
         ILogger<VendorController> logger)
     {
         _vendorService = vendorService;
         _companyService = companyService;
+        _context = context;
         _logger = logger;
     }
 
@@ -327,5 +334,222 @@ public class VendorController : Controller
             TempData["ErrorMessage"] = "An error occurred while deleting the vendor.";
             return RedirectToAction(nameof(Details), new { id, companyId });
         }
+    }
+
+    // ===== Invoice Template Management =====
+
+    // GET: Vendor/Templates/5?companyId=xxx
+    public async Task<IActionResult> Templates(Guid id, Guid companyId)
+    {
+        var currentUserId = GetCurrentUserId();
+        var userCompany = await _companyService.GetUserCompanyAsync(currentUserId, companyId);
+        if (userCompany == null) return NotFound();
+
+        var vendor = await _context.Vendors.FindAsync(id);
+        if (vendor == null || vendor.CompanyId != companyId) return NotFound();
+
+        var templates = await _context.VendorInvoiceTemplates
+            .Include(t => t.DefaultChartOfAccount)
+            .Where(t => t.VendorId == id)
+            .OrderByDescending(t => t.IsActive)
+            .ThenByDescending(t => t.UpdatedAt)
+            .ToListAsync();
+
+        var company = await _companyService.GetByIdAsync(companyId);
+        ViewBag.CompanyId = companyId;
+        ViewBag.CompanyName = company?.Name;
+        ViewBag.VendorId = id;
+        ViewBag.VendorName = vendor.Name;
+
+        return View(templates);
+    }
+
+    // GET: Vendor/CreateTemplate/5?companyId=xxx
+    public async Task<IActionResult> CreateTemplate(Guid id, Guid companyId)
+    {
+        var currentUserId = GetCurrentUserId();
+        var userCompany = await _companyService.GetUserCompanyAsync(currentUserId, companyId);
+        if (userCompany == null) return NotFound();
+
+        var vendor = await _context.Vendors.FindAsync(id);
+        if (vendor == null || vendor.CompanyId != companyId) return NotFound();
+
+        var company = await _companyService.GetByIdAsync(companyId);
+        ViewBag.CompanyId = companyId;
+        ViewBag.CompanyName = company?.Name;
+        ViewBag.VendorId = id;
+        ViewBag.VendorName = vendor.Name;
+
+        await PopulateChartOfAccountsAsync(companyId);
+
+        return View(new VendorInvoiceTemplate { VendorId = id, TemplateName = $"{vendor.Name} - Default" });
+    }
+
+    // POST: Vendor/CreateTemplate
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> CreateTemplate(Guid companyId, VendorInvoiceTemplate model)
+    {
+        var currentUserId = GetCurrentUserId();
+        var userCompany = await _companyService.GetUserCompanyAsync(currentUserId, companyId);
+        if (userCompany == null) return NotFound();
+
+        try
+        {
+            model.Id = Guid.NewGuid();
+            model.CreatedAt = DateTime.UtcNow;
+            model.UpdatedAt = DateTime.UtcNow;
+
+            if (model.DefaultChartOfAccountId == Guid.Empty)
+                model.DefaultChartOfAccountId = null;
+
+            _context.VendorInvoiceTemplates.Add(model);
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "Invoice template created successfully!";
+            return RedirectToAction(nameof(Templates), new { id = model.VendorId, companyId });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error creating invoice template");
+            TempData["ErrorMessage"] = "Error creating template.";
+
+            var vendor = await _context.Vendors.FindAsync(model.VendorId);
+            var company = await _companyService.GetByIdAsync(companyId);
+            ViewBag.CompanyId = companyId;
+            ViewBag.CompanyName = company?.Name;
+            ViewBag.VendorId = model.VendorId;
+            ViewBag.VendorName = vendor?.Name;
+            await PopulateChartOfAccountsAsync(companyId);
+
+            return View(model);
+        }
+    }
+
+    // GET: Vendor/EditTemplate/5?companyId=xxx
+    public async Task<IActionResult> EditTemplate(Guid id, Guid companyId)
+    {
+        var currentUserId = GetCurrentUserId();
+        var userCompany = await _companyService.GetUserCompanyAsync(currentUserId, companyId);
+        if (userCompany == null) return NotFound();
+
+        var template = await _context.VendorInvoiceTemplates
+            .Include(t => t.Vendor)
+            .FirstOrDefaultAsync(t => t.Id == id);
+
+        if (template == null || template.Vendor?.CompanyId != companyId) return NotFound();
+
+        var company = await _companyService.GetByIdAsync(companyId);
+        ViewBag.CompanyId = companyId;
+        ViewBag.CompanyName = company?.Name;
+        ViewBag.VendorId = template.VendorId;
+        ViewBag.VendorName = template.Vendor?.Name;
+
+        await PopulateChartOfAccountsAsync(companyId, template.DefaultChartOfAccountId);
+
+        return View(template);
+    }
+
+    // POST: Vendor/EditTemplate/5
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> EditTemplate(Guid id, Guid companyId, VendorInvoiceTemplate model)
+    {
+        var currentUserId = GetCurrentUserId();
+        var userCompany = await _companyService.GetUserCompanyAsync(currentUserId, companyId);
+        if (userCompany == null) return NotFound();
+
+        try
+        {
+            var template = await _context.VendorInvoiceTemplates
+                .Include(t => t.Vendor)
+                .FirstOrDefaultAsync(t => t.Id == id);
+
+            if (template == null || template.Vendor?.CompanyId != companyId) return NotFound();
+
+            template.TemplateName = model.TemplateName;
+            template.HasInvoiceNumber = model.HasInvoiceNumber;
+            template.HasInvoiceDate = model.HasInvoiceDate;
+            template.HasDueDate = model.HasDueDate;
+            template.HasDescription = model.HasDescription;
+            template.HasLineItems = model.HasLineItems;
+            template.HasTaxRate = model.HasTaxRate;
+            template.HasSubTotal = model.HasSubTotal;
+            template.InvoiceNumberLabel = model.InvoiceNumberLabel;
+            template.InvoiceDateLabel = model.InvoiceDateLabel;
+            template.DueDateLabel = model.DueDateLabel;
+            template.SubTotalLabel = model.SubTotalLabel;
+            template.TaxLabel = model.TaxLabel;
+            template.TotalLabel = model.TotalLabel;
+            template.DefaultTaxRate = model.DefaultTaxRate;
+            template.DefaultChartOfAccountId = (model.DefaultChartOfAccountId == Guid.Empty) ? null : model.DefaultChartOfAccountId;
+            template.Notes = model.Notes;
+            template.IsActive = model.IsActive;
+            template.UpdatedAt = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "Invoice template updated successfully!";
+            return RedirectToAction(nameof(Templates), new { id = template.VendorId, companyId });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error updating invoice template");
+            TempData["ErrorMessage"] = "Error updating template.";
+
+            var vendor = await _context.Vendors.FindAsync(model.VendorId);
+            var company = await _companyService.GetByIdAsync(companyId);
+            ViewBag.CompanyId = companyId;
+            ViewBag.CompanyName = company?.Name;
+            ViewBag.VendorId = model.VendorId;
+            ViewBag.VendorName = vendor?.Name;
+            await PopulateChartOfAccountsAsync(companyId, model.DefaultChartOfAccountId);
+
+            return View(model);
+        }
+    }
+
+    // POST: Vendor/DeleteTemplate/5
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteTemplate(Guid id, Guid companyId)
+    {
+        try
+        {
+            var template = await _context.VendorInvoiceTemplates
+                .Include(t => t.Vendor)
+                .FirstOrDefaultAsync(t => t.Id == id);
+
+            if (template == null) return NotFound();
+
+            var vendorId = template.VendorId;
+            _context.VendorInvoiceTemplates.Remove(template);
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "Template deleted successfully!";
+            return RedirectToAction(nameof(Templates), new { id = vendorId, companyId });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error deleting template");
+            TempData["ErrorMessage"] = "Error deleting template.";
+            return RedirectToAction(nameof(Index), new { companyId });
+        }
+    }
+
+    private async Task PopulateChartOfAccountsAsync(Guid companyId, Guid? selectedId = null)
+    {
+        var accounts = await _context.ChartOfAccounts
+            .Where(a => a.CompanyId == companyId && a.IsActive)
+            .OrderBy(a => a.Code)
+            .Select(a => new SelectListItem
+            {
+                Value = a.Id.ToString(),
+                Text = $"{a.Code} - {a.Name}",
+                Selected = selectedId.HasValue && a.Id == selectedId.Value
+            })
+            .ToListAsync();
+
+        ViewBag.ChartOfAccounts = accounts;
     }
 }

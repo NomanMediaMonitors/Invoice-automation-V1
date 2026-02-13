@@ -36,13 +36,20 @@ public class InvoiceService : IInvoiceService
                 return (false, "You don't have access to this company", null);
             }
 
+            // Generate a temporary invoice number if not provided (OCR will update it later)
+            var invoiceNumber = model.InvoiceNumber;
+            if (string.IsNullOrWhiteSpace(invoiceNumber))
+            {
+                invoiceNumber = $"DRAFT-{DateTime.UtcNow:yyyyMMdd-HHmmss}";
+            }
+
             // Check if invoice number already exists for this company
             var exists = await _context.Invoices
-                .AnyAsync(i => i.CompanyId == model.CompanyId && i.InvoiceNumber == model.InvoiceNumber);
+                .AnyAsync(i => i.CompanyId == model.CompanyId && i.InvoiceNumber == invoiceNumber);
 
             if (exists)
             {
-                return (false, $"Invoice number {model.InvoiceNumber} already exists for this company", null);
+                return (false, $"Invoice number {invoiceNumber} already exists for this company", null);
             }
 
             // Create invoice
@@ -51,7 +58,7 @@ public class InvoiceService : IInvoiceService
                 Id = Guid.NewGuid(),
                 CompanyId = model.CompanyId,
                 VendorId = model.VendorId,
-                InvoiceNumber = model.InvoiceNumber,
+                InvoiceNumber = invoiceNumber,
                 InvoiceDate = model.InvoiceDate,
                 DueDate = model.DueDate ?? model.InvoiceDate.AddDays(30),
                 Description = model.Description,
@@ -593,6 +600,7 @@ public class InvoiceService : IInvoiceService
                 }
 
                 // Try to match vendor by name from OCR text
+                VendorInvoiceTemplate? vendorTemplate = null;
                 if (!string.IsNullOrWhiteSpace(ocrResult.ExtractedData.VendorName))
                 {
                     var vendorName = ocrResult.ExtractedData.VendorName;
@@ -610,7 +618,33 @@ public class InvoiceService : IInvoiceService
                         invoice.VendorId = matched.Id;
                         _logger.LogInformation("Matched vendor '{VendorName}' (Id: {VendorId}) from OCR text",
                             matched.Name, matched.Id);
+
+                        // Load vendor's active invoice template
+                        vendorTemplate = await _context.VendorInvoiceTemplates
+                            .FirstOrDefaultAsync(t => t.VendorId == matched.Id && t.IsActive);
+
+                        if (vendorTemplate != null)
+                        {
+                            _logger.LogInformation("Using vendor template '{TemplateName}' for OCR processing",
+                                vendorTemplate.TemplateName);
+                        }
                     }
+                }
+                // Also try to load template if vendor was already set on the invoice
+                else if (invoice.VendorId.HasValue && invoice.VendorId.Value != Guid.Empty)
+                {
+                    vendorTemplate = await _context.VendorInvoiceTemplates
+                        .FirstOrDefaultAsync(t => t.VendorId == invoice.VendorId.Value && t.IsActive);
+                }
+
+                // Apply template defaults
+                var defaultTaxRate = vendorTemplate?.DefaultTaxRate ?? 0;
+                var defaultChartOfAccountId = vendorTemplate?.DefaultChartOfAccountId;
+                string? defaultAccountCode = null;
+                if (defaultChartOfAccountId.HasValue)
+                {
+                    var defaultAccount = await _context.ChartOfAccounts.FindAsync(defaultChartOfAccountId.Value);
+                    defaultAccountCode = defaultAccount?.Code;
                 }
 
                 // Clear existing OCR-extracted line items before adding new ones
@@ -625,6 +659,10 @@ public class InvoiceService : IInvoiceService
                 int lineNumber = invoice.LineItems.Count(li => !li.IsOcrExtracted) + 1;
                 foreach (var ocrLineItem in ocrResult.ExtractedData.LineItems)
                 {
+                    var taxRate = defaultTaxRate;
+                    var amount = ocrLineItem.Amount;
+                    var taxAmount = amount * (taxRate / 100);
+
                     var lineItem = new InvoiceLineItem
                     {
                         Id = Guid.NewGuid(),
@@ -633,10 +671,12 @@ public class InvoiceService : IInvoiceService
                         Description = ocrLineItem.Description,
                         Quantity = ocrLineItem.Quantity,
                         UnitPrice = ocrLineItem.UnitPrice,
-                        Amount = ocrLineItem.Amount,
-                        TaxRate = 0,
-                        TaxAmount = 0,
-                        TotalAmount = ocrLineItem.Amount,
+                        Amount = amount,
+                        TaxRate = taxRate,
+                        TaxAmount = taxAmount,
+                        TotalAmount = amount + taxAmount,
+                        ChartOfAccountId = defaultChartOfAccountId,
+                        AccountCode = defaultAccountCode,
                         IsOcrExtracted = true,
                         OcrConfidenceScore = ocrLineItem.ConfidenceScore,
                         CreatedAt = DateTime.UtcNow,

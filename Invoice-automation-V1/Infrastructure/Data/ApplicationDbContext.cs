@@ -18,6 +18,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<Vendor> Vendors { get; set; }
     public DbSet<Invoice> Invoices { get; set; }
     public DbSet<InvoiceLineItem> InvoiceLineItems { get; set; }
+    public DbSet<VendorInvoiceTemplate> VendorInvoiceTemplates { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -455,7 +456,7 @@ public class ApplicationDbContext : DbContext
 
             // Relationships
             entity.HasOne(e => e.Company).WithMany().HasForeignKey(e => e.CompanyId).OnDelete(DeleteBehavior.Cascade);
-            entity.HasOne(e => e.Vendor).WithMany().HasForeignKey(e => e.VendorId).OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(e => e.Vendor).WithMany().HasForeignKey(e => e.VendorId).IsRequired(false).OnDelete(DeleteBehavior.SetNull);
 
             // Indexes
             entity.HasIndex(e => new { e.CompanyId, e.InvoiceNumber }).IsUnique();
@@ -494,6 +495,50 @@ public class ApplicationDbContext : DbContext
 
             // Indexes
             entity.HasIndex(e => new { e.InvoiceId, e.LineNumber }).IsUnique();
+        });
+
+        // VendorInvoiceTemplate Configuration
+        modelBuilder.Entity<VendorInvoiceTemplate>(entity =>
+        {
+            entity.ToTable("vendor_invoice_templates");
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.Id).HasColumnName("id").HasColumnType("CHAR(36)");
+            entity.Property(e => e.VendorId).HasColumnName("vendor_id").HasColumnType("CHAR(36)");
+            entity.Property(e => e.TemplateName).IsRequired().HasMaxLength(200).HasColumnName("template_name");
+
+            // Field configuration
+            entity.Property(e => e.HasInvoiceNumber).HasColumnName("has_invoice_number").HasColumnType("TINYINT(1)").HasDefaultValue(true);
+            entity.Property(e => e.HasInvoiceDate).HasColumnName("has_invoice_date").HasColumnType("TINYINT(1)").HasDefaultValue(true);
+            entity.Property(e => e.HasDueDate).HasColumnName("has_due_date").HasColumnType("TINYINT(1)").HasDefaultValue(true);
+            entity.Property(e => e.HasDescription).HasColumnName("has_description").HasColumnType("TINYINT(1)").HasDefaultValue(true);
+            entity.Property(e => e.HasLineItems).HasColumnName("has_line_items").HasColumnType("TINYINT(1)").HasDefaultValue(true);
+            entity.Property(e => e.HasTaxRate).HasColumnName("has_tax_rate").HasColumnType("TINYINT(1)").HasDefaultValue(true);
+            entity.Property(e => e.HasSubTotal).HasColumnName("has_sub_total").HasColumnType("TINYINT(1)").HasDefaultValue(true);
+
+            // OCR field mapping labels
+            entity.Property(e => e.InvoiceNumberLabel).HasMaxLength(100).HasColumnName("invoice_number_label");
+            entity.Property(e => e.InvoiceDateLabel).HasMaxLength(100).HasColumnName("invoice_date_label");
+            entity.Property(e => e.DueDateLabel).HasMaxLength(100).HasColumnName("due_date_label");
+            entity.Property(e => e.SubTotalLabel).HasMaxLength(100).HasColumnName("sub_total_label");
+            entity.Property(e => e.TaxLabel).HasMaxLength(100).HasColumnName("tax_label");
+            entity.Property(e => e.TotalLabel).HasMaxLength(100).HasColumnName("total_label");
+
+            // Defaults
+            entity.Property(e => e.DefaultTaxRate).HasColumnName("default_tax_rate").HasColumnType("DECIMAL(5,2)");
+            entity.Property(e => e.DefaultChartOfAccountId).HasColumnName("default_chart_of_account_id").HasColumnType("CHAR(36)");
+
+            entity.Property(e => e.Notes).HasMaxLength(1000).HasColumnName("notes");
+            entity.Property(e => e.IsActive).HasColumnName("is_active").HasColumnType("TINYINT(1)").HasDefaultValue(true);
+            entity.Property(e => e.CreatedAt).HasColumnName("created_at").HasColumnType("DATETIME").HasDefaultValueSql("CURRENT_TIMESTAMP");
+            entity.Property(e => e.UpdatedAt).HasColumnName("updated_at").HasColumnType("DATETIME").HasDefaultValueSql("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP");
+
+            // Relationships
+            entity.HasOne(e => e.Vendor).WithMany().HasForeignKey(e => e.VendorId).OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(e => e.DefaultChartOfAccount).WithMany().HasForeignKey(e => e.DefaultChartOfAccountId).IsRequired(false).OnDelete(DeleteBehavior.SetNull);
+
+            // Indexes
+            entity.HasIndex(e => e.VendorId);
         });
     }
 }

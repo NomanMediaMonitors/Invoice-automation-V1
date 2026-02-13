@@ -17,12 +17,6 @@
             <a asp-action="Index" class="btn btn-outline-secondary">
                 <i class="bi bi-arrow-left"></i> Back
             </a>
-            @if (canEdit)
-            {
-                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-primary">
-                    <i class="bi bi-pencil"></i> Edit
-                </a>
-            }
         </div>
     </div>
 
@@ -32,7 +26,19 @@
             <!-- Invoice Header Card -->
             <div class="card mb-4">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h4 class="mb-0">Invoice: @Model.InvoiceNumber</h4>
+                    <h4 class="mb-0">
+                        @if (canEdit)
+                        {
+                            <span class="editable-field" data-field="invoicenumber" data-value="@Model.InvoiceNumber">
+                                Invoice: <span class="editable-text">@Model.InvoiceNumber</span>
+                                <i class="bi bi-pencil-square text-muted ms-1 edit-icon" style="font-size: 0.7em; cursor:pointer;"></i>
+                            </span>
+                        }
+                        else
+                        {
+                            <span>Invoice: @Model.InvoiceNumber</span>
+                        }
+                    </h4>
                     <span class="badge bg-@(Model.Status switch { "Draft" => "secondary", "PendingApproval" => "warning", "Approved" => "success", "Rejected" => "danger", "Paid" => "primary", _ => "secondary" }) fs-6">
                         @Model.Status
                     </span>
@@ -41,7 +47,26 @@
                     <div class="row">
                         <div class="col-md-6">
                             <h5 class="text-muted mb-3">Vendor Information</h5>
-                            <p class="mb-1"><strong>@Model.VendorName</strong></p>
+                            @if (canEdit)
+                            {
+                                <div class="mb-2">
+                                    <select class="form-select form-select-sm inline-vendor-select" id="vendorSelect"
+                                            data-field="vendorid" data-invoice-id="@Model.Id">
+                                        <option value="">-- Select Vendor --</option>
+                                        @if (ViewBag.Vendors != null)
+                                        {
+                                            @foreach (var vendor in (List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>)ViewBag.Vendors)
+                                            {
+                                                <option value="@vendor.Value" selected="@(Model.VendorId.ToString() == vendor.Value)">@vendor.Text</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            }
+                            else
+                            {
+                                <p class="mb-1"><strong>@Model.VendorName</strong></p>
+                            }
                             <p class="mb-1 text-muted">
                                 <i class="bi bi-envelope"></i> @Model.VendorEmail
                             </p>
@@ -54,38 +79,80 @@
                         </div>
                         <div class="col-md-6">
                             <h5 class="text-muted mb-3">Invoice Dates</h5>
-                            <p class="mb-1">
-                                <strong>Invoice Date:</strong> @Model.InvoiceDate.ToString("MMMM dd, yyyy")
-                            </p>
-                            @if (Model.DueDate.HasValue)
+                            @if (canEdit)
                             {
-                                <p class="mb-1 @(Model.IsOverdue ? "text-danger" : "")">
-                                    <strong>Due Date:</strong> @Model.DueDate.Value.ToString("MMMM dd, yyyy")
+                                <div class="mb-2">
+                                    <label class="form-label form-label-sm mb-0"><strong>Invoice Date:</strong></label>
+                                    <input type="date" class="form-control form-control-sm inline-date-field"
+                                           data-field="invoicedate" data-invoice-id="@Model.Id"
+                                           value="@Model.InvoiceDate.ToString("yyyy-MM-dd")">
+                                </div>
+                                <div class="mb-2">
+                                    <label class="form-label form-label-sm mb-0"><strong>Due Date:</strong></label>
+                                    <input type="date" class="form-control form-control-sm inline-date-field"
+                                           data-field="duedate" data-invoice-id="@Model.Id"
+                                           value="@(Model.DueDate?.ToString("yyyy-MM-dd") ?? "")">
                                     @if (Model.IsOverdue)
                                     {
-                                        <span class="badge bg-danger">OVERDUE</span>
+                                        <span class="badge bg-danger mt-1">OVERDUE</span>
                                     }
                                     else if (Model.DaysUntilDue <= 7 && Model.DaysUntilDue > 0)
                                     {
-                                        <span class="badge bg-warning">Due in @Model.DaysUntilDue days</span>
+                                        <span class="badge bg-warning mt-1">Due in @Model.DaysUntilDue days</span>
                                     }
+                                </div>
+                            }
+                            else
+                            {
+                                <p class="mb-1">
+                                    <strong>Invoice Date:</strong> @Model.InvoiceDate.ToString("MMMM dd, yyyy")
                                 </p>
+                                @if (Model.DueDate.HasValue)
+                                {
+                                    <p class="mb-1 @(Model.IsOverdue ? "text-danger" : "")">
+                                        <strong>Due Date:</strong> @Model.DueDate.Value.ToString("MMMM dd, yyyy")
+                                        @if (Model.IsOverdue)
+                                        {
+                                            <span class="badge bg-danger">OVERDUE</span>
+                                        }
+                                        else if (Model.DaysUntilDue <= 7 && Model.DaysUntilDue > 0)
+                                        {
+                                            <span class="badge bg-warning">Due in @Model.DaysUntilDue days</span>
+                                        }
+                                    </p>
+                                }
                             }
                         </div>
                     </div>
 
-                    @if (!string.IsNullOrEmpty(Model.Description))
+                    <hr>
+                    @if (canEdit)
                     {
-                        <hr>
-                        <h5 class="text-muted mb-2">Description</h5>
-                        <p class="mb-0">@Model.Description</p>
+                        <div class="mb-2">
+                            <label class="form-label form-label-sm mb-0"><strong>Description:</strong></label>
+                            <textarea class="form-control form-control-sm inline-text-field" rows="2"
+                                      data-field="description" data-invoice-id="@Model.Id"
+                                      placeholder="Brief description...">@Model.Description</textarea>
+                        </div>
+                        <div class="mb-0">
+                            <label class="form-label form-label-sm mb-0"><strong>Notes:</strong></label>
+                            <textarea class="form-control form-control-sm inline-text-field" rows="2"
+                                      data-field="notes" data-invoice-id="@Model.Id"
+                                      placeholder="Additional notes...">@Model.Notes</textarea>
+                        </div>
                     }
-
-                    @if (!string.IsNullOrEmpty(Model.Notes))
+                    else
                     {
-                        <hr>
-                        <h5 class="text-muted mb-2">Notes</h5>
-                        <p class="mb-0">@Model.Notes</p>
+                        @if (!string.IsNullOrEmpty(Model.Description))
+                        {
+                            <h5 class="text-muted mb-2">Description</h5>
+                            <p class="mb-0">@Model.Description</p>
+                        }
+                        @if (!string.IsNullOrEmpty(Model.Notes))
+                        {
+                            <h5 class="text-muted mb-2">Notes</h5>
+                            <p class="mb-0">@Model.Notes</p>
+                        }
                     }
                 </div>
             </div>
@@ -158,7 +225,7 @@
                     @if (Model.LineItems.Any())
                     {
                         <div class="table-responsive">
-                            <table class="table table-bordered">
+                            <table class="table table-bordered" id="lineItemsTable">
                                 <thead class="table-light">
                                     <tr>
                                         <th>#</th>
@@ -166,33 +233,33 @@
                                         <th>Account</th>
                                         <th class="text-end">Qty</th>
                                         <th class="text-end">Unit Price</th>
+                                        <th class="text-end">Tax %</th>
                                         <th class="text-end">Amount</th>
                                         <th class="text-end">Tax</th>
                                         <th class="text-end">Total</th>
                                         @if (canEdit)
                                         {
-                                            <th style="width: 50px;"></th>
+                                            <th style="width: 80px;" class="text-center">Actions</th>
                                         }
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach (var item in Model.LineItems)
                                     {
-                                        <tr>
+                                        <tr data-line-item-id="@item.Id">
                                             <td>@item.LineNumber</td>
-                                            <td>
-                                                @item.Description
-                                                @if (item.IsOcrExtracted)
-                                                {
-                                                    <span class="badge bg-info text-white ms-2" title="Extracted by OCR">OCR</span>
-                                                }
-                                            </td>
-                                            <td>
-                                                @if (canEdit)
-                                                {
-                                                    <select class="form-select form-select-sm account-select"
-                                                            data-line-item-id="@item.Id"
-                                                            style="min-width: 180px;">
+                                            @if (canEdit)
+                                            {
+                                                <td>
+                                                    <input type="text" class="form-control form-control-sm li-description"
+                                                           value="@item.Description" data-original="@item.Description">
+                                                    @if (item.IsOcrExtracted)
+                                                    {
+                                                        <span class="badge bg-info text-white mt-1" style="font-size:0.65em;" title="Extracted by OCR">OCR</span>
+                                                    }
+                                                </td>
+                                                <td>
+                                                    <select class="form-select form-select-sm li-account" style="min-width: 150px;">
                                                         <option value="">-- Select --</option>
                                                         @if (ViewBag.ChartOfAccounts != null)
                                                         {
@@ -205,48 +272,81 @@
                                                             }
                                                         }
                                                     </select>
-                                                }
-                                                else if (!string.IsNullOrEmpty(item.AccountCode))
-                                                {
-                                                    <small class="text-muted">@item.AccountCode - @item.AccountName</small>
-                                                }
-                                                else
-                                                {
-                                                    <small class="text-muted">Not assigned</small>
-                                                }
-                                            </td>
-                                            <td class="text-end">@item.Quantity.ToString("N2")</td>
-                                            <td class="text-end">@Model.Currency @item.UnitPrice.ToString("N2")</td>
-                                            <td class="text-end">@Model.Currency @item.Amount.ToString("N2")</td>
-                                            <td class="text-end">@Model.Currency @item.TaxAmount.ToString("N2")</td>
-                                            <td class="text-end fw-bold">@Model.Currency @item.TotalAmount.ToString("N2")</td>
-                                            @if (canEdit)
-                                            {
-                                                <td class="text-center">
-                                                    <form asp-action="DeleteLineItem" method="post" class="d-inline"
-                                                          onsubmit="return confirm('Delete this line item?')">
-                                                        <input type="hidden" name="lineItemId" value="@item.Id" />
-                                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete">
-                                                            <i class="bi bi-trash"></i>
-                                                        </button>
-                                                    </form>
                                                 </td>
+                                                <td>
+                                                    <input type="number" class="form-control form-control-sm text-end li-qty"
+                                                           value="@item.Quantity" min="0.0001" step="0.01"
+                                                           data-original="@item.Quantity" style="width: 80px;">
+                                                </td>
+                                                <td>
+                                                    <input type="number" class="form-control form-control-sm text-end li-unitprice"
+                                                           value="@item.UnitPrice" min="0" step="0.01"
+                                                           data-original="@item.UnitPrice" style="width: 110px;">
+                                                </td>
+                                                <td>
+                                                    <input type="number" class="form-control form-control-sm text-end li-taxrate"
+                                                           value="@item.TaxRate" min="0" max="100" step="0.01"
+                                                           data-original="@item.TaxRate" style="width: 70px;">
+                                                </td>
+                                                <td class="text-end li-amount">@Model.Currency @item.Amount.ToString("N2")</td>
+                                                <td class="text-end li-taxamount">@Model.Currency @item.TaxAmount.ToString("N2")</td>
+                                                <td class="text-end fw-bold li-totalamount">@Model.Currency @item.TotalAmount.ToString("N2")</td>
+                                                <td class="text-center">
+                                                    <div class="btn-group-vertical btn-group-sm">
+                                                        <button type="button" class="btn btn-outline-success btn-sm save-line-item" title="Save changes" style="display:none;">
+                                                            <i class="bi bi-check-lg"></i>
+                                                        </button>
+                                                        <form asp-action="DeleteLineItem" method="post" class="d-inline"
+                                                              onsubmit="return confirm('Delete this line item?')">
+                                                            <input type="hidden" name="lineItemId" value="@item.Id" />
+                                                            <button type="submit" class="btn btn-outline-danger btn-sm" title="Delete">
+                                                                <i class="bi bi-trash"></i>
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </td>
+                                            }
+                                            else
+                                            {
+                                                <td>
+                                                    @item.Description
+                                                    @if (item.IsOcrExtracted)
+                                                    {
+                                                        <span class="badge bg-info text-white ms-2" title="Extracted by OCR">OCR</span>
+                                                    }
+                                                </td>
+                                                <td>
+                                                    @if (!string.IsNullOrEmpty(item.AccountCode))
+                                                    {
+                                                        <small class="text-muted">@item.AccountCode - @item.AccountName</small>
+                                                    }
+                                                    else
+                                                    {
+                                                        <small class="text-muted">Not assigned</small>
+                                                    }
+                                                </td>
+                                                <td class="text-end">@item.Quantity.ToString("N2")</td>
+                                                <td class="text-end">@Model.Currency @item.UnitPrice.ToString("N2")</td>
+                                                <td class="text-end">@item.TaxRate.ToString("N2")%</td>
+                                                <td class="text-end">@Model.Currency @item.Amount.ToString("N2")</td>
+                                                <td class="text-end">@Model.Currency @item.TaxAmount.ToString("N2")</td>
+                                                <td class="text-end fw-bold">@Model.Currency @item.TotalAmount.ToString("N2")</td>
                                             }
                                         </tr>
                                     }
                                 </tbody>
                                 <tfoot class="table-light">
                                     <tr>
-                                        <td colspan="@(canEdit ? 8 : 7)" class="text-end"><strong>Subtotal:</strong></td>
-                                        <td class="text-end fw-bold">@Model.Currency @Model.SubTotal.ToString("N2")</td>
+                                        <td colspan="@(canEdit ? 9 : 8)" class="text-end"><strong>Subtotal:</strong></td>
+                                        <td class="text-end fw-bold" id="invoiceSubTotal">@Model.Currency @Model.SubTotal.ToString("N2")</td>
                                     </tr>
                                     <tr>
-                                        <td colspan="@(canEdit ? 8 : 7)" class="text-end"><strong>Tax:</strong></td>
-                                        <td class="text-end fw-bold">@Model.Currency @Model.TaxAmount.ToString("N2")</td>
+                                        <td colspan="@(canEdit ? 9 : 8)" class="text-end"><strong>Tax:</strong></td>
+                                        <td class="text-end fw-bold" id="invoiceTaxAmount">@Model.Currency @Model.TaxAmount.ToString("N2")</td>
                                     </tr>
                                     <tr class="table-primary">
-                                        <td colspan="@(canEdit ? 8 : 7)" class="text-end"><strong>Total Amount:</strong></td>
-                                        <td class="text-end fw-bold fs-5">@Model.Currency @Model.TotalAmount.ToString("N2")</td>
+                                        <td colspan="@(canEdit ? 9 : 8)" class="text-end"><strong>Total Amount:</strong></td>
+                                        <td class="text-end fw-bold fs-5" id="invoiceTotalAmount">@Model.Currency @Model.TotalAmount.ToString("N2")</td>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -488,7 +588,207 @@
 
 @section Scripts {
     <script>
-        // Live preview for add line item form
+        var currency = '@Model.Currency';
+        var invoiceId = '@Model.Id';
+        var canEdit = @(canEdit ? "true" : "false");
+        var antiForgeryToken = document.querySelector('input[name="__RequestVerificationToken"]')?.value || '';
+
+        // ===== Inline Line Item Editing =====
+        if (canEdit) {
+            var debounceTimers = {};
+
+            // Show save button when any field changes
+            document.querySelectorAll('#lineItemsTable tbody tr').forEach(function(row) {
+                var inputs = row.querySelectorAll('input, select');
+                var saveBtn = row.querySelector('.save-line-item');
+                inputs.forEach(function(input) {
+                    input.addEventListener('input', function() {
+                        if (saveBtn) saveBtn.style.display = 'block';
+                        updateRowPreview(row);
+                    });
+                    input.addEventListener('change', function() {
+                        if (saveBtn) saveBtn.style.display = 'block';
+                        updateRowPreview(row);
+                    });
+                });
+            });
+
+            function updateRowPreview(row) {
+                var qty = parseFloat(row.querySelector('.li-qty')?.value) || 0;
+                var price = parseFloat(row.querySelector('.li-unitprice')?.value) || 0;
+                var taxRate = parseFloat(row.querySelector('.li-taxrate')?.value) || 0;
+                var amount = qty * price;
+                var tax = amount * (taxRate / 100);
+                var total = amount + tax;
+                var amountCell = row.querySelector('.li-amount');
+                var taxCell = row.querySelector('.li-taxamount');
+                var totalCell = row.querySelector('.li-totalamount');
+                if (amountCell) amountCell.textContent = currency + ' ' + amount.toFixed(2);
+                if (taxCell) taxCell.textContent = currency + ' ' + tax.toFixed(2);
+                if (totalCell) totalCell.textContent = currency + ' ' + total.toFixed(2);
+            }
+
+            // Save line item
+            document.querySelectorAll('.save-line-item').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    var row = this.closest('tr');
+                    var lineItemId = row.dataset.lineItemId;
+                    saveLineItem(row, lineItemId, this);
+                });
+            });
+
+            function saveLineItem(row, lineItemId, btn) {
+                var data = {
+                    lineItemId: lineItemId,
+                    description: row.querySelector('.li-description')?.value || '',
+                    quantity: parseFloat(row.querySelector('.li-qty')?.value) || 0,
+                    unitPrice: parseFloat(row.querySelector('.li-unitprice')?.value) || 0,
+                    taxRate: parseFloat(row.querySelector('.li-taxrate')?.value) || 0,
+                    chartOfAccountId: row.querySelector('.li-account')?.value || null
+                };
+
+                btn.disabled = true;
+                btn.innerHTML = '<i class="bi bi-hourglass-split"></i>';
+
+                fetch('@Url.Action("UpdateLineItem", "Invoice")', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': antiForgeryToken
+                    },
+                    body: JSON.stringify(data)
+                })
+                .then(function(r) { return r.json(); })
+                .then(function(result) {
+                    if (result.success) {
+                        btn.style.display = 'none';
+                        // Flash green on the row
+                        row.classList.add('table-success');
+                        setTimeout(function() { row.classList.remove('table-success'); }, 1500);
+                        // Update totals
+                        var amountCell = row.querySelector('.li-amount');
+                        var taxCell = row.querySelector('.li-taxamount');
+                        var totalCell = row.querySelector('.li-totalamount');
+                        if (amountCell) amountCell.textContent = currency + ' ' + result.lineItem.amount.toFixed(2);
+                        if (taxCell) taxCell.textContent = currency + ' ' + result.lineItem.taxAmount.toFixed(2);
+                        if (totalCell) totalCell.textContent = currency + ' ' + result.lineItem.totalAmount.toFixed(2);
+                        // Update invoice totals
+                        document.getElementById('invoiceSubTotal').textContent = currency + ' ' + result.invoice.subTotal.toFixed(2);
+                        document.getElementById('invoiceTaxAmount').textContent = currency + ' ' + result.invoice.taxAmount.toFixed(2);
+                        document.getElementById('invoiceTotalAmount').textContent = currency + ' ' + result.invoice.totalAmount.toFixed(2);
+                    } else {
+                        alert('Error: ' + (result.message || 'Unknown error'));
+                    }
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="bi bi-check-lg"></i>';
+                })
+                .catch(function(err) {
+                    alert('Error saving line item');
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="bi bi-check-lg"></i>';
+                });
+            }
+
+            // ===== Inline Invoice Field Editing =====
+            function saveInvoiceField(field, value) {
+                fetch('@Url.Action("UpdateInvoiceField", "Invoice")', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': antiForgeryToken
+                    },
+                    body: JSON.stringify({
+                        invoiceId: invoiceId,
+                        field: field,
+                        value: value
+                    })
+                })
+                .then(function(r) { return r.json(); })
+                .then(function(result) {
+                    if (!result.success) {
+                        alert('Error: ' + (result.message || 'Failed to save'));
+                    }
+                })
+                .catch(function(err) {
+                    alert('Error saving field');
+                });
+            }
+
+            // Vendor select
+            var vendorSelect = document.getElementById('vendorSelect');
+            if (vendorSelect) {
+                vendorSelect.addEventListener('change', function() {
+                    saveInvoiceField('vendorid', this.value);
+                });
+            }
+
+            // Date fields
+            document.querySelectorAll('.inline-date-field').forEach(function(input) {
+                input.addEventListener('change', function() {
+                    saveInvoiceField(this.dataset.field, this.value);
+                });
+            });
+
+            // Text fields (debounced)
+            document.querySelectorAll('.inline-text-field').forEach(function(input) {
+                input.addEventListener('input', function() {
+                    var field = this.dataset.field;
+                    var value = this.value;
+                    clearTimeout(debounceTimers[field]);
+                    debounceTimers[field] = setTimeout(function() {
+                        saveInvoiceField(field, value);
+                    }, 800);
+                });
+            });
+
+            // Editable invoice number (click to edit)
+            document.querySelectorAll('.editable-field').forEach(function(el) {
+                el.addEventListener('click', function() {
+                    var field = this.dataset.field;
+                    var currentVal = this.dataset.value;
+                    var textSpan = this.querySelector('.editable-text');
+                    var editIcon = this.querySelector('.edit-icon');
+
+                    if (this.querySelector('input')) return; // already editing
+
+                    var input = document.createElement('input');
+                    input.type = 'text';
+                    input.className = 'form-control form-control-sm d-inline-block';
+                    input.style.width = 'auto';
+                    input.style.minWidth = '200px';
+                    input.value = currentVal;
+
+                    textSpan.style.display = 'none';
+                    editIcon.style.display = 'none';
+                    this.appendChild(input);
+                    input.focus();
+
+                    function save() {
+                        var newVal = input.value.trim();
+                        if (newVal && newVal !== currentVal) {
+                            saveInvoiceField(field, newVal);
+                            textSpan.textContent = newVal;
+                            el.dataset.value = newVal;
+                        }
+                        textSpan.style.display = '';
+                        editIcon.style.display = '';
+                        input.remove();
+                    }
+
+                    input.addEventListener('blur', save);
+                    input.addEventListener('keydown', function(e) {
+                        if (e.key === 'Enter') { e.preventDefault(); save(); }
+                        if (e.key === 'Escape') {
+                            textSpan.style.display = '';
+                            editIcon.style.display = '';
+                            input.remove();
+                        }
+                    });
+                });
+            });
+        }
+
+        // ===== Add Line Item Preview =====
         var qtyEl = document.getElementById('newQty');
         var priceEl = document.getElementById('newPrice');
         var taxRateEl = document.getElementById('newTaxRate');
@@ -511,38 +811,6 @@
         if (qtyEl) qtyEl.addEventListener('input', updatePreview);
         if (priceEl) priceEl.addEventListener('input', updatePreview);
         if (taxRateEl) taxRateEl.addEventListener('input', updatePreview);
-
-        // Inline chart of accounts assignment for line items
-        document.querySelectorAll('.account-select').forEach(function(select) {
-            select.addEventListener('change', function() {
-                var lineItemId = this.dataset.lineItemId;
-                var chartOfAccountId = this.value;
-
-                fetch('@Url.Action("AssignLineItemAccount", "Invoice")', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
-                    },
-                    body: JSON.stringify({
-                        lineItemId: lineItemId,
-                        chartOfAccountId: chartOfAccountId || null
-                    })
-                })
-                .then(function(response) { return response.json(); })
-                .then(function(data) {
-                    if (data.success) {
-                        select.classList.add('border-success');
-                        setTimeout(function() { select.classList.remove('border-success'); }, 2000);
-                    } else {
-                        alert('Failed to assign account: ' + (data.message || 'Unknown error'));
-                    }
-                })
-                .catch(function(error) {
-                    console.error('Error assigning account:', error);
-                });
-            });
-        });
     </script>
 }
 
@@ -557,9 +825,25 @@
         vertical-align: middle;
     }
 
-    .account-select.border-success {
-        border-color: #198754 !important;
-        box-shadow: 0 0 0 0.15rem rgba(25, 135, 84, 0.25);
-        transition: border-color 0.3s, box-shadow 0.3s;
+    .editable-field {
+        cursor: pointer;
+    }
+
+    .editable-field:hover .edit-icon {
+        color: #0d6efd !important;
+    }
+
+    tr.table-success {
+        transition: background-color 0.3s;
+    }
+
+    .inline-vendor-select,
+    .inline-date-field,
+    .inline-text-field {
+        transition: border-color 0.3s;
+    }
+
+    .save-line-item {
+        transition: all 0.2s;
     }
 </style>
