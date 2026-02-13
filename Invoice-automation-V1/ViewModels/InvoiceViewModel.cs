@@ -33,14 +33,13 @@ public class CreateInvoiceViewModel
 {
     public Guid CompanyId { get; set; }
 
-    [Required(ErrorMessage = "Vendor is required")]
-    public Guid VendorId { get; set; }
+    // Vendor is optional at upload time - OCR may match it
+    public Guid? VendorId { get; set; }
 
-    [Required(ErrorMessage = "Invoice number is required")]
+    // Invoice number is optional at upload time - OCR will extract it
     [StringLength(100)]
-    public string InvoiceNumber { get; set; } = string.Empty;
+    public string? InvoiceNumber { get; set; }
 
-    [Required(ErrorMessage = "Invoice date is required")]
     [DataType(DataType.Date)]
     public DateTime InvoiceDate { get; set; } = DateTime.Today;
 
@@ -66,8 +65,7 @@ public class EditInvoiceViewModel
     public Guid Id { get; set; }
     public Guid CompanyId { get; set; }
 
-    [Required]
-    public Guid VendorId { get; set; }
+    public Guid? VendorId { get; set; }
 
     [Required]
     [StringLength(100)]
@@ -102,7 +100,7 @@ public class InvoiceDetailsViewModel
     public Guid Id { get; set; }
     public Guid CompanyId { get; set; }
     public string CompanyName { get; set; } = string.Empty;
-    public Guid VendorId { get; set; }
+    public Guid? VendorId { get; set; }
     public string VendorName { get; set; } = string.Empty;
     public string VendorEmail { get; set; } = string.Empty;
     public string? VendorPhone { get; set; }

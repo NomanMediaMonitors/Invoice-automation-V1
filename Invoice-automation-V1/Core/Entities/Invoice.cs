@@ -6,7 +6,7 @@ public class Invoice
 {
     public Guid Id { get; set; }
     public Guid CompanyId { get; set; }
-    public Guid VendorId { get; set; }
+    public Guid? VendorId { get; set; }
     public string InvoiceNumber { get; set; } = string.Empty;
     public DateTime InvoiceDate { get; set; }
     public DateTime? DueDate { get; set; }

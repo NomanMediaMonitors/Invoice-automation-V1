@@ -578,6 +578,147 @@ public class InvoiceController : Controller
         return RedirectToAction(nameof(Details), new { id = invoiceId });
     }
 
+    // POST: Invoice/UpdateLineItem (AJAX)
+    [HttpPost]
+    public async Task<IActionResult> UpdateLineItem([FromBody] UpdateLineItemRequest request)
+    {
+        try
+        {
+            var lineItem = await _context.InvoiceLineItems
+                .Include(li => li.Invoice)
+                .ThenInclude(i => i!.LineItems)
+                .FirstOrDefaultAsync(li => li.Id == request.LineItemId);
+
+            if (lineItem == null)
+                return Json(new { success = false, message = "Line item not found" });
+
+            var userId = GetCurrentUserId();
+            if (!await _invoiceService.CanUserAccessInvoiceAsync(lineItem.InvoiceId, userId))
+                return Json(new { success = false, message = "Access denied" });
+
+            // Check invoice is editable
+            var invoice = lineItem.Invoice!;
+            if (invoice.Status == InvoiceStatus.Paid || invoice.SyncedToIndraajAt.HasValue)
+                return Json(new { success = false, message = "Invoice cannot be edited" });
+
+            lineItem.Description = request.Description;
+            lineItem.Quantity = request.Quantity;
+            lineItem.UnitPrice = request.UnitPrice;
+            lineItem.TaxRate = request.TaxRate;
+            lineItem.Amount = request.Quantity * request.UnitPrice;
+            lineItem.TaxAmount = lineItem.Amount * (request.TaxRate / 100);
+            lineItem.TotalAmount = lineItem.Amount + lineItem.TaxAmount;
+            lineItem.UpdatedAt = DateTime.UtcNow;
+
+            if (request.ChartOfAccountId.HasValue && request.ChartOfAccountId.Value != Guid.Empty)
+            {
+                var account = await _context.ChartOfAccounts.FindAsync(request.ChartOfAccountId.Value);
+                lineItem.ChartOfAccountId = account?.Id;
+                lineItem.AccountCode = account?.Code;
+            }
+            else
+            {
+                lineItem.ChartOfAccountId = null;
+                lineItem.AccountCode = null;
+            }
+
+            // Recalculate invoice totals
+            invoice.SubTotal = invoice.LineItems.Sum(li => li.Amount);
+            invoice.TaxAmount = invoice.LineItems.Sum(li => li.TaxAmount);
+            invoice.TotalAmount = invoice.LineItems.Sum(li => li.TotalAmount);
+            invoice.UpdatedAt = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+
+            return Json(new
+            {
+                success = true,
+                lineItem = new
+                {
+                    amount = lineItem.Amount,
+                    taxAmount = lineItem.TaxAmount,
+                    totalAmount = lineItem.TotalAmount
+                },
+                invoice = new
+                {
+                    subTotal = invoice.SubTotal,
+                    taxAmount = invoice.TaxAmount,
+                    totalAmount = invoice.TotalAmount
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error updating line item");
+            return Json(new { success = false, message = "An error occurred" });
+        }
+    }
+
+    // POST: Invoice/UpdateInvoiceField (AJAX - for inline header editing)
+    [HttpPost]
+    public async Task<IActionResult> UpdateInvoiceField([FromBody] UpdateInvoiceFieldRequest request)
+    {
+        try
+        {
+            var invoice = await _context.Invoices.FindAsync(request.InvoiceId);
+            if (invoice == null)
+                return Json(new { success = false, message = "Invoice not found" });
+
+            var userId = GetCurrentUserId();
+            if (!await _invoiceService.CanUserAccessInvoiceAsync(request.InvoiceId, userId))
+                return Json(new { success = false, message = "Access denied" });
+
+            if (invoice.Status == InvoiceStatus.Paid || invoice.SyncedToIndraajAt.HasValue)
+                return Json(new { success = false, message = "Invoice cannot be edited" });
+
+            switch (request.Field.ToLower())
+            {
+                case "vendorid":
+                    if (Guid.TryParse(request.Value, out var vendorId))
+                    {
+                        var vendor = await _context.Vendors.FindAsync(vendorId);
+                        if (vendor != null && vendor.CompanyId == invoice.CompanyId)
+                            invoice.VendorId = vendorId;
+                        else
+                            return Json(new { success = false, message = "Invalid vendor" });
+                    }
+                    break;
+                case "invoicenumber":
+                    if (!string.IsNullOrWhiteSpace(request.Value))
+                        invoice.InvoiceNumber = request.Value;
+                    break;
+                case "invoicedate":
+                    if (DateTime.TryParse(request.Value, out var invoiceDate))
+                        invoice.InvoiceDate = invoiceDate;
+                    break;
+                case "duedate":
+                    if (DateTime.TryParse(request.Value, out var dueDate))
+                        invoice.DueDate = dueDate;
+                    else if (string.IsNullOrWhiteSpace(request.Value))
+                        invoice.DueDate = null;
+                    break;
+                case "description":
+                    invoice.Description = request.Value;
+                    break;
+                case "notes":
+                    invoice.Notes = request.Value;
+                    break;
+                default:
+                    return Json(new { success = false, message = "Unknown field" });
+            }
+
+            invoice.UpdatedAt = DateTime.UtcNow;
+            await _context.SaveChangesAsync();
+
+            return Json(new { success = true });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error updating invoice field");
+            return Json(new { success = false, message = "An error occurred" });
+        }
+    }
+
     // POST: Invoice/DeleteLineItem
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -794,5 +935,22 @@ public class InvoiceController : Controller
     {
         public Guid LineItemId { get; set; }
         public Guid? ChartOfAccountId { get; set; }
+    }
+
+    public class UpdateLineItemRequest
+    {
+        public Guid LineItemId { get; set; }
+        public string Description { get; set; } = string.Empty;
+        public decimal Quantity { get; set; }
+        public decimal UnitPrice { get; set; }
+        public decimal TaxRate { get; set; }
+        public Guid? ChartOfAccountId { get; set; }
+    }
+
+    public class UpdateInvoiceFieldRequest
+    {
+        public Guid InvoiceId { get; set; }
+        public string Field { get; set; } = string.Empty;
+        public string? Value { get; set; }
     }
 }
