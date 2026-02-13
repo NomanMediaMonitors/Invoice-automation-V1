@@ -7,44 +7,45 @@
     var vendorName = (string)ViewBag.VendorName;
 }
 
-<div class="container py-4">
-    <nav aria-label="breadcrumb" class="mb-3">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item">
-                <a asp-controller="Company" asp-action="Details" asp-route-id="@companyId">@companyName</a>
-            </li>
-            <li class="breadcrumb-item">
-                <a asp-action="Index" asp-route-companyId="@companyId">Vendors</a>
-            </li>
-            <li class="breadcrumb-item">
-                <a asp-action="Details" asp-route-id="@vendorId" asp-route-companyId="@companyId">@vendorName</a>
-            </li>
-            <li class="breadcrumb-item">
-                <a asp-action="Templates" asp-route-id="@vendorId" asp-route-companyId="@companyId">Templates</a>
-            </li>
-            <li class="breadcrumb-item active">New Template</li>
-        </ol>
-    </nav>
+<!-- Breadcrumbs -->
+<nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a asp-controller="Company" asp-action="Details" asp-route-id="@companyId">@companyName</a>
+        </li>
+        <li class="breadcrumb-item">
+            <a asp-action="Index" asp-route-companyId="@companyId">Vendors</a>
+        </li>
+        <li class="breadcrumb-item">
+            <a asp-action="Details" asp-route-id="@vendorId" asp-route-companyId="@companyId">@vendorName</a>
+        </li>
+        <li class="breadcrumb-item">
+            <a asp-action="Templates" asp-route-id="@vendorId" asp-route-companyId="@companyId">Templates</a>
+        </li>
+        <li class="breadcrumb-item active">New Template</li>
+    </ol>
+</nav>
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="mb-0"><i class="bi bi-plus-circle"></i> New Invoice Template for @vendorName</h2>
+<!-- Page Header -->
+<div class="page-header mb-4">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+        <div>
+            <h2 class="fw-bold mb-1">New Invoice Template</h2>
+            <p class="text-muted mb-0">@vendorName</p>
+        </div>
         <a asp-action="Templates" asp-route-id="@vendorId" asp-route-companyId="@companyId" class="btn btn-outline-secondary">
-            <i class="bi bi-arrow-left"></i> Back
+            <i class="bi bi-arrow-left me-1"></i> Back
         </a>
     </div>
-
-    <form asp-action="CreateTemplate" asp-route-companyId="@companyId" method="post">
-        <partial name="_TemplateForm" model="Model" />
-
-        <div class="d-flex justify-content-end gap-2">
-            <a asp-action="Templates" asp-route-id="@vendorId" asp-route-companyId="@companyId" class="btn btn-secondary">Cancel</a>
-            <button type="submit" class="btn btn-primary">
-                <i class="bi bi-check-circle"></i> Create Template
-            </button>
-        </div>
-    </form>
 </div>
 
-<style>
-    .card-header { background-color: #f8f9fa; border-bottom: 2px solid #dee2e6; }
-</style>
+<form asp-action="CreateTemplate" asp-route-companyId="@companyId" method="post">
+    <partial name="_TemplateForm" model="Model" />
+
+    <div class="d-flex justify-content-end gap-2 mt-4">
+        <a asp-action="Templates" asp-route-id="@vendorId" asp-route-companyId="@companyId" class="btn btn-outline-secondary">Cancel</a>
+        <button type="submit" class="btn btn-primary">
+            <i class="bi bi-check-circle me-1"></i> Create Template
+        </button>
+    </div>
+</form>

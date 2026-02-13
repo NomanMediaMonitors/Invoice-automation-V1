@@ -3,157 +3,168 @@
     ViewData["Title"] = "Upload New Invoice";
 }
 
-<div class="container-fluid py-4">
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2 class="mb-0">
-                    <i class="bi bi-cloud-upload"></i> Upload New Invoice
-                </h2>
-                <a asp-action="Index" class="btn btn-outline-secondary">
-                    <i class="bi bi-arrow-left"></i> Back to List
-                </a>
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-action="Index">Invoices</a></li>
+        <li class="breadcrumb-item active">Upload New Invoice</li>
+    </ol>
+</nav>
+
+<div class="page-header d-flex justify-content-between align-items-center">
+    <div>
+        <h2 class="page-title">
+            <i class="bi bi-cloud-upload"></i> Upload New Invoice
+        </h2>
+        <p class="page-subtitle mb-0">Upload an invoice file to process with OCR</p>
+    </div>
+    <a asp-action="Index" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Back to List
+    </a>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <form asp-action="Create" method="post" enctype="multipart/form-data" id="uploadForm">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+            <!-- Company Selection -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-building"></i> Company</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-0">
+                        <label asp-for="CompanyId" class="form-label">Select Company <span class="text-danger">*</span></label>
+                        <select asp-for="CompanyId" class="form-select" asp-items="ViewBag.Companies" id="companySelect">
+                        </select>
+                        <span asp-validation-for="CompanyId" class="text-danger"></span>
+                    </div>
+                </div>
             </div>
 
-            <form asp-action="Create" method="post" enctype="multipart/form-data" id="uploadForm">
-                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
-
-                <!-- Step 1: Company & File -->
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h5 class="mb-0"><i class="bi bi-building"></i> Company</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="mb-0">
-                            <label asp-for="CompanyId" class="form-label">Select Company <span class="text-danger">*</span></label>
-                            <select asp-for="CompanyId" class="form-select" asp-items="ViewBag.Companies" id="companySelect">
-                            </select>
-                            <span asp-validation-for="CompanyId" class="text-danger"></span>
-                        </div>
-                    </div>
+            <!-- File Upload -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-file-earmark-arrow-up"></i> Invoice File</h5>
                 </div>
-
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h5 class="mb-0"><i class="bi bi-file-earmark-arrow-up"></i> Invoice File</h5>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label">Upload Invoice <span class="text-danger">*</span></label>
+                        <div id="dropZone" style="border: 2px dashed var(--border-color); border-radius: var(--radius-xl); padding: 2rem; text-align: center; cursor: pointer; transition: all 0.2s ease;">
+                            <i class="bi bi-cloud-arrow-up" style="font-size: 2.5rem; color: var(--primary-color);"></i>
+                            <p class="mt-2 mb-1 fw-bold" style="color: var(--text-primary);">Drag & drop your invoice here</p>
+                            <p style="color: var(--text-tertiary); font-size: 0.8125rem;" class="mb-2">or click to browse files</p>
+                            <input type="file" asp-for="InvoiceFile" class="form-control" accept=".pdf,.jpg,.jpeg,.png,.tif,.tiff" id="invoiceFileInput" style="display:none;">
+                            <button type="button" class="btn btn-outline-primary btn-sm" id="browseBtn">
+                                <i class="bi bi-folder2-open"></i> Browse Files
+                            </button>
+                            <p class="mb-0 mt-2" style="color: var(--text-muted); font-size: 0.75rem;">
+                                Accepted: PDF, JPG, PNG, TIF (Max 10 MB)
+                            </p>
+                        </div>
+                        <span asp-validation-for="InvoiceFile" class="text-danger"></span>
                     </div>
-                    <div class="card-body">
-                        <div class="mb-3">
-                            <label class="form-label">Upload Invoice <span class="text-danger">*</span></label>
-                            <div class="upload-zone border border-2 border-dashed rounded p-4 text-center" id="dropZone">
-                                <i class="bi bi-cloud-arrow-up display-3 text-primary"></i>
-                                <p class="mt-2 mb-1 fw-bold">Drag & drop your invoice here</p>
-                                <p class="text-muted small mb-2">or click to browse</p>
-                                <input type="file" asp-for="InvoiceFile" class="form-control" accept=".pdf,.jpg,.jpeg,.png,.tif,.tiff" id="invoiceFileInput" style="display:none;">
-                                <button type="button" class="btn btn-outline-primary btn-sm" id="browseBtn">
-                                    <i class="bi bi-folder2-open"></i> Browse Files
-                                </button>
-                                <div class="form-text mt-2">
-                                    Accepted: PDF, JPG, PNG, TIF (Max 10 MB)
-                                </div>
+
+                    <!-- File Preview -->
+                    <div id="filePreview" class="d-none">
+                        <div class="d-flex align-items-center p-3" style="background: var(--bg-secondary); border-radius: var(--radius-lg); border: 1px solid var(--border-color);">
+                            <i class="bi bi-file-earmark-check me-3" style="font-size: 1.75rem; color: var(--success-color);"></i>
+                            <div class="flex-grow-1">
+                                <p id="fileName" class="mb-0 fw-bold" style="color: var(--text-primary); font-size: 0.875rem;"></p>
+                                <p id="fileSize" class="mb-0" style="color: var(--text-tertiary); font-size: 0.75rem;"></p>
                             </div>
-                            <span asp-validation-for="InvoiceFile" class="text-danger"></span>
-                        </div>
-
-                        <!-- File Preview -->
-                        <div id="filePreview" class="d-none">
-                            <div class="d-flex align-items-center bg-light rounded p-3">
-                                <i class="bi bi-file-earmark-check display-6 text-success me-3"></i>
-                                <div class="flex-grow-1">
-                                    <p id="fileName" class="mb-0 fw-bold"></p>
-                                    <p id="fileSize" class="text-muted small mb-0"></p>
-                                </div>
-                                <button type="button" class="btn btn-outline-danger btn-sm" id="removeFile">
-                                    <i class="bi bi-x-lg"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <hr>
-
-                        <div class="form-check form-switch">
-                            <input type="checkbox" asp-for="ProcessWithOcr" class="form-check-input" id="processOcrSwitch" checked>
-                            <label class="form-check-label" for="processOcrSwitch">
-                                <i class="bi bi-magic"></i> <strong>Process with OCR automatically</strong>
-                            </label>
-                        </div>
-                        <div class="form-text">
-                            OCR will extract invoice number, dates, vendor, amounts, and line items from the uploaded file.
-                            You can review and correct all fields after processing.
+                            <button type="button" class="btn btn-outline-danger btn-sm" id="removeFile">
+                                <i class="bi bi-x-lg"></i>
+                            </button>
                         </div>
                     </div>
+
+                    <hr style="border-color: var(--border-color);">
+
+                    <div class="form-check form-switch">
+                        <input type="checkbox" asp-for="ProcessWithOcr" class="form-check-input" id="processOcrSwitch" checked>
+                        <label class="form-check-label" for="processOcrSwitch">
+                            <strong>Process with OCR automatically</strong>
+                        </label>
+                    </div>
+                    <p class="mb-0 mt-1" style="color: var(--text-tertiary); font-size: 0.8125rem;">
+                        OCR will extract invoice number, dates, vendor, amounts, and line items from the uploaded file.
+                        You can review and correct all fields after processing.
+                    </p>
                 </div>
+            </div>
 
-                <!-- Optional: Pre-fill details (collapsed by default) -->
-                <div class="card mb-4">
-                    <div class="card-header" style="cursor:pointer;" data-bs-toggle="collapse" data-bs-target="#manualDetails">
+            <!-- Pre-fill Details (collapsed) -->
+            <div class="card mb-4">
+                <div class="card-header" style="cursor:pointer;" data-bs-toggle="collapse" data-bs-target="#manualDetails">
+                    <div class="d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">
                             <i class="bi bi-pencil-square"></i> Pre-fill Details
-                            <small class="text-muted ms-2">(optional - OCR will fill these)</small>
-                            <i class="bi bi-chevron-down float-end"></i>
+                            <span style="color: var(--text-muted); font-size: 0.75rem; font-weight: 400;" class="ms-2">(optional - OCR will fill these)</span>
                         </h5>
+                        <i class="bi bi-chevron-down" style="color: var(--text-tertiary);"></i>
                     </div>
-                    <div class="collapse" id="manualDetails">
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label asp-for="VendorId" class="form-label">Vendor</label>
-                                    <select asp-for="VendorId" class="form-select" asp-items="ViewBag.Vendors" id="vendorSelect">
-                                        <option value="">-- OCR will match vendor --</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label asp-for="InvoiceNumber" class="form-label">Invoice Number</label>
-                                    <input asp-for="InvoiceNumber" class="form-control" placeholder="OCR will extract this">
-                                </div>
+                </div>
+                <div class="collapse" id="manualDetails">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="VendorId" class="form-label">Vendor</label>
+                                <select asp-for="VendorId" class="form-select" asp-items="ViewBag.Vendors" id="vendorSelect">
+                                    <option value="">-- OCR will match vendor --</option>
+                                </select>
                             </div>
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label asp-for="InvoiceDate" class="form-label">Invoice Date</label>
-                                    <input asp-for="InvoiceDate" type="date" class="form-control">
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label asp-for="DueDate" class="form-label">Due Date</label>
-                                    <input asp-for="DueDate" type="date" class="form-control">
-                                </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="InvoiceNumber" class="form-label">Invoice Number</label>
+                                <input asp-for="InvoiceNumber" class="form-control" placeholder="OCR will extract this">
                             </div>
-                            <div class="mb-3">
-                                <label asp-for="Description" class="form-label">Description</label>
-                                <textarea asp-for="Description" class="form-control" rows="2" placeholder="Brief description..."></textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="InvoiceDate" class="form-label">Invoice Date</label>
+                                <input asp-for="InvoiceDate" type="date" class="form-control">
                             </div>
-                            <div class="mb-0">
-                                <label asp-for="Notes" class="form-label">Notes</label>
-                                <textarea asp-for="Notes" class="form-control" rows="2" placeholder="Additional notes..."></textarea>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="DueDate" class="form-label">Due Date</label>
+                                <input asp-for="DueDate" type="date" class="form-control">
                             </div>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Description" class="form-label">Description</label>
+                            <textarea asp-for="Description" class="form-control" rows="2" placeholder="Brief description..."></textarea>
+                        </div>
+                        <div class="mb-0">
+                            <label asp-for="Notes" class="form-label">Notes</label>
+                            <textarea asp-for="Notes" class="form-control" rows="2" placeholder="Additional notes..."></textarea>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <!-- How it works -->
-                <div class="alert alert-info d-flex align-items-start">
-                    <i class="bi bi-lightbulb flex-shrink-0 me-2 fs-5"></i>
-                    <div>
-                        <strong>How it works:</strong>
-                        <ol class="mb-0 mt-2">
-                            <li>Upload your invoice file (PDF or image)</li>
-                            <li>OCR automatically extracts invoice number, dates, vendor, amounts & line items</li>
-                            <li>Review and correct extracted data on the invoice details page</li>
-                            <li>Assign chart of accounts and submit for approval</li>
-                        </ol>
-                    </div>
+            <!-- How it works -->
+            <div class="alert alert-info">
+                <i class="bi bi-lightbulb flex-shrink-0 me-1"></i>
+                <div>
+                    <strong>How it works:</strong>
+                    <ol class="mb-0 mt-2" style="padding-left: 1rem;">
+                        <li>Upload your invoice file (PDF or image)</li>
+                        <li>OCR automatically extracts invoice number, dates, vendor, amounts & line items</li>
+                        <li>Review and correct extracted data on the invoice details page</li>
+                        <li>Assign chart of accounts and submit for approval</li>
+                    </ol>
                 </div>
+            </div>
 
-                <!-- Submit -->
-                <div class="d-flex justify-content-end gap-2">
-                    <a asp-action="Index" class="btn btn-secondary">
-                        <i class="bi bi-x-circle"></i> Cancel
-                    </a>
-                    <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
-                        <i class="bi bi-cloud-upload"></i> Upload & Process
-                    </button>
-                </div>
-            </form>
-        </div>
+            <!-- Submit -->
+            <div class="d-flex justify-content-end gap-2">
+                <a asp-action="Index" class="btn btn-outline-secondary">
+                    Cancel
+                </a>
+                <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
+                    <i class="bi bi-cloud-upload"></i> Upload & Process
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -176,14 +187,17 @@
         // Drag & drop
         dropZone.addEventListener('dragover', function(e) {
             e.preventDefault();
-            dropZone.classList.add('border-primary', 'bg-light');
+            dropZone.style.borderColor = 'var(--primary-color)';
+            dropZone.style.backgroundColor = 'var(--primary-50)';
         });
         dropZone.addEventListener('dragleave', function() {
-            dropZone.classList.remove('border-primary', 'bg-light');
+            dropZone.style.borderColor = 'var(--border-color)';
+            dropZone.style.backgroundColor = '';
         });
         dropZone.addEventListener('drop', function(e) {
             e.preventDefault();
-            dropZone.classList.remove('border-primary', 'bg-light');
+            dropZone.style.borderColor = 'var(--border-color)';
+            dropZone.style.backgroundColor = '';
             if (e.dataTransfer.files.length > 0) {
                 fileInput.files = e.dataTransfer.files;
                 showFilePreview(e.dataTransfer.files[0]);
@@ -244,35 +258,4 @@
             btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Uploading & Processing...';
         });
     </script>
-
-    <style>
-        .card-header {
-            background-color: #f8f9fa;
-            border-bottom: 2px solid #dee2e6;
-        }
-
-        .upload-zone {
-            cursor: pointer;
-            transition: all 0.3s;
-            border-color: #dee2e6 !important;
-        }
-
-        .upload-zone:hover {
-            border-color: #0d6efd !important;
-            background-color: #f8f9fa;
-        }
-
-        .border-dashed {
-            border-style: dashed !important;
-        }
-
-        #filePreview {
-            animation: fadeIn 0.3s;
-        }
-
-        @@keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-    </style>
 }

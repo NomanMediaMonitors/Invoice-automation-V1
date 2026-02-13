@@ -4,127 +4,86 @@
     ViewData["Title"] = "Edit Profile";
 }
 
-<div class="container-fluid animate-fadeIn">
-    <!-- Page Header -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="page-header">
-                <div class="d-flex justify-content-between align-items-center flex-wrap">
-                    <div>
-                        <div class="page-title">
-                            <i class="bi bi-pencil-square"></i>
-                            <h2 class="fw-bold mb-0">Edit Profile</h2>
+<!-- Page Header -->
+<div class="page-header mb-4">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+        <div>
+            <h2 class="fw-bold mb-1">Edit Profile</h2>
+            <p class="text-muted mb-0">Update your personal information</p>
+        </div>
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i> Back to Profile
+        </a>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <div class="card">
+            <div class="card-body">
+                <form asp-action="Edit" method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="FullName" class="form-label">Full Name <span class="text-danger">*</span></label>
+                        <input asp-for="FullName" class="form-control" placeholder="Enter your full name" />
+                        <span asp-validation-for="FullName" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label">Email <span class="text-danger">*</span></label>
+                        <input asp-for="Email" class="form-control" placeholder="your@email.com" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                        <small class="form-text text-muted">
+                            <i class="bi bi-info-circle me-1"></i> Changing your email will require re-verification
+                        </small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Phone" class="form-label">Phone</label>
+                        <input asp-for="Phone" class="form-control" placeholder="+1 (555) 123-4567" />
+                        <span asp-validation-for="Phone" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="AvatarUrl" class="form-label">Avatar URL</label>
+                        <input asp-for="AvatarUrl" class="form-control" placeholder="https://example.com/avatar.jpg" />
+                        <span asp-validation-for="AvatarUrl" class="text-danger"></span>
+                        <small class="form-text text-muted">
+                            <i class="bi bi-info-circle me-1"></i> Provide a URL to your profile picture
+                        </small>
+                    </div>
+
+                    <!-- Avatar Preview -->
+                    <div class="mb-3" id="avatarPreview" style="display: none;">
+                        <label class="form-label">Preview</label>
+                        <div class="rounded-3 p-3" style="background-color: #f8f9fa;">
+                            <div class="rounded-circle overflow-hidden" style="width: 96px; height: 96px; border: 3px solid #2563eb;">
+                                <img id="avatarPreviewImg" src="" alt="Avatar preview" style="width: 100%; height: 100%; object-fit: cover;" />
+                            </div>
                         </div>
-                        <p class="page-subtitle mb-0">Update your personal information</p>
                     </div>
-                    <div>
-                        <a asp-action="Index" class="btn btn-outline-secondary">
-                            <i class="bi bi-arrow-left"></i> Back to Profile
-                        </a>
+
+                    <div class="d-flex justify-content-end gap-2 mt-4">
+                        <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle me-1"></i> Save Changes
+                        </button>
                     </div>
-                </div>
+                </form>
             </div>
         </div>
-    </div>
 
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <div class="card">
-                <div class="card-body p-4">
-                    <form asp-action="Edit" method="post">
-                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
-
-                        <!-- Full Name -->
-                        <div class="mb-4">
-                            <label asp-for="FullName" class="form-label required"></label>
-                            <div class="input-group">
-                                <span class="input-group-text">
-                                    <i class="bi bi-person"></i>
-                                </span>
-                                <input asp-for="FullName" class="form-control form-control-lg" placeholder="Enter your full name" />
-                            </div>
-                            <span asp-validation-for="FullName" class="text-danger"></span>
-                        </div>
-
-                        <!-- Email -->
-                        <div class="mb-4">
-                            <label asp-for="Email" class="form-label required"></label>
-                            <div class="input-group">
-                                <span class="input-group-text">
-                                    <i class="bi bi-envelope"></i>
-                                </span>
-                                <input asp-for="Email" class="form-control form-control-lg" placeholder="your@email.com" />
-                            </div>
-                            <span asp-validation-for="Email" class="text-danger"></span>
-                            <small class="form-text text-muted">
-                                <i class="bi bi-info-circle"></i> Changing your email will require re-verification
-                            </small>
-                        </div>
-
-                        <!-- Phone -->
-                        <div class="mb-4">
-                            <label asp-for="Phone" class="form-label"></label>
-                            <div class="input-group">
-                                <span class="input-group-text">
-                                    <i class="bi bi-telephone"></i>
-                                </span>
-                                <input asp-for="Phone" class="form-control form-control-lg" placeholder="+1 (555) 123-4567" />
-                            </div>
-                            <span asp-validation-for="Phone" class="text-danger"></span>
-                        </div>
-
-                        <!-- Avatar URL -->
-                        <div class="mb-4">
-                            <label asp-for="AvatarUrl" class="form-label"></label>
-                            <div class="input-group">
-                                <span class="input-group-text">
-                                    <i class="bi bi-image"></i>
-                                </span>
-                                <input asp-for="AvatarUrl" class="form-control form-control-lg" placeholder="https://example.com/avatar.jpg" />
-                            </div>
-                            <span asp-validation-for="AvatarUrl" class="text-danger"></span>
-                            <small class="form-text text-muted">
-                                <i class="bi bi-info-circle"></i> Provide a URL to your profile picture
-                            </small>
-                        </div>
-
-                        <!-- Avatar Preview -->
-                        <div class="mb-4" id="avatarPreview" style="display: none;">
-                            <div class="avatar-preview-container">
-                                <label class="form-label">Preview</label>
-                                <div class="avatar-preview">
-                                    <img id="avatarPreviewImg" src="" alt="Avatar preview" />
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Buttons -->
-                        <div class="d-flex gap-3 justify-content-end mt-4">
-                            <a asp-action="Index" class="btn btn-outline-secondary btn-lg">
-                                <i class="bi bi-x-circle"></i> Cancel
-                            </a>
-                            <button type="submit" class="btn btn-primary btn-lg">
-                                <i class="bi bi-check-circle"></i> Save Changes
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-            <!-- Additional Information Card -->
-            <div class="card mt-4">
-                <div class="card-body">
-                    <h5 class="card-title mb-3">
-                        <i class="bi bi-info-circle text-info me-2"></i>
-                        Profile Tips
-                    </h5>
-                    <ul class="mb-0">
-                        <li class="mb-2">Use your real name to help colleagues identify you</li>
-                        <li class="mb-2">Keep your email address up to date for important notifications</li>
-                        <li class="mb-2">Add a profile picture to personalize your account</li>
-                        <li>Your profile information is visible to other members of your companies</li>
-                    </ul>
-                </div>
+        <!-- Profile Tips -->
+        <div class="card mt-4">
+            <div class="card-body">
+                <h6 class="fw-semibold mb-3">Profile Tips</h6>
+                <ul class="mb-0 text-muted small">
+                    <li class="mb-2">Use your real name to help colleagues identify you</li>
+                    <li class="mb-2">Keep your email address up to date for important notifications</li>
+                    <li class="mb-2">Add a profile picture to personalize your account</li>
+                    <li>Your profile information is visible to other members of your companies</li>
+                </ul>
             </div>
         </div>
     </div>
@@ -161,81 +120,3 @@
         }
     </script>
 }
-
-<style>
-    .container-fluid {
-        max-width: 1200px;
-        padding: 2rem;
-    }
-
-    .card {
-        border: 1px solid var(--border-color);
-        border-radius: var(--radius-xl);
-        box-shadow: var(--shadow-md);
-    }
-
-    .form-label {
-        font-weight: 600;
-        color: var(--text-primary);
-        margin-bottom: 0.5rem;
-    }
-
-    .form-label.required::after {
-        content: ' *';
-        color: var(--danger-color);
-    }
-
-    .input-group-text {
-        background: var(--bg-secondary);
-        border: 1px solid var(--border-color);
-        color: var(--text-secondary);
-    }
-
-    .form-control-lg {
-        padding: 0.75rem 1rem;
-        font-size: 1rem;
-    }
-
-    .form-control:focus {
-        border-color: var(--primary-color);
-        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
-    }
-
-    .avatar-preview-container {
-        background: var(--bg-secondary);
-        border-radius: var(--radius-lg);
-        padding: 1.5rem;
-    }
-
-    .avatar-preview {
-        width: 120px;
-        height: 120px;
-        border-radius: 50%;
-        overflow: hidden;
-        border: 3px solid var(--primary-color);
-        margin-top: 0.5rem;
-    }
-
-    .avatar-preview img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-
-    .card-title {
-        font-size: 1.125rem;
-        font-weight: 700;
-        color: var(--text-primary);
-    }
-
-    ul li {
-        color: var(--text-secondary);
-        font-size: 0.938rem;
-    }
-
-    @@media (max-width: 768px) {
-        .container-fluid {
-            padding: 1rem;
-        }
-    }
-</style>
