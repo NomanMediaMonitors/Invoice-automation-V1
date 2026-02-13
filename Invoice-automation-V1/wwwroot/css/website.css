@@ -617,6 +617,15 @@ a:hover {
     outline: none;
 }
 
+.form-control-sm,
+.form-select-sm {
+    color: var(--text-primary) !important;
+    background-color: #ffffff !important;
+    border: 1px solid var(--border-color);
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8125rem;
+}
+
 .form-control-lg {
     padding: 0.625rem 0.875rem;
     font-size: 0.9375rem;
@@ -950,12 +959,56 @@ a:hover {
     color: var(--text-secondary);
 }
 
+.table tfoot td {
+    padding: 0.625rem 0.875rem;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-primary);
+    font-size: 0.8125rem;
+}
+
 .table tbody tr { transition: background-color var(--transition-fast); }
 .table-hover tbody tr:hover { background-color: var(--bg-secondary); }
 
 .table-responsive {
     border-radius: var(--radius-lg);
     overflow: hidden;
+}
+
+/* Form controls inside tables - high specificity to override Bootstrap */
+.table .form-control,
+.table .form-select,
+.table input[type="text"],
+.table input[type="number"],
+.table input[type="date"],
+.table select,
+.table textarea {
+    color: var(--text-primary) !important;
+    background-color: #ffffff !important;
+    border: 1px solid var(--border-color) !important;
+    font-size: 0.8125rem;
+}
+
+.table .form-control:focus,
+.table .form-select:focus,
+.table input:focus,
+.table select:focus {
+    border-color: var(--primary-color) !important;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.12) !important;
+    outline: none;
+}
+
+.table .form-control-sm,
+.table .form-select-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8125rem;
+}
+
+/* Ensure select option elements are always readable */
+select option,
+.form-select option {
+    color: #0f172a;
+    background-color: #ffffff;
 }
 
 /* ===================================
@@ -1458,6 +1511,60 @@ a:hover {
     .app-content { margin-left: 0 !important; }
     body { background: white; }
     .card { box-shadow: none; border: 1px solid #ccc; }
+}
+
+/* ===================================
+   Bootstrap 5.3 Polyfills (for 5.1 compat)
+   =================================== */
+.bg-primary-subtle { background-color: var(--primary-50) !important; }
+.text-primary-emphasis { color: var(--primary-700) !important; }
+.bg-success-subtle { background-color: var(--success-light) !important; }
+.text-success-emphasis { color: #065f46 !important; }
+.bg-danger-subtle { background-color: var(--danger-light) !important; }
+.text-danger-emphasis { color: #991b1b !important; }
+.bg-warning-subtle { background-color: var(--warning-light) !important; }
+.text-warning-emphasis { color: #92400e !important; }
+.bg-info-subtle { background-color: var(--info-light) !important; }
+.text-info-emphasis { color: #0c4a6e !important; }
+.bg-secondary-subtle { background-color: var(--gray-100) !important; }
+.text-secondary-emphasis { color: var(--gray-700) !important; }
+
+/* ===================================
+   Inline Editing Styles
+   =================================== */
+.inline-vendor-select,
+.inline-date-field,
+.inline-text-field {
+    color: var(--text-primary) !important;
+    background-color: #ffffff !important;
+    border: 1px solid var(--border-color) !important;
+}
+
+.inline-vendor-select:focus,
+.inline-date-field:focus,
+.inline-text-field:focus {
+    border-color: var(--primary-color) !important;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1) !important;
+}
+
+/* Line item editable row styles */
+.li-description,
+.li-qty,
+.li-unitprice,
+.li-taxrate,
+.li-account {
+    color: var(--text-primary) !important;
+    background-color: #ffffff !important;
+    border: 1px solid var(--border-color) !important;
+}
+
+.li-description:focus,
+.li-qty:focus,
+.li-unitprice:focus,
+.li-taxrate:focus,
+.li-account:focus {
+    border-color: var(--primary-color) !important;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.12) !important;
 }
 
 /* ===================================
