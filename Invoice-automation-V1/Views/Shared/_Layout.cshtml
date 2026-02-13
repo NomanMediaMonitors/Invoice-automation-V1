@@ -3,240 +3,247 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Invoice Automation System</title>
+    <title>@ViewData["Title"] - Invoice Automation</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="~/css/website.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Invoice_automation_V1.styles.css" asp-append-version="true" />
 </head>
 <body>
-    <!-- Modern Navigation Bar -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm">
-        <div class="container-fluid px-4">
-            <a class="navbar-brand d-flex align-items-center" asp-area="" asp-controller="Home" asp-action="Index">
-                <div class="brand-icon me-2">
-                    <i class="bi bi-receipt"></i>
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        <!-- Authenticated: Sidebar Layout -->
+        <div class="app-layout">
+            <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+            <aside class="app-sidebar" id="appSidebar">
+                <a class="sidebar-brand" asp-controller="Home" asp-action="Dashboard">
+                    <div class="sidebar-brand-icon">
+                        <i class="bi bi-receipt"></i>
+                    </div>
+                    <div>
+                        <span class="sidebar-brand-text">Invoice Automation</span>
+                        <span class="sidebar-brand-sub">Enterprise Platform</span>
+                    </div>
+                </a>
+
+                <nav class="sidebar-nav">
+                    <p class="sidebar-nav-label">Main</p>
+                    <a class="sidebar-nav-item @(ViewContext.RouteData.Values["action"]?.ToString() == "Dashboard" ? "active" : "")"
+                       asp-controller="Home" asp-action="Dashboard">
+                        <i class="bi bi-grid-1x2"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a class="sidebar-nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Company" ? "active" : "")"
+                       asp-controller="Company" asp-action="Index">
+                        <i class="bi bi-building"></i>
+                        <span>Companies</span>
+                    </a>
+                    <a class="sidebar-nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Invoice" ? "active" : "")"
+                       asp-controller="Invoice" asp-action="Index">
+                        <i class="bi bi-file-text"></i>
+                        <span>Invoices</span>
+                    </a>
+                    <a class="sidebar-nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Vendor" ? "active" : "")"
+                       asp-controller="Vendor" asp-action="Index">
+                        <i class="bi bi-truck"></i>
+                        <span>Vendors</span>
+                    </a>
+
+                    <p class="sidebar-nav-label">Account</p>
+                    <a class="sidebar-nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Profile" ? "active" : "")"
+                       asp-controller="Profile" asp-action="Index">
+                        <i class="bi bi-person"></i>
+                        <span>My Profile</span>
+                    </a>
+                    <a class="sidebar-nav-item" asp-controller="Profile" asp-action="ChangePassword">
+                        <i class="bi bi-shield-lock"></i>
+                        <span>Security</span>
+                    </a>
+                </nav>
+
+                <div class="sidebar-footer">
+                    <div class="sidebar-user">
+                        <div class="sidebar-user-avatar">
+                            <i class="bi bi-person-fill"></i>
+                        </div>
+                        <div class="sidebar-user-info">
+                            <span class="sidebar-user-name">@User.Identity?.Name</span>
+                            <form asp-controller="Account" asp-action="Logout" method="post" style="display:inline;">
+                                <button type="submit" class="sidebar-user-link" style="background:none;border:none;padding:0;cursor:pointer;">
+                                    Sign out
+                                </button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
-                <div class="brand-text">
-                    <span class="brand-name">Invoice Automation</span>
-                    <small class="brand-tagline d-none d-lg-block">Smart Invoice Processing</small>
-                </div>
-            </a>
+            </aside>
 
-            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-
-            <div class="collapse navbar-collapse" id="navbarMain">
-                @if (User.Identity?.IsAuthenticated == true)
-                {
-                    <ul class="navbar-nav ms-4 me-auto">
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Home" asp-action="Dashboard">
-                                <i class="bi bi-speedometer2"></i> Dashboard
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Company" asp-action="Index">
-                                <i class="bi bi-building"></i> Companies
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Invoice" asp-action="Index">
-                                <i class="bi bi-receipt"></i> Invoices
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Vendor" asp-action="Index">
-                                <i class="bi bi-people"></i> Vendors
-                            </a>
-                        </li>
-                    </ul>
-                }
-                else
-                {
-                    <ul class="navbar-nav ms-4 me-auto">
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">
-                                <i class="bi bi-house"></i> Home
-                            </a>
-                        </li>
-                    </ul>
-                }
-
-                <ul class="navbar-nav align-items-center">
-                    @if (User.Identity?.IsAuthenticated == true)
-                    {
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle user-dropdown" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
-                                <div class="user-avatar">
-                                    <i class="bi bi-person-circle"></i>
+            <div class="app-content">
+                <header class="app-topbar">
+                    <div class="topbar-left">
+                        <button class="sidebar-toggle" id="sidebarToggle" type="button">
+                            <i class="bi bi-list"></i>
+                        </button>
+                        <span class="topbar-breadcrumb">@ViewData["Title"]</span>
+                    </div>
+                    <div class="topbar-right">
+                        <div class="dropdown">
+                            <button class="topbar-user-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <div class="topbar-user-avatar">
+                                    <i class="bi bi-person-fill" style="font-size: 0.75rem;"></i>
                                 </div>
-                                <span class="user-name d-none d-md-inline">@User.Identity.Name</span>
-                            </a>
+                                <span class="d-none d-sm-inline">@User.Identity?.Name</span>
+                            </button>
                             <ul class="dropdown-menu dropdown-menu-end">
-                                <li class="dropdown-header">
-                                    <strong>@User.Identity.Name</strong>
-                                </li>
+                                <li class="dropdown-header">Signed in as <strong>@User.Identity?.Name</strong></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
                                     <a class="dropdown-item" asp-controller="Profile" asp-action="Index">
-                                        <i class="bi bi-person"></i> My Profile
+                                        <i class="bi bi-person"></i> Profile
                                     </a>
                                 </li>
                                 <li>
                                     <a class="dropdown-item" asp-controller="Profile" asp-action="ChangePassword">
-                                        <i class="bi bi-key"></i> Change Password
+                                        <i class="bi bi-shield-lock"></i> Security
                                     </a>
                                 </li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
                                     <form asp-controller="Account" asp-action="Logout" method="post">
                                         <button type="submit" class="dropdown-item text-danger">
-                                            <i class="bi bi-box-arrow-right"></i> Logout
+                                            <i class="bi bi-box-arrow-right"></i> Sign out
                                         </button>
                                     </form>
                                 </li>
                             </ul>
-                        </li>
-                    }
-                    else
-                    {
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Account" asp-action="Login">
-                                <i class="bi bi-box-arrow-in-right"></i> Login
-                            </a>
-                        </li>
-                        <li class="nav-item ms-2">
-                            <a class="btn btn-primary btn-sm" asp-controller="Account" asp-action="Register">
-                                <i class="bi bi-person-plus"></i> Register
-                            </a>
-                        </li>
-                    }
-                </ul>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Main Content -->
-    <main role="main" class="main-content">
-        @RenderBody()
-    </main>
-
-    <!-- Modern Footer - Redesigned -->
-    <footer class="footer mt-auto">
-        <div class="footer-main">
-            <div class="container py-5">
-                <div class="row g-4">
-                    <!-- Brand Column -->
-                    <div class="col-lg-4 col-md-6">
-                        <div class="footer-brand mb-4">
-                            <div class="footer-logo d-flex align-items-center mb-3">
-                                <div class="footer-logo-icon me-2">
-                                    <i class="bi bi-receipt"></i>
-                                </div>
-                                <span class="footer-logo-text">Invoice Automation</span>
-                            </div>
-                            <p class="footer-description">
-                                Streamline your invoice processing with intelligent OCR, automated workflows,
-                                and seamless accounting integration.
-                            </p>
-                            @if (User.Identity?.IsAuthenticated != true)
-                            {
-                                <a asp-controller="Account" asp-action="Register" class="btn btn-primary btn-sm mt-3">
-                                    <i class="bi bi-rocket-takeoff"></i> Get Started Free
-                                </a>
-                            }
                         </div>
                     </div>
+                </header>
 
-                    <!-- Product Links -->
-                    <div class="col-lg-2 col-md-6 col-6">
-                        <h6 class="footer-heading">Product</h6>
-                        <ul class="footer-links">
-                            <li><a asp-controller="Home" asp-action="Index">Features</a></li>
-                            @if (User.Identity?.IsAuthenticated == true)
-                            {
-                                <li><a asp-controller="Home" asp-action="Dashboard">Dashboard</a></li>
-                                <li><a asp-controller="Company" asp-action="Index">Companies</a></li>
-                            }
-                            else
-                            {
-                                <li><a asp-controller="Account" asp-action="Register">Pricing</a></li>
-                                <li><a href="#">Integrations</a></li>
-                            }
-                        </ul>
-                    </div>
+                <main class="app-main animate-fadeIn" role="main">
+                    @RenderBody()
+                </main>
+            </div>
+        </div>
+    }
+    else
+    {
+        <!-- Unauthenticated: Public Layout -->
+        <div class="public-layout">
+            <nav class="navbar navbar-expand-lg sticky-top">
+                <div class="container">
+                    <a class="navbar-brand" asp-controller="Home" asp-action="Index">
+                        <div class="brand-icon">
+                            <i class="bi bi-receipt"></i>
+                        </div>
+                        <div class="brand-text">
+                            <span class="brand-name">Invoice Automation</span>
+                        </div>
+                    </a>
 
-                    <!-- Company Links -->
-                    <div class="col-lg-2 col-md-6 col-6">
-                        <h6 class="footer-heading">Company</h6>
-                        <ul class="footer-links">
-                            <li><a href="#">About Us</a></li>
-                            <li><a href="#">Contact</a></li>
-                            <li><a href="#">Careers</a></li>
-                            <li><a href="#">Blog</a></li>
-                        </ul>
-                    </div>
+                    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarPublic">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
 
-                    <!-- Resources Links -->
-                    <div class="col-lg-2 col-md-6 col-6">
-                        <h6 class="footer-heading">Resources</h6>
-                        <ul class="footer-links">
-                            <li><a href="#">Documentation</a></li>
-                            <li><a href="#">API Reference</a></li>
-                            <li><a href="#">Support</a></li>
-                            <li><a href="#">FAQ</a></li>
-                        </ul>
-                    </div>
-
-                    <!-- Legal Links -->
-                    <div class="col-lg-2 col-md-6 col-6">
-                        <h6 class="footer-heading">Legal</h6>
-                        <ul class="footer-links">
-                            <li><a asp-controller="Home" asp-action="Privacy">Privacy Policy</a></li>
-                            <li><a href="#">Terms of Service</a></li>
-                            <li><a href="#">Security</a></li>
-                            <li><a href="#">Compliance</a></li>
+                    <div class="collapse navbar-collapse" id="navbarPublic">
+                        <ul class="navbar-nav ms-auto align-items-center gap-1">
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Home" asp-action="Index">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            </li>
+                            <li class="nav-item ms-lg-2">
+                                <a class="nav-link" asp-controller="Account" asp-action="Login">Sign in</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="btn btn-primary btn-sm" asp-controller="Account" asp-action="Register">
+                                    Get Started
+                                </a>
+                            </li>
                         </ul>
                     </div>
                 </div>
-            </div>
-        </div>
+            </nav>
 
-        <!-- Footer Bottom -->
-        <div class="footer-bottom">
-            <div class="container py-3">
-                <div class="row align-items-center">
-                    <div class="col-md-6 text-center text-md-start mb-2 mb-md-0">
-                        <p class="footer-copyright mb-0">
+            <main class="public-content" role="main">
+                @RenderBody()
+            </main>
+
+            <footer class="footer">
+                <div class="footer-main">
+                    <div class="container">
+                        <div class="row g-4">
+                            <div class="col-lg-4 col-md-6">
+                                <div class="footer-brand">
+                                    <div class="footer-logo">
+                                        <div class="footer-logo-icon">
+                                            <i class="bi bi-receipt"></i>
+                                        </div>
+                                        <span class="footer-logo-text">Invoice Automation</span>
+                                    </div>
+                                    <p class="footer-description">
+                                        Streamline invoice processing with OCR, automated workflows, and accounting integration.
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="col-lg-2 col-md-6 col-6">
+                                <h6 class="footer-heading">Product</h6>
+                                <ul class="footer-links">
+                                    <li><a asp-controller="Home" asp-action="Index">Features</a></li>
+                                    <li><a asp-controller="Account" asp-action="Register">Get Started</a></li>
+                                </ul>
+                            </div>
+                            <div class="col-lg-2 col-md-6 col-6">
+                                <h6 class="footer-heading">Legal</h6>
+                                <ul class="footer-links">
+                                    <li><a asp-controller="Home" asp-action="Privacy">Privacy Policy</a></li>
+                                    <li><a href="#">Terms of Service</a></li>
+                                </ul>
+                            </div>
+                            <div class="col-lg-4 col-md-6">
+                                <h6 class="footer-heading">Built with</h6>
+                                <div class="footer-tech-stack">
+                                    <span class="tech-item"><i class="bi bi-code-square"></i> ASP.NET Core</span>
+                                    <span class="tech-item"><i class="bi bi-database"></i> MySQL</span>
+                                    <span class="tech-item"><i class="bi bi-eye"></i> Tesseract OCR</span>
+                                    <span class="tech-item"><i class="bi bi-link-45deg"></i> Indraaj</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="footer-bottom">
+                    <div class="container">
+                        <p class="footer-copyright text-center">
                             &copy; 2026 Invoice Automation System. All rights reserved.
                         </p>
                     </div>
-                    <div class="col-md-6 text-center text-md-end">
-                        <div class="footer-tech-stack">
-                            <span class="tech-item" title="ASP.NET Core">
-                                <i class="bi bi-code-square"></i> ASP.NET
-                            </span>
-                            <span class="tech-item" title="MySQL Database">
-                                <i class="bi bi-database"></i> MySQL
-                            </span>
-                            <span class="tech-item" title="Tesseract OCR">
-                                <i class="bi bi-eye"></i> OCR
-                            </span>
-                            <span class="tech-item" title="Indraaj Integration">
-                                <i class="bi bi-link-45deg"></i> Indraaj
-                            </span>
-                        </div>
-                    </div>
                 </div>
-            </div>
+            </footer>
         </div>
-    </footer>
+    }
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/website.js" asp-append-version="true"></script>
+    <script>
+        (function() {
+            var toggle = document.getElementById('sidebarToggle');
+            var sidebar = document.getElementById('appSidebar');
+            var overlay = document.getElementById('sidebarOverlay');
+            if (toggle && sidebar && overlay) {
+                toggle.addEventListener('click', function() {
+                    sidebar.classList.toggle('show');
+                    overlay.classList.toggle('show');
+                });
+                overlay.addEventListener('click', function() {
+                    sidebar.classList.remove('show');
+                    overlay.classList.remove('show');
+                });
+            }
+        })();
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

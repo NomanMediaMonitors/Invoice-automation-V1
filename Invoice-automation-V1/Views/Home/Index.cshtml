@@ -2,817 +2,223 @@
     ViewData["Title"] = "Home";
 }
 
-<!-- Hero Section - Redesigned for authenticity -->
-<div class="hero-section animate-fadeIn">
-    <div class="container py-5">
-        <div class="row align-items-center min-vh-75 g-5">
-            <div class="col-lg-6 mb-5 mb-lg-0">
-                <div class="hero-content">
-                    <!-- Benefit-focused badge -->
-                    <div class="mb-4">
-                        <span class="hero-badge">
-                            <i class="bi bi-stars"></i>
-                            Save 20+ hours per week on invoice processing
-                        </span>
-                    </div>
-
-                    <h1 class="hero-headline mb-4">
-                        Stop chasing invoices.<br/>
-                        <span class="text-gradient">Start automating</span> them.
-                    </h1>
-
-                    <p class="hero-description mb-4">
-                        Invoice Automation System handles everything from OCR extraction to approval workflows and payment reconciliation—so your team can focus on what actually matters.
-                    </p>
-
-                    <!-- Key Benefits List -->
-                    <ul class="hero-benefits mb-4">
-                        <li><i class="bi bi-check2-circle"></i> Extract data from any invoice format with 95%+ accuracy</li>
-                        <li><i class="bi bi-check2-circle"></i> Route approvals automatically based on your rules</li>
-                        <li><i class="bi bi-check2-circle"></i> Sync directly with Indraaj accounting system</li>
-                    </ul>
-
-                    <div class="d-flex gap-3 flex-wrap align-items-center">
-                        @if (User.Identity?.IsAuthenticated == true)
-                        {
-                            <a asp-controller="Home" asp-action="Dashboard" class="btn btn-primary btn-lg">
-                                <i class="bi bi-speedometer2"></i> Go to Dashboard
-                            </a>
-                        }
-                        else
-                        {
-                            <a asp-controller="Account" asp-action="Register" class="btn btn-primary btn-lg">
-                                Get Started Free
-                            </a>
-                            <a asp-controller="Account" asp-action="Login" class="btn btn-outline-secondary btn-lg">
-                                Sign In
-                            </a>
-                        }
-                    </div>
-
-                    @if (User.Identity?.IsAuthenticated != true)
+<!-- Hero Section -->
+<section style="background-color: #ffffff; padding: 5rem 0 4rem;">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center">
+                <h1 style="font-size: 3rem; font-weight: 800; line-height: 1.15; letter-spacing: -0.03em; color: #0f172a; margin-bottom: 1.25rem;">
+                    Automate Your Invoice Processing
+                </h1>
+                <p style="font-size: 1.2rem; line-height: 1.7; color: #475569; max-width: 600px; margin: 0 auto 2rem;">
+                    Extract, route, approve, and sync invoices to your accounting system -- without the manual work. Built for teams that value accuracy and speed.
+                </p>
+                <div class="d-flex gap-3 justify-content-center flex-wrap mb-5">
+                    @if (User.Identity?.IsAuthenticated == true)
                     {
-                        <div class="mt-4">
-                            <small class="text-muted d-flex align-items-center gap-2 flex-wrap">
-                                <span><i class="bi bi-shield-check text-success"></i> No credit card needed</span>
-                                <span class="mx-1">•</span>
-                                <span><i class="bi bi-clock text-info"></i> 2-minute setup</span>
-                                <span class="mx-1">•</span>
-                                <span><i class="bi bi-people text-primary"></i> Multi-user support</span>
-                            </small>
-                        </div>
+                        <a asp-controller="Home" asp-action="Dashboard" class="btn btn-primary btn-lg">
+                            <i class="bi bi-speedometer2"></i> Go to Dashboard
+                        </a>
+                    }
+                    else
+                    {
+                        <a asp-controller="Account" asp-action="Register" class="btn btn-primary btn-lg"
+                           style="padding: 0.7rem 1.75rem; font-size: 0.9375rem;">
+                            Get Started
+                        </a>
+                        <a href="#features" class="btn btn-outline-secondary btn-lg"
+                           style="padding: 0.7rem 1.75rem; font-size: 0.9375rem;">
+                            Learn More
+                        </a>
                     }
                 </div>
             </div>
+        </div>
 
-            <!-- Right side - More realistic preview -->
-            <div class="col-lg-6">
-                <div class="hero-preview">
-                    <!-- Invoice Processing Visualization -->
-                    <div class="invoice-flow-demo">
-                        <div class="flow-step flow-step-1">
-                            <div class="flow-icon">
-                                <i class="bi bi-file-earmark-arrow-up"></i>
-                            </div>
-                            <div class="flow-label">Upload Invoice</div>
-                        </div>
-
-                        <div class="flow-arrow">→</div>
-
-                        <div class="flow-step flow-step-2">
-                            <div class="flow-icon">
-                                <i class="bi bi-cpu"></i>
-                            </div>
-                            <div class="flow-label">OCR Extract</div>
-                            <div class="flow-badge">95% accurate</div>
-                        </div>
-
-                        <div class="flow-arrow">→</div>
-
-                        <div class="flow-step flow-step-3">
-                            <div class="flow-icon">
-                                <i class="bi bi-check2-square"></i>
-                            </div>
-                            <div class="flow-label">Auto Approve</div>
-                        </div>
-
-                        <div class="flow-arrow">→</div>
-
-                        <div class="flow-step flow-step-4">
-                            <div class="flow-icon">
-                                <i class="bi bi-credit-card"></i>
-                            </div>
-                            <div class="flow-label">Pay & Sync</div>
-                        </div>
+        <!-- Stats Row -->
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="row text-center g-4">
+                    <div class="col-md-4">
+                        <div style="font-size: 1.75rem; font-weight: 800; color: #2563eb;">5x</div>
+                        <div style="font-size: 0.8125rem; color: #64748b; font-weight: 500;">Faster Processing</div>
                     </div>
-
-                    <!-- Stats preview -->
-                    <div class="hero-stats mt-4">
-                        <div class="hero-stat-item">
-                            <div class="stat-number">10x</div>
-                            <div class="stat-label">Faster processing</div>
-                        </div>
-                        <div class="hero-stat-item">
-                            <div class="stat-number">95%</div>
-                            <div class="stat-label">OCR accuracy</div>
-                        </div>
-                        <div class="hero-stat-item">
-                            <div class="stat-number">100%</div>
-                            <div class="stat-label">Audit trail</div>
-                        </div>
+                    <div class="col-md-4" style="border-left: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0;">
+                        <div style="font-size: 1.75rem; font-weight: 800; color: #2563eb;">99%</div>
+                        <div style="font-size: 0.8125rem; color: #64748b; font-weight: 500;">Extraction Accuracy</div>
+                    </div>
+                    <div class="col-md-4">
+                        <div style="font-size: 1.75rem; font-weight: 800; color: #2563eb;">Seamless</div>
+                        <div style="font-size: 0.8125rem; color: #64748b; font-weight: 500;">Accounting Integration</div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+</section>
 
-<!-- Problem/Solution Section -->
-<div class="problem-solution-section py-5">
-    <div class="container">
-        <div class="row align-items-center g-5">
-            <div class="col-lg-5">
-                <div class="section-badge mb-3">The Problem</div>
-                <h2 class="section-title mb-4">Manual invoice processing is costing you more than you think</h2>
-                <div class="problem-list">
-                    <div class="problem-item">
-                        <div class="problem-icon">
-                            <i class="bi bi-hourglass"></i>
-                        </div>
-                        <div class="problem-content">
-                            <h5>Hours wasted on data entry</h5>
-                            <p>Your team manually types invoice details instead of doing strategic work</p>
-                        </div>
-                    </div>
-                    <div class="problem-item">
-                        <div class="problem-icon">
-                            <i class="bi bi-exclamation-triangle"></i>
-                        </div>
-                        <div class="problem-content">
-                            <h5>Human errors & duplicate payments</h5>
-                            <p>Typos and missed invoices lead to payment delays and vendor issues</p>
-                        </div>
-                    </div>
-                    <div class="problem-item">
-                        <div class="problem-icon">
-                            <i class="bi bi-search"></i>
-                        </div>
-                        <div class="problem-content">
-                            <h5>No visibility or audit trail</h5>
-                            <p>Finding old invoices or tracking approval status is a nightmare</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-lg-7">
-                <div class="section-badge mb-3">The Solution</div>
-                <h2 class="section-title mb-4">One system. Complete automation. Total control.</h2>
-
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <div class="solution-card">
-                            <div class="solution-number">01</div>
-                            <div class="solution-icon">
-                                <i class="bi bi-file-earmark-text"></i>
-                            </div>
-                            <h5>Upload Any Invoice</h5>
-                            <p>PDF, image, scanned—we handle all formats. Bulk upload supported.</p>
-                        </div>
-                    </div>
-
-                    <div class="col-md-6">
-                        <div class="solution-card">
-                            <div class="solution-number">02</div>
-                            <div class="solution-icon">
-                                <i class="bi bi-cpu"></i>
-                            </div>
-                            <h5>Instant Data Extraction</h5>
-                            <p>Tesseract 5 OCR captures vendor, amounts, dates, line items automatically.</p>
-                        </div>
-                    </div>
-
-                    <div class="col-md-6">
-                        <div class="solution-card">
-                            <div class="solution-number">03</div>
-                            <div class="solution-icon">
-                                <i class="bi bi-diagram-3"></i>
-                            </div>
-                            <h5>Smart Approval Routing</h5>
-                            <p>Multi-level approval based on amount thresholds and vendor types.</p>
-                        </div>
-                    </div>
-
-                    <div class="col-md-6">
-                        <div class="solution-card">
-                            <div class="solution-number">04</div>
-                            <div class="solution-icon">
-                                <i class="bi bi-arrow-repeat"></i>
-                            </div>
-                            <h5>Auto-Sync to Accounting</h5>
-                            <p>Payments and journal entries flow directly into Indraaj in real-time.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- How It Works Section -->
-<div class="how-it-works-section py-5 bg-light">
+<!-- Features Section -->
+<section id="features" style="background-color: #f8fafc; padding: 4.5rem 0;">
     <div class="container">
         <div class="text-center mb-5">
-            <div class="section-badge mb-3">How It Works</div>
-            <h2 class="section-title mb-3">From upload to payment in minutes, not days</h2>
-            <p class="lead text-muted">No complex setup. No training required. Just upload and go.</p>
+            <h2 style="font-size: 2rem; font-weight: 800; color: #0f172a; margin-bottom: 0.75rem;">
+                Everything you need to manage invoices
+            </h2>
+            <p style="font-size: 1.05rem; color: #475569; max-width: 520px; margin: 0 auto;">
+                A complete system from document capture to accounting reconciliation.
+            </p>
         </div>
 
-        <div class="row g-4">
+        <div class="row g-4 justify-content-center">
+            <!-- Feature 1: OCR Processing -->
             <div class="col-md-4">
-                <div class="step-card">
-                    <div class="step-badge">Step 1</div>
-                    <div class="step-visual">
-                        <i class="bi bi-cloud-upload"></i>
-                    </div>
-                    <h4>Upload Invoices</h4>
-                    <p>Drag & drop PDFs, images, or scanned documents. Supports batch uploads.</p>
-                    <div class="step-tech">
-                        <i class="bi bi-filetype-pdf"></i>
-                        <i class="bi bi-filetype-jpg"></i>
-                        <i class="bi bi-file-earmark-image"></i>
+                <div class="card h-100" style="border-radius: 0.75rem; border: 1px solid #e2e8f0;">
+                    <div class="card-body" style="padding: 2rem;">
+                        <div style="width: 48px; height: 48px; border-radius: 0.5rem; background-color: #eff6ff; display: flex; align-items: center; justify-content: center; margin-bottom: 1.25rem;">
+                            <i class="bi bi-cpu" style="font-size: 1.375rem; color: #2563eb;"></i>
+                        </div>
+                        <h4 style="font-size: 1.125rem; font-weight: 700; color: #0f172a; margin-bottom: 0.5rem;">
+                            OCR Processing
+                        </h4>
+                        <p style="font-size: 0.9rem; color: #475569; margin-bottom: 0; line-height: 1.6;">
+                            Upload PDFs or scanned images and let Tesseract 5 OCR extract vendor names, amounts, dates, and line items automatically.
+                        </p>
                     </div>
                 </div>
             </div>
 
+            <!-- Feature 2: Multi-Company Management -->
             <div class="col-md-4">
-                <div class="step-card">
-                    <div class="step-badge">Step 2</div>
-                    <div class="step-visual">
-                        <i class="bi bi-gear-wide-connected"></i>
-                    </div>
-                    <h4>Review & Map Accounts</h4>
-                    <p>OCR extracts data automatically. Review, edit if needed, and map to expense accounts.</p>
-                    <div class="step-highlight">
-                        <i class="bi bi-stars"></i> 95% accuracy
+                <div class="card h-100" style="border-radius: 0.75rem; border: 1px solid #e2e8f0;">
+                    <div class="card-body" style="padding: 2rem;">
+                        <div style="width: 48px; height: 48px; border-radius: 0.5rem; background-color: #eff6ff; display: flex; align-items: center; justify-content: center; margin-bottom: 1.25rem;">
+                            <i class="bi bi-building" style="font-size: 1.375rem; color: #2563eb;"></i>
+                        </div>
+                        <h4 style="font-size: 1.125rem; font-weight: 700; color: #0f172a; margin-bottom: 0.5rem;">
+                            Multi-Company Management
+                        </h4>
+                        <p style="font-size: 0.9rem; color: #475569; margin-bottom: 0; line-height: 1.6;">
+                            Manage invoices across multiple companies from a single dashboard. Role-based access keeps each team focused on what matters.
+                        </p>
                     </div>
                 </div>
             </div>
 
+            <!-- Feature 3: Accounting Integration -->
             <div class="col-md-4">
-                <div class="step-card">
-                    <div class="step-badge">Step 3</div>
-                    <div class="step-visual">
-                        <i class="bi bi-check2-all"></i>
-                    </div>
-                    <h4>Approve & Pay</h4>
-                    <p>Approval routes automatically. Once approved, payment syncs to Indraaj instantly.</p>
-                    <div class="step-highlight">
-                        <i class="bi bi-lightning"></i> Real-time sync
+                <div class="card h-100" style="border-radius: 0.75rem; border: 1px solid #e2e8f0;">
+                    <div class="card-body" style="padding: 2rem;">
+                        <div style="width: 48px; height: 48px; border-radius: 0.5rem; background-color: #eff6ff; display: flex; align-items: center; justify-content: center; margin-bottom: 1.25rem;">
+                            <i class="bi bi-arrow-left-right" style="font-size: 1.375rem; color: #2563eb;"></i>
+                        </div>
+                        <h4 style="font-size: 1.125rem; font-weight: 700; color: #0f172a; margin-bottom: 0.5rem;">
+                            Accounting Integration
+                        </h4>
+                        <p style="font-size: 0.9rem; color: #475569; margin-bottom: 0; line-height: 1.6;">
+                            Approved invoices sync directly with Indraaj. Journal entries, payments, and reconciliation happen in real time.
+                        </p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+</section>
+
+<!-- How It Works Section -->
+<section style="background-color: #ffffff; padding: 4.5rem 0;">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 style="font-size: 2rem; font-weight: 800; color: #0f172a; margin-bottom: 0.75rem;">
+                How it works
+            </h2>
+            <p style="font-size: 1.05rem; color: #475569; max-width: 480px; margin: 0 auto;">
+                Three steps from paper invoice to accounting entry.
+            </p>
+        </div>
+
+        <div class="row g-4 justify-content-center align-items-stretch">
+            <!-- Step 1 -->
+            <div class="col-md-4">
+                <div class="text-center h-100 d-flex flex-column align-items-center" style="padding: 2rem 1.5rem;">
+                    <div style="width: 56px; height: 56px; border-radius: 50%; background-color: #2563eb; color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 1.375rem; font-weight: 700; margin-bottom: 1.25rem;">
+                        1
+                    </div>
+                    <div style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem;">
+                        <i class="bi bi-cloud-arrow-up" style="font-size: 2rem; color: #2563eb;"></i>
+                    </div>
+                    <h4 style="font-size: 1.125rem; font-weight: 700; color: #0f172a; margin-bottom: 0.5rem;">
+                        Upload Invoice
+                    </h4>
+                    <p style="font-size: 0.9rem; color: #475569; margin-bottom: 0; line-height: 1.6;">
+                        Drag and drop PDFs, images, or scanned documents. Batch uploads supported.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="col-md-4">
+                <div class="text-center h-100 d-flex flex-column align-items-center" style="padding: 2rem 1.5rem;">
+                    <div style="width: 56px; height: 56px; border-radius: 50%; background-color: #2563eb; color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 1.375rem; font-weight: 700; margin-bottom: 1.25rem;">
+                        2
+                    </div>
+                    <div style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem;">
+                        <i class="bi bi-gear-wide-connected" style="font-size: 2rem; color: #2563eb;"></i>
+                    </div>
+                    <h4 style="font-size: 1.125rem; font-weight: 700; color: #0f172a; margin-bottom: 0.5rem;">
+                        OCR Extract
+                    </h4>
+                    <p style="font-size: 0.9rem; color: #475569; margin-bottom: 0; line-height: 1.6;">
+                        Data is extracted automatically -- vendor, amounts, dates, and line items. Review and edit as needed.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="col-md-4">
+                <div class="text-center h-100 d-flex flex-column align-items-center" style="padding: 2rem 1.5rem;">
+                    <div style="width: 56px; height: 56px; border-radius: 50%; background-color: #2563eb; color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 1.375rem; font-weight: 700; margin-bottom: 1.25rem;">
+                        3
+                    </div>
+                    <div style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem;">
+                        <i class="bi bi-check2-all" style="font-size: 2rem; color: #2563eb;"></i>
+                    </div>
+                    <h4 style="font-size: 1.125rem; font-weight: 700; color: #0f172a; margin-bottom: 0.5rem;">
+                        Approve & Sync
+                    </h4>
+                    <p style="font-size: 0.9rem; color: #475569; margin-bottom: 0; line-height: 1.6;">
+                        Route for approval, then sync payments and journal entries directly to Indraaj.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
 <!-- CTA Section -->
 @if (User.Identity?.IsAuthenticated != true)
 {
-    <div class="cta-section py-5">
+    <section style="background-color: #f8fafc; padding: 4.5rem 0;">
         <div class="container">
-            <div class="cta-card">
-                <div class="row align-items-center">
-                    <div class="col-lg-8 mb-4 mb-lg-0">
-                        <h2 class="cta-title mb-3">Ready to eliminate manual invoice processing?</h2>
-                        <p class="cta-description mb-0">
-                            Start automating today. First user becomes Super Admin with full control.
-                        </p>
-                        <div class="cta-features mt-3">
-                            <span class="cta-feature-item"><i class="bi bi-check2"></i> 2-minute setup</span>
-                            <span class="cta-feature-item"><i class="bi bi-check2"></i> No credit card</span>
-                            <span class="cta-feature-item"><i class="bi bi-check2"></i> Full features</span>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 text-lg-end">
-                        <a asp-controller="Account" asp-action="Register" class="btn btn-primary btn-lg btn-cta">
-                            Get Started Free
-                            <i class="bi bi-arrow-right ms-2"></i>
+            <div class="row justify-content-center">
+                <div class="col-lg-7 text-center">
+                    <h2 style="font-size: 2rem; font-weight: 800; color: #0f172a; margin-bottom: 1rem;">
+                        Ready to streamline your invoices?
+                    </h2>
+                    <p style="font-size: 1.05rem; color: #475569; max-width: 480px; margin: 0 auto 2rem;">
+                        Create an account and start automating your invoice workflow today. No credit card required.
+                    </p>
+                    <a asp-controller="Account" asp-action="Register" class="btn btn-primary btn-lg"
+                       style="padding: 0.75rem 2rem; font-size: 0.9375rem;">
+                        Create Your Account
+                    </a>
+                    <div style="margin-top: 1rem;">
+                        <span style="font-size: 0.8125rem; color: #64748b;">Already have an account?</span>
+                        <a asp-controller="Account" asp-action="Login" style="font-size: 0.8125rem; font-weight: 600;">
+                            Sign in
                         </a>
-                        <div class="mt-3">
-                            <small class="text-muted d-block">Already have an account?</small>
-                            <a asp-controller="Account" asp-action="Login" class="cta-login-link">
-                                Sign in here
-                            </a>
-                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    </section>
 }
-
-<style>
-    /* ===================================
-       Homepage Redesign - Authentic & Professional
-       =================================== */
-
-    /* Hero Section */
-    .hero-section {
-        min-height: 85vh;
-        display: flex;
-        align-items: center;
-        background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
-        position: relative;
-        overflow: hidden;
-    }
-
-    .hero-section::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        right: 0;
-        width: 50%;
-        height: 100%;
-        background: radial-gradient(circle at top right, rgba(102, 126, 234, 0.05), transparent);
-        pointer-events: none;
-    }
-
-    .hero-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.625rem 1.25rem;
-        background: linear-gradient(135deg, #e0e7ff 0%, #dbeafe 100%);
-        border: 1px solid #c7d2fe;
-        border-radius: 50px;
-        font-size: 0.875rem;
-        font-weight: 600;
-        color: #4338ca;
-    }
-
-    .hero-headline {
-        font-size: 3.5rem;
-        font-weight: 800;
-        line-height: 1.1;
-        color: var(--text-primary);
-        letter-spacing: -0.03em;
-    }
-
-    .hero-description {
-        font-size: 1.25rem;
-        line-height: 1.7;
-        color: var(--text-secondary);
-        max-width: 540px;
-    }
-
-    .hero-benefits {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
-
-    .hero-benefits li {
-        display: flex;
-        align-items: flex-start;
-        gap: 0.75rem;
-        margin-bottom: 0.875rem;
-        font-size: 1rem;
-        color: var(--text-secondary);
-    }
-
-    .hero-benefits li i {
-        color: var(--success-color);
-        font-size: 1.25rem;
-        flex-shrink: 0;
-        margin-top: 2px;
-    }
-
-    /* Invoice Flow Demo */
-    .invoice-flow-demo {
-        background: white;
-        border: 2px solid var(--border-color);
-        border-radius: 1.5rem;
-        padding: 2.5rem;
-        box-shadow: var(--shadow-xl);
-        display: flex;
-        flex-wrap: wrap;
-        gap: 1.5rem;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .flow-step {
-        text-align: center;
-        position: relative;
-    }
-
-    .flow-icon {
-        width: 70px;
-        height: 70px;
-        border-radius: 1rem;
-        background: var(--primary-gradient);
-        color: white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.75rem;
-        margin: 0 auto 0.75rem;
-        box-shadow: var(--shadow-md);
-        transition: transform 0.3s ease;
-    }
-
-    .flow-step:hover .flow-icon {
-        transform: scale(1.1);
-    }
-
-    .flow-label {
-        font-size: 0.875rem;
-        font-weight: 600;
-        color: var(--text-primary);
-    }
-
-    .flow-badge {
-        margin-top: 0.25rem;
-        font-size: 0.75rem;
-        color: var(--success-color);
-        font-weight: 600;
-    }
-
-    .flow-arrow {
-        font-size: 1.5rem;
-        color: var(--gray-300);
-        font-weight: 300;
-    }
-
-    /* Hero Stats */
-    .hero-stats {
-        display: flex;
-        gap: 2rem;
-        padding: 1.5rem;
-        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-        border-radius: 1rem;
-        border: 1px solid var(--border-color);
-    }
-
-    .hero-stat-item {
-        text-align: center;
-        flex: 1;
-    }
-
-    .stat-number {
-        font-size: 2rem;
-        font-weight: 800;
-        background: var(--primary-gradient);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-    }
-
-    .stat-label {
-        font-size: 0.75rem;
-        color: var(--text-tertiary);
-        margin-top: 0.25rem;
-        font-weight: 500;
-    }
-
-    /* Section Styles */
-    .section-badge {
-        display: inline-block;
-        padding: 0.5rem 1rem;
-        background: var(--info-light);
-        color: var(--info-color);
-        border-radius: 50px;
-        font-size: 0.8rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-    }
-
-    .section-title {
-        font-size: 2.5rem;
-        font-weight: 800;
-        line-height: 1.2;
-        color: var(--text-primary);
-    }
-
-    /* Problem/Solution Section */
-    .problem-solution-section {
-        background: white;
-    }
-
-    .problem-list {
-        display: flex;
-        flex-direction: column;
-        gap: 1.5rem;
-    }
-
-    .problem-item {
-        display: flex;
-        gap: 1rem;
-        align-items: flex-start;
-    }
-
-    .problem-icon {
-        width: 50px;
-        height: 50px;
-        border-radius: 0.75rem;
-        background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
-        color: #dc2626;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.5rem;
-        flex-shrink: 0;
-    }
-
-    .problem-content h5 {
-        font-size: 1.125rem;
-        font-weight: 700;
-        margin-bottom: 0.25rem;
-        color: var(--text-primary);
-    }
-
-    .problem-content p {
-        margin: 0;
-        font-size: 0.938rem;
-        color: var(--text-secondary);
-    }
-
-    .solution-card {
-        background: linear-gradient(135deg, #f8fafc 0%, white 100%);
-        border: 1px solid var(--border-color);
-        border-radius: 1rem;
-        padding: 1.5rem;
-        height: 100%;
-        position: relative;
-        transition: all 0.3s ease;
-    }
-
-    .solution-card:hover {
-        transform: translateY(-4px);
-        box-shadow: var(--shadow-lg);
-        border-color: var(--primary-color);
-    }
-
-    .solution-number {
-        position: absolute;
-        top: -12px;
-        left: 1.5rem;
-        background: var(--primary-gradient);
-        color: white;
-        width: 36px;
-        height: 36px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 700;
-        font-size: 0.875rem;
-        box-shadow: var(--shadow-md);
-    }
-
-    .solution-icon {
-        font-size: 2rem;
-        color: var(--primary-color);
-        margin-bottom: 1rem;
-        margin-top: 0.5rem;
-    }
-
-    .solution-card h5 {
-        font-size: 1.125rem;
-        font-weight: 700;
-        margin-bottom: 0.5rem;
-        color: var(--text-primary);
-    }
-
-    .solution-card p {
-        font-size: 0.875rem;
-        color: var(--text-secondary);
-        margin: 0;
-    }
-
-    /* How It Works Section */
-    .step-card {
-        background: white;
-        border: 2px solid var(--border-color);
-        border-radius: 1.5rem;
-        padding: 2rem;
-        text-align: center;
-        height: 100%;
-        transition: all 0.3s ease;
-        position: relative;
-    }
-
-    .step-card:hover {
-        border-color: var(--primary-color);
-        transform: translateY(-6px);
-        box-shadow: var(--shadow-xl);
-    }
-
-    .step-badge {
-        position: absolute;
-        top: -14px;
-        left: 50%;
-        transform: translateX(-50%);
-        background: var(--primary-gradient);
-        color: white;
-        padding: 0.375rem 1rem;
-        border-radius: 50px;
-        font-size: 0.75rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-    }
-
-    .step-visual {
-        width: 100px;
-        height: 100px;
-        margin: 1.5rem auto 1.5rem;
-        border-radius: 50%;
-        background: linear-gradient(135deg, #f8fafc 0%, #e0e7ff 100%);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 3rem;
-        color: var(--primary-color);
-        border: 3px solid var(--border-color);
-    }
-
-    .step-card h4 {
-        font-size: 1.25rem;
-        font-weight: 700;
-        margin-bottom: 0.75rem;
-        color: var(--text-primary);
-    }
-
-    .step-card p {
-        font-size: 0.938rem;
-        color: var(--text-secondary);
-        margin-bottom: 1rem;
-    }
-
-    .step-tech {
-        display: flex;
-        gap: 0.75rem;
-        justify-content: center;
-        font-size: 1.5rem;
-        color: var(--gray-400);
-    }
-
-    .step-highlight {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.5rem 1rem;
-        background: var(--success-light);
-        color: var(--success-color);
-        border-radius: 50px;
-        font-size: 0.813rem;
-        font-weight: 700;
-    }
-
-    /* CTA Section */
-    .cta-section {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        position: relative;
-        overflow: hidden;
-    }
-
-    .cta-section::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        right: -20%;
-        width: 600px;
-        height: 600px;
-        background: radial-gradient(circle, rgba(255,255,255,0.1), transparent);
-        border-radius: 50%;
-    }
-
-    .cta-card {
-        position: relative;
-        z-index: 1;
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        border-radius: 1.5rem;
-        padding: 3rem;
-    }
-
-    .cta-title {
-        font-size: 2.25rem;
-        font-weight: 800;
-        color: white;
-        margin-bottom: 1rem;
-    }
-
-    .cta-description {
-        font-size: 1.125rem;
-        color: rgba(255, 255, 255, 0.9);
-    }
-
-    .cta-features {
-        display: flex;
-        gap: 1.5rem;
-        flex-wrap: wrap;
-    }
-
-    .cta-feature-item {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        color: white;
-        font-weight: 600;
-        font-size: 0.938rem;
-    }
-
-    .cta-feature-item i {
-        color: #86efac;
-    }
-
-    .btn-cta {
-        padding: 1rem 2.5rem;
-        font-size: 1.125rem;
-        background: white;
-        color: var(--primary-color);
-        border: none;
-        box-shadow: var(--shadow-xl);
-    }
-
-    .btn-cta:hover {
-        background: #f8fafc;
-        transform: translateY(-2px);
-        box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-    }
-
-    .cta-login-link {
-        color: white;
-        font-weight: 600;
-        text-decoration: underline;
-    }
-
-    .cta-login-link:hover {
-        color: #e0e7ff;
-    }
-
-    .min-vh-75 {
-        min-height: 75vh;
-    }
-
-    /* Responsive Design */
-    @@media (max-width: 992px) {
-        .hero-headline {
-            font-size: 2.5rem;
-        }
-
-        .section-title {
-            font-size: 2rem;
-        }
-
-        .invoice-flow-demo {
-            padding: 1.5rem;
-        }
-
-        .flow-arrow {
-            display: none;
-        }
-
-        .cta-card {
-            padding: 2rem;
-        }
-
-        .cta-title {
-            font-size: 1.75rem;
-        }
-    }
-
-    @@media (max-width: 768px) {
-        .hero-section {
-            min-height: auto;
-            padding: 3rem 0;
-        }
-
-        .hero-headline {
-            font-size: 2rem;
-        }
-
-        .hero-description {
-            font-size: 1.125rem;
-        }
-
-        .flow-icon {
-            width: 60px;
-            height: 60px;
-            font-size: 1.5rem;
-        }
-
-        .hero-stats {
-            gap: 1rem;
-        }
-
-        .stat-number {
-            font-size: 1.5rem;
-        }
-    }
-</style>

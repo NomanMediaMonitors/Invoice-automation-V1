@@ -4,16 +4,15 @@
     <!-- Left Column: Field Configuration -->
     <div class="col-md-6">
         <div class="card mb-4">
-            <div class="card-header">
-                <h5 class="mb-0"><i class="bi bi-sliders"></i> Field Configuration</h5>
-            </div>
             <div class="card-body">
+                <h5 class="fw-semibold mb-3">Field Configuration</h5>
+
                 <div class="mb-3">
                     <label asp-for="TemplateName" class="form-label">Template Name <span class="text-danger">*</span></label>
                     <input asp-for="TemplateName" class="form-control" placeholder="e.g., Salsoft Standard Invoice">
                 </div>
 
-                <h6 class="text-muted mb-3">Which fields does this vendor use?</h6>
+                <h6 class="text-muted small text-uppercase mb-3">Which fields does this vendor use?</h6>
 
                 <div class="row">
                     <div class="col-6">
@@ -56,7 +55,7 @@
 
                 <hr>
 
-                <h6 class="text-muted mb-3">Defaults</h6>
+                <h6 class="text-muted small text-uppercase mb-3">Defaults</h6>
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label asp-for="DefaultTaxRate" class="form-label">Default Tax Rate (%)</label>
@@ -81,56 +80,43 @@
     <!-- Right Column: OCR Label Mapping -->
     <div class="col-md-6">
         <div class="card mb-4">
-            <div class="card-header">
-                <h5 class="mb-0"><i class="bi bi-magic"></i> OCR Label Mapping</h5>
-            </div>
             <div class="card-body">
+                <h5 class="fw-semibold mb-3">OCR Label Mapping</h5>
+
                 <div class="alert alert-info py-2 small">
-                    <i class="bi bi-info-circle"></i>
+                    <i class="bi bi-info-circle me-1"></i>
                     Enter the label text that appears on this vendor's invoices next to each field.
                     This helps OCR accurately extract data. Separate multiple labels with commas.
                 </div>
 
                 <div class="mb-3">
-                    <label asp-for="InvoiceNumberLabel" class="form-label">
-                        <i class="bi bi-hash"></i> Invoice Number Label
-                    </label>
+                    <label asp-for="InvoiceNumberLabel" class="form-label">Invoice Number Label</label>
                     <input asp-for="InvoiceNumberLabel" class="form-control" placeholder="e.g., Invoice No, Inv#, Bill Number">
                     <div class="form-text">What text appears next to the invoice number on this vendor's invoices?</div>
                 </div>
 
                 <div class="mb-3">
-                    <label asp-for="InvoiceDateLabel" class="form-label">
-                        <i class="bi bi-calendar"></i> Invoice Date Label
-                    </label>
+                    <label asp-for="InvoiceDateLabel" class="form-label">Invoice Date Label</label>
                     <input asp-for="InvoiceDateLabel" class="form-control" placeholder="e.g., Invoice Date, Date, Bill Date">
                 </div>
 
                 <div class="mb-3">
-                    <label asp-for="DueDateLabel" class="form-label">
-                        <i class="bi bi-calendar-check"></i> Due Date Label
-                    </label>
+                    <label asp-for="DueDateLabel" class="form-label">Due Date Label</label>
                     <input asp-for="DueDateLabel" class="form-control" placeholder="e.g., Due Date, Payment Due, Pay By">
                 </div>
 
                 <div class="mb-3">
-                    <label asp-for="SubTotalLabel" class="form-label">
-                        <i class="bi bi-calculator"></i> Sub Total Label
-                    </label>
+                    <label asp-for="SubTotalLabel" class="form-label">Sub Total Label</label>
                     <input asp-for="SubTotalLabel" class="form-control" placeholder="e.g., Sub Total, Subtotal, Net Amount">
                 </div>
 
                 <div class="mb-3">
-                    <label asp-for="TaxLabel" class="form-label">
-                        <i class="bi bi-percent"></i> Tax Label
-                    </label>
+                    <label asp-for="TaxLabel" class="form-label">Tax Label</label>
                     <input asp-for="TaxLabel" class="form-control" placeholder="e.g., GST, Tax, VAT, Sales Tax">
                 </div>
 
                 <div class="mb-0">
-                    <label asp-for="TotalLabel" class="form-label">
-                        <i class="bi bi-currency-dollar"></i> Total Label
-                    </label>
+                    <label asp-for="TotalLabel" class="form-label">Total Label</label>
                     <input asp-for="TotalLabel" class="form-control" placeholder="e.g., Total, Grand Total, Amount Due">
                 </div>
             </div>

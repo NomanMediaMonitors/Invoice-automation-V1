@@ -5,58 +5,70 @@
     var companyId = (Guid)ViewBag.CompanyId;
 }
 
-<div class="container animate-fadeIn">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card shadow-lg">
-                <div class="card-body">
-                    <div class="text-center mb-4">
-                        <div class="mb-3">
-                            <i class="bi bi-link-45deg" style="font-size: 3rem; color: var(--primary-color);"></i>
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a asp-action="Index">Companies</a>
+        </li>
+        <li class="breadcrumb-item">
+            <a asp-action="Details" asp-route-id="@companyId">@companyName</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">Connect Indraaj</li>
+    </ol>
+</nav>
+
+<div class="page-header">
+    <h2 class="page-title">Connect Indraaj</h2>
+    <p class="page-subtitle mb-0">Link your Indraaj account for @companyName</p>
+</div>
+
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-body">
+                <form asp-action="ConnectIndraaj" asp-route-id="@companyId" method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                    <div class="form-section">
+                        <div class="form-section-title">
+                            <i class="bi bi-key"></i> Access Token
                         </div>
-                        <h2 class="fw-bold text-gradient">Connect Indraaj</h2>
-                        <p class="text-muted">@companyName</p>
-                    </div>
-
-                    <div class="alert alert-info mb-4" role="alert">
-                        <i class="bi bi-info-circle"></i>
-                        <strong>How to get your access token:</strong>
-                        <ol class="mb-0 mt-2 small">
-                            <li>Log in to your Indraaj account</li>
-                            <li>Navigate to Settings → API Integration</li>
-                            <li>Copy your Access Token Code</li>
-                            <li>Paste it below</li>
-                        </ol>
-                    </div>
-
-                    <form asp-action="ConnectIndraaj" asp-route-id="@companyId" method="post">
-                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
-
-                        <div class="mb-4">
+                        <div class="mb-3">
                             <label asp-for="AccessToken" class="form-label">Indraaj Access Token *</label>
-                            <div class="input-group">
-                                <span class="input-group-text bg-light border-2"><i class="bi bi-key"></i></span>
-                                <input asp-for="AccessToken" class="form-control border-start-0" placeholder="Enter your Indraaj access token" />
-                            </div>
+                            <input asp-for="AccessToken" class="form-control" placeholder="Enter your Indraaj access token" />
                             <span asp-validation-for="AccessToken" class="text-danger"></span>
-                            <small class="text-muted">
+                            <small class="text-muted d-block mt-1">
                                 Your access token will be encrypted and stored securely.
                             </small>
                         </div>
+                    </div>
 
-                        <div class="d-grid gap-2 mb-3">
-                            <button type="submit" class="btn btn-primary btn-lg">
-                                <i class="bi bi-check-circle"></i> Connect & Test
-                            </button>
-                        </div>
+                    <div class="d-flex justify-content-between align-items-center pt-2">
+                        <a asp-action="Details" asp-route-id="@companyId" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left"></i> Back to Company
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i> Connect & Test
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
-                        <div class="text-center">
-                            <a asp-action="Details" asp-route-id="@companyId" class="text-muted">
-                                <i class="bi bi-arrow-left"></i> Back to Company Details
-                            </a>
-                        </div>
-                    </form>
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-body">
+                <div class="info-section-title mb-3">
+                    <i class="bi bi-question-circle"></i>
+                    <span>How to get your access token</span>
                 </div>
+                <ol class="mb-0" style="padding-left: 1.25rem; font-size: 0.8125rem; color: var(--text-secondary); line-height: 2;">
+                    <li>Log in to your Indraaj account</li>
+                    <li>Navigate to Settings &rarr; API Integration</li>
+                    <li>Copy your Access Token Code</li>
+                    <li>Paste it in the field on the left</li>
+                </ol>
             </div>
         </div>
     </div>

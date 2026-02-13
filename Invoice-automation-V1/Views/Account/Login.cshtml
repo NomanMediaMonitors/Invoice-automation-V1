@@ -1,77 +1,57 @@
 @model InvoiceAutomation.ViewModels.Account.LoginViewModel
 @{
-    ViewData["Title"] = "Login";
+    ViewData["Title"] = "Sign In";
 }
 
-<div class="container animate-fadeIn">
-    <div class="row justify-content-center">
-        <div class="col-md-5">
-            <div class="card auth-card shadow-lg">
-                <div class="card-body">
-                    <div class="text-center mb-4">
-                        <div class="mb-3">
-                            <i class="bi bi-box-arrow-in-right" style="font-size: 3rem; color: var(--primary-color);"></i>
-                        </div>
-                        <h2 class="fw-bold text-gradient">Welcome Back</h2>
-                        <p class="text-muted">Login to your account</p>
-                    </div>
-
-                    @if (TempData["SuccessMessage"] != null)
-                    {
-                        <div class="alert alert-success" role="alert">
-                            @TempData["SuccessMessage"]
-                        </div>
-                    }
-
-                    <form asp-action="Login" method="post">
-                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
-
-                        <div class="mb-3">
-                            <label asp-for="Email" class="form-label"></label>
-                            <div class="input-group">
-                                <span class="input-group-text bg-light border-2"><i class="bi bi-envelope"></i></span>
-                                <input asp-for="Email" class="form-control form-control-lg border-start-0" placeholder="Enter your email" autofocus />
-                            </div>
-                            <span asp-validation-for="Email" class="text-danger"></span>
-                        </div>
-
-                        <div class="mb-3">
-                            <label asp-for="Password" class="form-label"></label>
-                            <div class="input-group">
-                                <span class="input-group-text bg-light border-2"><i class="bi bi-lock"></i></span>
-                                <input asp-for="Password" class="form-control form-control-lg border-start-0" placeholder="Enter your password" />
-                            </div>
-                            <span asp-validation-for="Password" class="text-danger"></span>
-                        </div>
-
-                        <div class="mb-3 form-check d-flex align-items-center">
-                            <input asp-for="RememberMe" class="form-check-input" />
-                            <label asp-for="RememberMe" class="form-check-label"></label>
-                        </div>
-
-                        <div class="d-grid gap-2 mb-4">
-                            <button type="submit" class="btn btn-primary btn-lg">
-                                <i class="bi bi-box-arrow-in-right"></i> Login
-                            </button>
-                        </div>
-
-                        <div class="text-center">
-                            <a asp-action="ForgotPassword" class="fw-bold">
-                                <i class="bi bi-question-circle"></i> Forgot password?
-                            </a>
-                        </div>
-                    </form>
-
-                    <hr class="my-4">
-
-                    <div class="text-center">
-                        <p class="text-muted mb-0">
-                            Don't have an account?
-                            <a asp-action="Register" class="fw-bold">Register here</a>
-                        </p>
-                    </div>
-                </div>
+<div style="background: var(--bg-secondary); min-height: calc(100vh - 200px); display:flex; align-items:center; justify-content:center; padding: 2rem 1rem;">
+    <div class="card auth-card" style="width: 100%; max-width: 440px;">
+        <div class="card-body">
+            <div class="text-center mb-4">
+                <h2 class="fw-bold mb-2">Sign in to your account</h2>
+                <p class="text-muted mb-0">Enter your credentials to access the dashboard</p>
             </div>
+
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success" role="alert">
+                    @TempData["SuccessMessage"]
+                </div>
+            }
+
+            <form asp-action="Login" method="post">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                <div class="mb-3">
+                    <label asp-for="Email" class="form-label">Email address</label>
+                    <input asp-for="Email" class="form-control" placeholder="you@company.com" autofocus />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <label asp-for="Password" class="form-label mb-0">Password</label>
+                        <a asp-action="ForgotPassword" class="text-muted" style="font-size: 0.8125rem;">Forgot password?</a>
+                    </div>
+                    <input asp-for="Password" class="form-control" placeholder="Enter your password" />
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+
+                <div class="mb-4 form-check">
+                    <input asp-for="RememberMe" class="form-check-input" />
+                    <label asp-for="RememberMe" class="form-check-label">Remember me</label>
+                </div>
+
+                <div class="d-grid mb-3">
+                    <button type="submit" class="btn btn-primary btn-lg">Sign in</button>
+                </div>
+
+                <div class="text-center">
+                    <p class="text-muted mb-0">
+                        Don't have an account?
+                        <a asp-action="Register" class="fw-semibold">Create an account</a>
+                    </p>
+                </div>
+            </form>
         </div>
     </div>
 </div>
