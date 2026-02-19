@@ -89,11 +89,15 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 20,
+          "SelectedChildIndex": 21,
           "Children": [
             {
               "$type": "Bookmark",
               "Name": "ST:1:0:{d212f56b-c48a-434c-a121-1c5d80b59b9f}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:11:0:{e8034f19-ab72-4f06-83fd-f6832b41aa63}"
             },
             {
               "$type": "Bookmark",
@@ -109,8 +113,7 @@
               "RelativeToolTip": "Invoice-automation-V1\\Core\\Configuration\\TesseractSettings.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAqwAQAAAASAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-12T15:07:41.394Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-02-12T15:07:41.394Z"
             },
             {
               "$type": "Document",
@@ -122,8 +125,7 @@
               "RelativeToolTip": "Invoice-automation-V1\\Infrastructure\\Services\\OcrService.cs",
               "ViewState": "AgIAAJ0AAAAAAAAAAAAUwL4AAAA8AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-12T13:58:55.879Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-02-12T13:58:55.879Z"
             },
             {
               "$type": "Document",
@@ -135,8 +137,7 @@
               "RelativeToolTip": "Invoice-automation-V1\\Views\\Profile\\Index.cshtml",
               "ViewState": "AgIAAPQBAAAAAAAAAAAqwBACAAALAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-02-11T16:08:12.623Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-02-11T16:08:12.623Z"
             },
             {
               "$type": "Document",
@@ -148,8 +149,7 @@
               "RelativeToolTip": "Invoice-automation-V1\\Views\\Profile\\Edit.cshtml",
               "ViewState": "AgIAAMoAAAAAAAAAAAAQwOsAAAALAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-02-11T16:08:11.748Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-02-11T16:08:11.748Z"
             },
             {
               "$type": "Document",
@@ -161,8 +161,7 @@
               "RelativeToolTip": "Invoice-automation-V1\\Views\\Profile\\ChangePassword.cshtml",
               "ViewState": "AgIAAAYBAAAAAAAAAAAWwCgBAAALAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-02-11T16:08:09.935Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-02-11T16:08:09.935Z"
             },
             {
               "$type": "Document",
@@ -174,8 +173,7 @@
               "RelativeToolTip": "Invoice-automation-V1\\Controllers\\EmployeeController.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAATAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-11T11:47:21.003Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-02-11T11:47:21.003Z"
             },
             {
               "$type": "Document",
@@ -187,8 +185,7 @@
               "RelativeToolTip": "Invoice-automation-V1\\Views\\Employee\\Index.cshtml",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-02-11T11:47:31.846Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-02-11T11:47:31.846Z"
             },
             {
               "$type": "Document",
@@ -198,8 +195,7 @@
               "ToolTip": "C:\\Program Files\\dotnet\\sdk\\9.0.300\\Sdks\\Microsoft.NET.Sdk.StaticWebAssets\\targets\\Microsoft.NET.Sdk.StaticWebAssets.targets",
               "ViewState": "AgIAAEQCAAAAAAAAAAAWwGYCAAAEAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003801|",
-              "WhenOpened": "2026-02-11T11:46:06.342Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-02-11T11:46:06.342Z"
             },
             {
               "$type": "Document",
@@ -211,8 +207,7 @@
               "RelativeToolTip": "Invoice-automation-V1\\Core\\Services\\EmployeeService.cs",
               "ViewState": "AgIAAFgAAAAAAAAAAAAuwHoAAAAuAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-11T11:34:57.834Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-02-11T11:34:57.834Z"
             },
             {
               "$type": "Document",
@@ -224,8 +219,7 @@
               "RelativeToolTip": "Invoice-automation-V1\\Infrastructure\\Repositories\\CompanyRepository.cs",
               "ViewState": "AgIAABEAAAAAAAAAAIBJwBQAAAAEAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-11T10:22:34.123Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-02-11T10:22:34.123Z"
             },
             {
               "$type": "Document",
@@ -237,8 +231,7 @@
               "RelativeToolTip": "Invoice-automation-V1\\Views\\Shared\\_Layout.cshtml",
               "ViewState": "AgIAAD0AAAAAAAAAAAAewFMAAABPAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-02-11T09:51:33.483Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-02-11T09:51:33.483Z"
             },
             {
               "$type": "Document",
@@ -250,8 +243,7 @@
               "RelativeToolTip": "Invoice-automation-V1\\Views\\Company\\Index.cshtml",
               "ViewState": "AgIAAEMAAAAAAAAAAAAcwGUAAAAuAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-02-10T15:47:27.316Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-02-10T15:47:27.316Z"
             },
             {
               "$type": "Document",
@@ -263,8 +255,7 @@
               "RelativeToolTip": "Invoice-automation-V1\\Infrastructure\\Repositories\\UserCompanyRepository.cs",
               "ViewState": "AgIAACIAAAAAAAAAAAAcwEQAAAAUAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-10T15:47:23.912Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-02-10T15:47:23.912Z"
             },
             {
               "$type": "Document",
@@ -276,8 +267,7 @@
               "RelativeToolTip": "Invoice-automation-V1\\Infrastructure\\Data\\ApplicationDbContext.cs",
               "ViewState": "AgIAANsAAAAAAAAAAAAhwP4AAAAjAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-10T15:47:19.177Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-02-10T15:47:19.177Z"
             },
             {
               "$type": "Document",
@@ -302,8 +292,7 @@
               "RelativeToolTip": "Invoice-automation-V1\\wwwroot\\css\\website.css",
               "ViewState": "AgIAAAwAAAAAAAAAAIBJwA8AAAAaAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
-              "WhenOpened": "2026-02-10T14:08:36.071Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-02-10T14:08:36.071Z"
             },
             {
               "$type": "Document",
@@ -315,8 +304,7 @@
               "RelativeToolTip": "Invoice-automation-V1\\Views\\Account\\Register.cshtml",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABYAAABRAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-02-10T14:07:58.077Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-02-10T14:07:58.077Z"
             },
             {
               "$type": "Document",
@@ -328,8 +316,7 @@
               "RelativeToolTip": "Invoice-automation-V1\\Controllers\\AccountController.cs",
               "ViewState": "AgIAAAUAAAAAAAAAAAAQwCUAAAAFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-10T14:06:59.8Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-02-10T14:06:59.8Z"
             },
             {
               "$type": "Document",
@@ -339,7 +326,7 @@
               "RelativeDocumentMoniker": "Invoice-automation-V1\\appsettings.json",
               "ToolTip": "F:\\Invoice-automation-V1\\Invoice-automation-V1\\appsettings.json",
               "RelativeToolTip": "Invoice-automation-V1\\appsettings.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAAVAAAAAAAAAA==",
+              "ViewState": "AgIAAAUAAAAAAAAAAAAiwBkAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
               "WhenOpened": "2026-02-10T11:07:52.223Z",
               "EditorCaption": ""
@@ -354,8 +341,7 @@
               "RelativeToolTip": "Invoice-automation-V1\\Program.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-10T11:07:45.614Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-02-10T11:07:45.614Z"
             }
           ]
         }
