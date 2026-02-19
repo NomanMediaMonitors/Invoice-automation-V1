@@ -16,17 +16,17 @@
                 <div class="flex gap-3 justify-center flex-wrap mb-5">
                     @if (User.Identity?.IsAuthenticated == true)
                     {
-                        <a asp-controller="Home" asp-action="Dashboard" class="btn btn-primary btn-lg">
+                        <a asp-controller="Home" asp-action="Dashboard" class="inline-flex items-center gap-1.5 px-5 py-2.5 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition-colors cursor-pointer">
                             <i class="bi bi-speedometer2"></i> Go to Dashboard
                         </a>
                     }
                     else
                     {
-                        <a asp-controller="Account" asp-action="Register" class="btn btn-primary btn-lg"
+                        <a asp-controller="Account" asp-action="Register" class="inline-flex items-center gap-1.5 px-5 py-2.5 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition-colors cursor-pointer"
                            style="padding: 0.7rem 1.75rem; font-size: 0.9375rem;">
                             Get Started
                         </a>
-                        <a href="#features" class="btn btn-outline-secondary btn-lg"
+                        <a href="#features" class="inline-flex items-center gap-1.5 px-5 py-2.5 border border-gray-200 text-gray-600 font-medium rounded-md hover:bg-gray-50 transition-colors cursor-pointer"
                            style="padding: 0.7rem 1.75rem; font-size: 0.9375rem;">
                             Learn More
                         </a>
@@ -72,8 +72,8 @@
         <div class="row g-4 justify-center">
             <!-- Feature 1: OCR Processing -->
             <div class="col-md-4">
-                <div class="card h-full" style="border-radius: 0.75rem; border: 1px solid #e2e8f0;">
-                    <div class="card-body" style="padding: 2rem;">
+                <div class="bg-white border border-gray-200 rounded-xl shadow-sm h-full" style="border-radius: 0.75rem; border: 1px solid #e2e8f0;">
+                    <div class="p-6" style="padding: 2rem;">
                         <div style="width: 48px; height: 48px; border-radius: 0.5rem; background-color: #eff6ff; display: flex; align-items: center; justify-content: center; margin-bottom: 1.25rem;">
                             <i class="bi bi-cpu" style="font-size: 1.375rem; color: #2563eb;"></i>
                         </div>
@@ -89,8 +89,8 @@
 
             <!-- Feature 2: Multi-Company Management -->
             <div class="col-md-4">
-                <div class="card h-full" style="border-radius: 0.75rem; border: 1px solid #e2e8f0;">
-                    <div class="card-body" style="padding: 2rem;">
+                <div class="bg-white border border-gray-200 rounded-xl shadow-sm h-full" style="border-radius: 0.75rem; border: 1px solid #e2e8f0;">
+                    <div class="p-6" style="padding: 2rem;">
                         <div style="width: 48px; height: 48px; border-radius: 0.5rem; background-color: #eff6ff; display: flex; align-items: center; justify-content: center; margin-bottom: 1.25rem;">
                             <i class="bi bi-building" style="font-size: 1.375rem; color: #2563eb;"></i>
                         </div>
@@ -106,8 +106,8 @@
 
             <!-- Feature 3: Accounting Integration -->
             <div class="col-md-4">
-                <div class="card h-full" style="border-radius: 0.75rem; border: 1px solid #e2e8f0;">
-                    <div class="card-body" style="padding: 2rem;">
+                <div class="bg-white border border-gray-200 rounded-xl shadow-sm h-full" style="border-radius: 0.75rem; border: 1px solid #e2e8f0;">
+                    <div class="p-6" style="padding: 2rem;">
                         <div style="width: 48px; height: 48px; border-radius: 0.5rem; background-color: #eff6ff; display: flex; align-items: center; justify-content: center; margin-bottom: 1.25rem;">
                             <i class="bi bi-arrow-left-right" style="font-size: 1.375rem; color: #2563eb;"></i>
                         </div>
@@ -207,7 +207,7 @@
                     <p style="font-size: 1.05rem; color: #475569; max-width: 480px; margin: 0 auto 2rem;">
                         Create an account and start automating your invoice workflow today. No credit card required.
                     </p>
-                    <a asp-controller="Account" asp-action="Register" class="btn btn-primary btn-lg"
+                    <a asp-controller="Account" asp-action="Register" class="inline-flex items-center gap-1.5 px-5 py-2.5 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition-colors cursor-pointer"
                        style="padding: 0.75rem 2rem; font-size: 0.9375rem;">
                         Create Your Account
                     </a>
