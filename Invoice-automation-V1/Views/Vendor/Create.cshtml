@@ -22,9 +22,9 @@
 
 <!-- Page Header -->
 <div class="page-header mb-4">
-    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+    <div class="flex justify-between items-center flex-wrap gap-3">
         <div>
-            <h2 class="fw-bold mb-1">Add New Vendor</h2>
+            <h2 class="font-bold mb-1">Add New Vendor</h2>
             <p class="text-muted mb-0">@companyName</p>
         </div>
         <a asp-action="Index" asp-route-companyId="@companyId" class="btn btn-outline-secondary">
@@ -33,7 +33,7 @@
     </div>
 </div>
 
-<div class="row justify-content-center">
+<div class="row justify-center">
     <div class="col-lg-10">
         <form asp-action="Create" method="post">
             <input type="hidden" asp-for="CompanyId" value="@companyId" />
@@ -42,7 +42,7 @@
             <!-- Basic Information -->
             <div class="card mb-4">
                 <div class="card-body">
-                    <h5 class="fw-semibold mb-3">Basic Information</h5>
+                    <h5 class="font-semibold mb-3">Basic Information</h5>
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label asp-for="Name" class="form-label">Vendor Name <span class="text-danger">*</span></label>
@@ -86,7 +86,7 @@
             <!-- Tax Information -->
             <div class="card mb-4">
                 <div class="card-body">
-                    <h5 class="fw-semibold mb-3">Tax Information</h5>
+                    <h5 class="font-semibold mb-3">Tax Information</h5>
                     <div class="row">
                         <div class="col-md-4 mb-3">
                             <label asp-for="Ntn" class="form-label">NTN <span class="text-danger">*</span></label>
@@ -108,7 +108,7 @@
             <!-- Address -->
             <div class="card mb-4">
                 <div class="card-body">
-                    <h5 class="fw-semibold mb-3">Address</h5>
+                    <h5 class="font-semibold mb-3">Address</h5>
                     <div class="row">
                         <div class="col-md-12 mb-3">
                             <label asp-for="Address" class="form-label">Street Address <span class="text-danger">*</span></label>
@@ -141,7 +141,7 @@
             <!-- Contact Person -->
             <div class="card mb-4">
                 <div class="card-body">
-                    <h5 class="fw-semibold mb-3">Contact Person</h5>
+                    <h5 class="font-semibold mb-3">Contact Person</h5>
                     <div class="row">
                         <div class="col-md-4 mb-3">
                             <label asp-for="ContactPersonName" class="form-label">Name <span class="text-danger">*</span></label>
@@ -165,7 +165,7 @@
             <!-- Banking Information -->
             <div class="card mb-4">
                 <div class="card-body">
-                    <h5 class="fw-semibold mb-3">Banking Information</h5>
+                    <h5 class="font-semibold mb-3">Banking Information</h5>
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label asp-for="BankName" class="form-label">Bank Name <span class="text-danger">*</span></label>
@@ -198,7 +198,7 @@
             <!-- Payment Terms -->
             <div class="card mb-4">
                 <div class="card-body">
-                    <h5 class="fw-semibold mb-3">Payment Terms</h5>
+                    <h5 class="font-semibold mb-3">Payment Terms</h5>
                     <div class="row">
                         <div class="col-md-4 mb-3">
                             <label asp-for="PaymentTermDays" class="form-label">Payment Terms (Days)</label>
@@ -218,7 +218,7 @@
             </div>
 
             <!-- Actions -->
-            <div class="d-flex justify-content-end gap-2">
+            <div class="flex justify-end gap-2">
                 <a asp-action="Index" asp-route-companyId="@companyId" class="btn btn-outline-secondary">Cancel</a>
                 <button type="submit" class="btn btn-primary">
                     <i class="bi bi-check-circle me-1"></i> Create Vendor

@@ -5,7 +5,7 @@
 <!-- Hero Section -->
 <section style="background-color: #ffffff; padding: 5rem 0 4rem;">
     <div class="container">
-        <div class="row justify-content-center">
+        <div class="row justify-center">
             <div class="col-lg-8 text-center">
                 <h1 style="font-size: 3rem; font-weight: 800; line-height: 1.15; letter-spacing: -0.03em; color: #0f172a; margin-bottom: 1.25rem;">
                     Automate Your Invoice Processing
@@ -13,7 +13,7 @@
                 <p style="font-size: 1.2rem; line-height: 1.7; color: #475569; max-width: 600px; margin: 0 auto 2rem;">
                     Extract, route, approve, and sync invoices to your accounting system -- without the manual work. Built for teams that value accuracy and speed.
                 </p>
-                <div class="d-flex gap-3 justify-content-center flex-wrap mb-5">
+                <div class="flex gap-3 justify-center flex-wrap mb-5">
                     @if (User.Identity?.IsAuthenticated == true)
                     {
                         <a asp-controller="Home" asp-action="Dashboard" class="btn btn-primary btn-lg">
@@ -36,7 +36,7 @@
         </div>
 
         <!-- Stats Row -->
-        <div class="row justify-content-center">
+        <div class="row justify-center">
             <div class="col-lg-8">
                 <div class="row text-center g-4">
                     <div class="col-md-4">
@@ -69,10 +69,10 @@
             </p>
         </div>
 
-        <div class="row g-4 justify-content-center">
+        <div class="row g-4 justify-center">
             <!-- Feature 1: OCR Processing -->
             <div class="col-md-4">
-                <div class="card h-100" style="border-radius: 0.75rem; border: 1px solid #e2e8f0;">
+                <div class="card h-full" style="border-radius: 0.75rem; border: 1px solid #e2e8f0;">
                     <div class="card-body" style="padding: 2rem;">
                         <div style="width: 48px; height: 48px; border-radius: 0.5rem; background-color: #eff6ff; display: flex; align-items: center; justify-content: center; margin-bottom: 1.25rem;">
                             <i class="bi bi-cpu" style="font-size: 1.375rem; color: #2563eb;"></i>
@@ -89,7 +89,7 @@
 
             <!-- Feature 2: Multi-Company Management -->
             <div class="col-md-4">
-                <div class="card h-100" style="border-radius: 0.75rem; border: 1px solid #e2e8f0;">
+                <div class="card h-full" style="border-radius: 0.75rem; border: 1px solid #e2e8f0;">
                     <div class="card-body" style="padding: 2rem;">
                         <div style="width: 48px; height: 48px; border-radius: 0.5rem; background-color: #eff6ff; display: flex; align-items: center; justify-content: center; margin-bottom: 1.25rem;">
                             <i class="bi bi-building" style="font-size: 1.375rem; color: #2563eb;"></i>
@@ -106,7 +106,7 @@
 
             <!-- Feature 3: Accounting Integration -->
             <div class="col-md-4">
-                <div class="card h-100" style="border-radius: 0.75rem; border: 1px solid #e2e8f0;">
+                <div class="card h-full" style="border-radius: 0.75rem; border: 1px solid #e2e8f0;">
                     <div class="card-body" style="padding: 2rem;">
                         <div style="width: 48px; height: 48px; border-radius: 0.5rem; background-color: #eff6ff; display: flex; align-items: center; justify-content: center; margin-bottom: 1.25rem;">
                             <i class="bi bi-arrow-left-right" style="font-size: 1.375rem; color: #2563eb;"></i>
@@ -136,10 +136,10 @@
             </p>
         </div>
 
-        <div class="row g-4 justify-content-center align-items-stretch">
+        <div class="row g-4 justify-center items-stretch">
             <!-- Step 1 -->
             <div class="col-md-4">
-                <div class="text-center h-100 d-flex flex-column align-items-center" style="padding: 2rem 1.5rem;">
+                <div class="text-center h-full flex flex-col items-center" style="padding: 2rem 1.5rem;">
                     <div style="width: 56px; height: 56px; border-radius: 50%; background-color: #2563eb; color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 1.375rem; font-weight: 700; margin-bottom: 1.25rem;">
                         1
                     </div>
@@ -157,7 +157,7 @@
 
             <!-- Step 2 -->
             <div class="col-md-4">
-                <div class="text-center h-100 d-flex flex-column align-items-center" style="padding: 2rem 1.5rem;">
+                <div class="text-center h-full flex flex-col items-center" style="padding: 2rem 1.5rem;">
                     <div style="width: 56px; height: 56px; border-radius: 50%; background-color: #2563eb; color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 1.375rem; font-weight: 700; margin-bottom: 1.25rem;">
                         2
                     </div>
@@ -175,7 +175,7 @@
 
             <!-- Step 3 -->
             <div class="col-md-4">
-                <div class="text-center h-100 d-flex flex-column align-items-center" style="padding: 2rem 1.5rem;">
+                <div class="text-center h-full flex flex-col items-center" style="padding: 2rem 1.5rem;">
                     <div style="width: 56px; height: 56px; border-radius: 50%; background-color: #2563eb; color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 1.375rem; font-weight: 700; margin-bottom: 1.25rem;">
                         3
                     </div>
@@ -199,7 +199,7 @@
 {
     <section style="background-color: #f8fafc; padding: 4.5rem 0;">
         <div class="container">
-            <div class="row justify-content-center">
+            <div class="row justify-center">
                 <div class="col-lg-7 text-center">
                     <h2 style="font-size: 2rem; font-weight: 800; color: #0f172a; margin-bottom: 1rem;">
                         Ready to streamline your invoices?
