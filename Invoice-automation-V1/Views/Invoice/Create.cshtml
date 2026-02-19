@@ -10,7 +10,7 @@
     </ol>
 </nav>
 
-<div class="page-header d-flex justify-content-between align-items-center">
+<div class="page-header flex justify-between items-center">
     <div>
         <h2 class="page-title">
             <i class="bi bi-cloud-upload"></i> Upload New Invoice
@@ -22,7 +22,7 @@
     </a>
 </div>
 
-<div class="row justify-content-center">
+<div class="row justify-center">
     <div class="col-lg-8">
         <form asp-action="Create" method="post" enctype="multipart/form-data" id="uploadForm">
             <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
@@ -52,7 +52,7 @@
                         <label class="form-label">Upload Invoice <span class="text-danger">*</span></label>
                         <div id="dropZone" style="border: 2px dashed var(--border-color); border-radius: var(--radius-xl); padding: 2rem; text-align: center; cursor: pointer; transition: all 0.2s ease;">
                             <i class="bi bi-cloud-arrow-up" style="font-size: 2.5rem; color: var(--primary-color);"></i>
-                            <p class="mt-2 mb-1 fw-bold" style="color: var(--text-primary);">Drag & drop your invoice here</p>
+                            <p class="mt-2 mb-1 font-bold" style="color: var(--text-primary);">Drag & drop your invoice here</p>
                             <p style="color: var(--text-tertiary); font-size: 0.8125rem;" class="mb-2">or click to browse files</p>
                             <input type="file" asp-for="InvoiceFile" class="form-control" accept=".pdf,.jpg,.jpeg,.png,.tif,.tiff" id="invoiceFileInput" style="display:none;">
                             <button type="button" class="btn btn-outline-primary btn-sm" id="browseBtn">
@@ -66,11 +66,11 @@
                     </div>
 
                     <!-- File Preview -->
-                    <div id="filePreview" class="d-none">
-                        <div class="d-flex align-items-center p-3" style="background: var(--bg-secondary); border-radius: var(--radius-lg); border: 1px solid var(--border-color);">
+                    <div id="filePreview" class="hidden">
+                        <div class="flex items-center p-3" style="background: var(--bg-secondary); border-radius: var(--radius-lg); border: 1px solid var(--border-color);">
                             <i class="bi bi-file-earmark-check me-3" style="font-size: 1.75rem; color: var(--success-color);"></i>
-                            <div class="flex-grow-1">
-                                <p id="fileName" class="mb-0 fw-bold" style="color: var(--text-primary); font-size: 0.875rem;"></p>
+                            <div class="grow">
+                                <p id="fileName" class="mb-0 font-bold" style="color: var(--text-primary); font-size: 0.875rem;"></p>
                                 <p id="fileSize" class="mb-0" style="color: var(--text-tertiary); font-size: 0.75rem;"></p>
                             </div>
                             <button type="button" class="btn btn-outline-danger btn-sm" id="removeFile">
@@ -97,7 +97,7 @@
             <!-- Pre-fill Details (collapsed) -->
             <div class="card mb-4">
                 <div class="card-header" style="cursor:pointer;" data-bs-toggle="collapse" data-bs-target="#manualDetails">
-                    <div class="d-flex justify-content-between align-items-center">
+                    <div class="flex justify-between items-center">
                         <h5 class="mb-0">
                             <i class="bi bi-pencil-square"></i> Pre-fill Details
                             <span style="color: var(--text-muted); font-size: 0.75rem; font-weight: 400;" class="ms-2">(optional - OCR will fill these)</span>
@@ -156,7 +156,7 @@
             </div>
 
             <!-- Submit -->
-            <div class="d-flex justify-content-end gap-2">
+            <div class="flex justify-end gap-2">
                 <a asp-action="Index" class="btn btn-outline-secondary">
                     Cancel
                 </a>
@@ -212,14 +212,14 @@
         // Remove file
         removeFileBtn.addEventListener('click', function() {
             fileInput.value = '';
-            filePreview.classList.add('d-none');
+            filePreview.classList.add('hidden');
             dropZone.style.display = '';
         });
 
         function showFilePreview(file) {
             document.getElementById('fileName').textContent = file.name;
             document.getElementById('fileSize').textContent = formatFileSize(file.size);
-            filePreview.classList.remove('d-none');
+            filePreview.classList.remove('hidden');
             dropZone.style.display = 'none';
         }
 

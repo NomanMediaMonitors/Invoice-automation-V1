@@ -6,9 +6,9 @@
 
 <!-- Page Header -->
 <div class="page-header mb-4">
-    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+    <div class="flex justify-between items-center flex-wrap gap-3">
         <div>
-            <h2 class="fw-bold mb-1">My Profile</h2>
+            <h2 class="font-bold mb-1">My Profile</h2>
             <p class="text-muted mb-0">Manage your account settings and preferences</p>
         </div>
         <a asp-action="Edit" class="btn btn-primary">
@@ -44,13 +44,13 @@
                     }
                     else
                     {
-                        <div class="rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 100%; height: 100%; background-color: #2563eb; font-size: 3rem;">
+                        <div class="rounded-circle flex items-center justify-center text-white" style="width: 100%; height: 100%; background-color: #2563eb; font-size: 3rem;">
                             <i class="bi bi-person-circle"></i>
                         </div>
                     }
                 </div>
 
-                <h4 class="fw-bold mb-1">@Model.FullName</h4>
+                <h4 class="font-bold mb-1">@Model.FullName</h4>
                 <p class="text-muted mb-1">
                     @Model.Email
                     @if (Model.EmailConfirmed)
@@ -80,24 +80,24 @@
                 }
 
                 <div class="border-top pt-3 mt-3">
-                    <div class="d-flex align-items-center gap-2 text-muted small mb-2">
+                    <div class="flex items-center gap-2 text-muted small mb-2">
                         <i class="bi bi-calendar-check" style="color: #2563eb;"></i>
                         <span>Joined @Model.CreatedAt.ToString("MMM dd, yyyy")</span>
                     </div>
                     @if (Model.LastLoginAt.HasValue)
                     {
-                        <div class="d-flex align-items-center gap-2 text-muted small mb-2">
+                        <div class="flex items-center gap-2 text-muted small mb-2">
                             <i class="bi bi-clock-history" style="color: #2563eb;"></i>
                             <span>Last login @Model.LastLoginAt.Value.ToString("MMM dd, yyyy")</span>
                         </div>
                     }
-                    <div class="d-flex align-items-center gap-2 text-muted small">
+                    <div class="flex items-center gap-2 text-muted small">
                         <i class="bi bi-graph-up" style="color: #2563eb;"></i>
                         <span>@Model.Stats.DaysActive days active</span>
                     </div>
                 </div>
 
-                <div class="d-grid gap-2 mt-4">
+                <div class="grid gap-2 mt-4">
                     <a asp-action="Edit" class="btn btn-outline-primary">
                         <i class="bi bi-pencil me-1"></i> Edit Profile
                     </a>
@@ -116,12 +116,12 @@
             <div class="col-md-4">
                 <div class="card">
                     <div class="card-body py-3">
-                        <div class="d-flex align-items-center">
+                        <div class="flex items-center">
                             <div class="rounded-3 p-2 me-3" style="background-color: #eff6ff;">
                                 <i class="bi bi-building" style="font-size: 1.25rem; color: #2563eb;"></i>
                             </div>
                             <div>
-                                <div class="fs-4 fw-bold">@Model.Stats.TotalCompanies</div>
+                                <div class="fs-4 font-bold">@Model.Stats.TotalCompanies</div>
                                 <div class="text-muted small">Companies</div>
                             </div>
                         </div>
@@ -131,12 +131,12 @@
             <div class="col-md-4">
                 <div class="card">
                     <div class="card-body py-3">
-                        <div class="d-flex align-items-center">
+                        <div class="flex items-center">
                             <div class="rounded-3 p-2 me-3" style="background-color: #fdf2f8;">
                                 <i class="bi bi-truck" style="font-size: 1.25rem; color: #db2777;"></i>
                             </div>
                             <div>
-                                <div class="fs-4 fw-bold">@Model.Stats.TotalVendorsCreated</div>
+                                <div class="fs-4 font-bold">@Model.Stats.TotalVendorsCreated</div>
                                 <div class="text-muted small">Vendors Created</div>
                             </div>
                         </div>
@@ -146,12 +146,12 @@
             <div class="col-md-4">
                 <div class="card">
                     <div class="card-body py-3">
-                        <div class="d-flex align-items-center">
+                        <div class="flex items-center">
                             <div class="rounded-3 p-2 me-3" style="background-color: #f0fdf4;">
                                 <i class="bi bi-shield-check" style="font-size: 1.25rem; color: #16a34a;"></i>
                             </div>
                             <div>
-                                <div class="fs-4 fw-bold">@Model.Stats.CompaniesAsAdmin</div>
+                                <div class="fs-4 font-bold">@Model.Stats.CompaniesAsAdmin</div>
                                 <div class="text-muted small">Admin Roles</div>
                             </div>
                         </div>
@@ -163,7 +163,7 @@
         <!-- Account Details -->
         <div class="card mb-4">
             <div class="card-body">
-                <h6 class="fw-semibold text-muted text-uppercase small mb-3">Account Details</h6>
+                <h6 class="font-semibold text-muted text-uppercase small mb-3">Account Details</h6>
                 <div class="row g-3">
                     <div class="col-md-6">
                         <div class="info-row">
@@ -236,7 +236,7 @@
         <!-- Recent Activity -->
         <div class="card">
             <div class="card-body">
-                <h6 class="fw-semibold text-muted text-uppercase small mb-3">Recent Activity</h6>
+                <h6 class="font-semibold text-muted text-uppercase small mb-3">Recent Activity</h6>
                 @if (Model.RecentActivity.Any())
                 {
                     <div class="activity-timeline">
