@@ -252,19 +252,19 @@
 
                 @if (Model.LineItems.Any())
                 {
-                    <div class="table-responsive">
-                        <table class="table mb-0" id="lineItemsTable">
+                    <div class="table-responsive" style="overflow-x: auto;">
+                        <table class="table mb-0 line-items-table" id="lineItemsTable">
                             <thead>
                                 <tr>
-                                    <th>#</th>
-                                    <th>Description</th>
-                                    <th>Account</th>
-                                    <th class="text-end">Qty</th>
-                                    <th class="text-end">Unit Price</th>
-                                    <th class="text-end">Tax %</th>
-                                    <th class="text-end">Amount</th>
-                                    <th class="text-end">Tax</th>
-                                    <th class="text-end">Total</th>
+                                    <th style="width: 50px;">#</th>
+                                    <th style="min-width: 250px;">Description</th>
+                                    <th style="min-width: 180px;">Account</th>
+                                    <th class="text-end" style="min-width: 90px;">Qty</th>
+                                    <th class="text-end" style="min-width: 120px;">Unit Price</th>
+                                    <th class="text-end" style="min-width: 80px;">Tax %</th>
+                                    <th class="text-end" style="min-width: 120px;">Amount</th>
+                                    <th class="text-end" style="min-width: 100px;">Tax</th>
+                                    <th class="text-end" style="min-width: 120px;">Total</th>
                                     @if (canEdit)
                                     {
                                         <th style="width: 80px;" class="text-center">Actions</th>
@@ -280,14 +280,15 @@
                                         {
                                             <td>
                                                 <input type="text" class="form-control form-control-sm li-description"
-                                                       value="@item.Description" data-original="@item.Description">
+                                                       value="@item.Description" data-original="@item.Description"
+                                                       style="min-width: 220px;">
                                                 @if (item.IsOcrExtracted)
                                                 {
                                                     <span class="badge mt-1" style="font-size:0.6rem; background-color: var(--info-light); color: var(--info-color);" title="Extracted by OCR">OCR</span>
                                                 }
                                             </td>
                                             <td>
-                                                <select class="form-select form-select-sm li-account" style="min-width: 150px;">
+                                                <select class="form-select form-select-sm li-account" style="min-width: 170px;">
                                                     <option value="">-- Select --</option>
                                                     @if (ViewBag.ChartOfAccounts != null)
                                                     {
@@ -304,21 +305,21 @@
                                             <td>
                                                 <input type="number" class="form-control form-control-sm text-end li-qty"
                                                        value="@item.Quantity" min="0.0001" step="0.01"
-                                                       data-original="@item.Quantity" style="width: 80px;">
+                                                       data-original="@item.Quantity" style="min-width: 80px; width: 100%;">
                                             </td>
                                             <td>
                                                 <input type="number" class="form-control form-control-sm text-end li-unitprice"
                                                        value="@item.UnitPrice" min="0" step="0.01"
-                                                       data-original="@item.UnitPrice" style="width: 110px;">
+                                                       data-original="@item.UnitPrice" style="min-width: 110px; width: 100%;">
                                             </td>
                                             <td>
                                                 <input type="number" class="form-control form-control-sm text-end li-taxrate"
                                                        value="@item.TaxRate" min="0" max="100" step="0.01"
-                                                       data-original="@item.TaxRate" style="width: 70px;">
+                                                       data-original="@item.TaxRate" style="min-width: 70px; width: 100%;">
                                             </td>
-                                            <td class="text-end li-amount">@Model.Currency @item.Amount.ToString("N2")</td>
-                                            <td class="text-end li-taxamount">@Model.Currency @item.TaxAmount.ToString("N2")</td>
-                                            <td class="text-end fw-bold li-totalamount">@Model.Currency @item.TotalAmount.ToString("N2")</td>
+                                            <td class="text-end li-amount" style="white-space: nowrap;">@Model.Currency @item.Amount.ToString("N2")</td>
+                                            <td class="text-end li-taxamount" style="white-space: nowrap;">@Model.Currency @item.TaxAmount.ToString("N2")</td>
+                                            <td class="text-end fw-bold li-totalamount" style="white-space: nowrap;">@Model.Currency @item.TotalAmount.ToString("N2")</td>
                                             <td class="text-center">
                                                 <div class="d-flex flex-column gap-1 align-items-center">
                                                     <button type="button" class="btn btn-outline-success btn-sm save-line-item" title="Save changes" style="display:none;">
@@ -353,12 +354,12 @@
                                                     <small style="color: var(--text-muted);">Not assigned</small>
                                                 }
                                             </td>
-                                            <td class="text-end">@item.Quantity.ToString("N2")</td>
-                                            <td class="text-end">@Model.Currency @item.UnitPrice.ToString("N2")</td>
-                                            <td class="text-end">@item.TaxRate.ToString("N2")%</td>
-                                            <td class="text-end">@Model.Currency @item.Amount.ToString("N2")</td>
-                                            <td class="text-end">@Model.Currency @item.TaxAmount.ToString("N2")</td>
-                                            <td class="text-end fw-bold">@Model.Currency @item.TotalAmount.ToString("N2")</td>
+                                            <td class="text-end" style="white-space: nowrap;">@item.Quantity.ToString("N2")</td>
+                                            <td class="text-end" style="white-space: nowrap;">@Model.Currency @item.UnitPrice.ToString("N2")</td>
+                                            <td class="text-end" style="white-space: nowrap;">@item.TaxRate.ToString("N2")%</td>
+                                            <td class="text-end" style="white-space: nowrap;">@Model.Currency @item.Amount.ToString("N2")</td>
+                                            <td class="text-end" style="white-space: nowrap;">@Model.Currency @item.TaxAmount.ToString("N2")</td>
+                                            <td class="text-end fw-bold" style="white-space: nowrap;">@Model.Currency @item.TotalAmount.ToString("N2")</td>
                                         }
                                     </tr>
                                 }
