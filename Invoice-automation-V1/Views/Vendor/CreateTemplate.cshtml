@@ -28,9 +28,9 @@
 
 <!-- Page Header -->
 <div class="page-header mb-4">
-    <div class="flex justify-between items-center flex-wrap gap-3">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
         <div>
-            <h2 class="font-bold mb-1">New Invoice Template</h2>
+            <h2 class="fw-bold mb-1">New Invoice Template</h2>
             <p class="text-muted mb-0">@vendorName</p>
         </div>
         <a asp-action="Templates" asp-route-id="@vendorId" asp-route-companyId="@companyId" class="btn btn-outline-secondary">
@@ -42,7 +42,7 @@
 <form asp-action="CreateTemplate" asp-route-companyId="@companyId" method="post">
     <partial name="_TemplateForm" model="Model" />
 
-    <div class="flex justify-end gap-2 mt-4">
+    <div class="d-flex justify-content-end gap-2 mt-4">
         <a asp-action="Templates" asp-route-id="@vendorId" asp-route-companyId="@companyId" class="btn btn-outline-secondary">Cancel</a>
         <button type="submit" class="btn btn-primary">
             <i class="bi bi-check-circle me-1"></i> Create Template

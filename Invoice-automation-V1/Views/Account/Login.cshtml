@@ -7,7 +7,7 @@
     <div class="card auth-card" style="width: 100%; max-width: 440px;">
         <div class="card-body">
             <div class="text-center mb-4">
-                <h2 class="font-bold mb-2">Sign in to your account</h2>
+                <h2 class="fw-bold mb-2">Sign in to your account</h2>
                 <p class="text-muted mb-0">Enter your credentials to access the dashboard</p>
             </div>
 
@@ -28,7 +28,7 @@
                 </div>
 
                 <div class="mb-3">
-                    <div class="flex justify-between items-center">
+                    <div class="d-flex justify-content-between align-items-center">
                         <label asp-for="Password" class="form-label mb-0">Password</label>
                         <a asp-action="ForgotPassword" class="text-muted" style="font-size: 0.8125rem;">Forgot password?</a>
                     </div>
@@ -41,14 +41,14 @@
                     <label asp-for="RememberMe" class="form-check-label">Remember me</label>
                 </div>
 
-                <div class="grid mb-3">
+                <div class="d-grid mb-3">
                     <button type="submit" class="btn btn-primary btn-lg">Sign in</button>
                 </div>
 
                 <div class="text-center">
                     <p class="text-muted mb-0">
                         Don't have an account?
-                        <a asp-action="Register" class="font-semibold">Create an account</a>
+                        <a asp-action="Register" class="fw-semibold">Create an account</a>
                     </p>
                 </div>
             </form>

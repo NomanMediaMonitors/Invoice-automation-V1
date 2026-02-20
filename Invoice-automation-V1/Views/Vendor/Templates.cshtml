@@ -27,12 +27,12 @@
 
 <!-- Page Header -->
 <div class="page-header mb-4">
-    <div class="flex justify-between items-center flex-wrap gap-3">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
         <div>
-            <h2 class="font-bold mb-1">Invoice Templates</h2>
+            <h2 class="fw-bold mb-1">Invoice Templates</h2>
             <p class="text-muted mb-0">Configure how OCR processes invoices from <strong>@vendorName</strong></p>
         </div>
-        <div class="flex gap-2">
+        <div class="d-flex gap-2">
             <a asp-action="CreateTemplate" asp-route-id="@vendorId" asp-route-companyId="@companyId" class="btn btn-primary">
                 <i class="bi bi-plus-circle me-1"></i> New Template
             </a>
@@ -66,8 +66,8 @@
             <div class="col-md-6 mb-4">
                 <div class="card @(!template.IsActive ? "opacity-75" : "")">
                     <div class="card-body">
-                        <div class="flex justify-between items-center mb-3">
-                            <h5 class="font-semibold mb-0">@template.TemplateName</h5>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="fw-semibold mb-0">@template.TemplateName</h5>
                             @if (template.IsActive)
                             {
                                 <span class="badge bg-success-subtle text-success-emphasis">Active</span>
@@ -79,7 +79,7 @@
                         </div>
 
                         <h6 class="text-muted small text-uppercase mb-2">Fields Used</h6>
-                        <div class="flex flex-wrap gap-1 mb-3">
+                        <div class="d-flex flex-wrap gap-1 mb-3">
                             @if (template.HasInvoiceNumber) { <span class="badge bg-primary-subtle text-primary-emphasis">Invoice Number</span> }
                             @if (template.HasInvoiceDate) { <span class="badge bg-primary-subtle text-primary-emphasis">Invoice Date</span> }
                             @if (template.HasDueDate) { <span class="badge bg-primary-subtle text-primary-emphasis">Due Date</span> }
@@ -110,14 +110,14 @@
                             }
                         </div>
                     </div>
-                    <div class="card-footer bg-transparent flex justify-between items-center">
+                    <div class="card-footer bg-transparent d-flex justify-content-between align-items-center">
                         <small class="text-muted">Updated @template.UpdatedAt.ToString("MMM dd, yyyy")</small>
-                        <div class="flex gap-1">
+                        <div class="d-flex gap-1">
                             <a asp-action="EditTemplate" asp-route-id="@template.Id" asp-route-companyId="@companyId"
                                class="btn btn-sm btn-outline-primary">
                                 <i class="bi bi-pencil me-1"></i> Edit
                             </a>
-                            <form asp-action="DeleteTemplate" method="post" class="inline"
+                            <form asp-action="DeleteTemplate" method="post" class="d-inline"
                                   onsubmit="return confirm('Delete this template?')">
                                 <input type="hidden" name="id" value="@template.Id" />
                                 <input type="hidden" name="companyId" value="@companyId" />

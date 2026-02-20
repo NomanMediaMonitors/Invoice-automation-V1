@@ -37,13 +37,13 @@
                             <label asp-for="AccessToken" class="form-label">Indraaj Access Token *</label>
                             <input asp-for="AccessToken" class="form-control" placeholder="Enter your Indraaj access token" />
                             <span asp-validation-for="AccessToken" class="text-danger"></span>
-                            <small class="text-muted block mt-1">
+                            <small class="text-muted d-block mt-1">
                                 Your access token will be encrypted and stored securely.
                             </small>
                         </div>
                     </div>
 
-                    <div class="flex justify-between items-center pt-2">
+                    <div class="d-flex justify-content-between align-items-center pt-2">
                         <a asp-action="Details" asp-route-id="@companyId" class="btn btn-outline-secondary">
                             <i class="bi bi-arrow-left"></i> Back to Company
                         </a>

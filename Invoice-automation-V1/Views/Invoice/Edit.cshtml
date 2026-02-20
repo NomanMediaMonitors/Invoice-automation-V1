@@ -11,7 +11,7 @@
     </ol>
 </nav>
 
-<div class="page-header flex justify-between items-center">
+<div class="page-header d-flex justify-content-between align-items-center">
     <div>
         <h2 class="page-title">
             <i class="bi bi-pencil-square"></i> Edit Invoice
@@ -93,10 +93,10 @@
                     {
                         <div class="mb-3">
                             <label class="form-label">Current File</label>
-                            <div class="flex items-center p-3" style="background: var(--bg-secondary); border-radius: var(--radius-lg); border: 1px solid var(--border-color);">
+                            <div class="d-flex align-items-center p-3" style="background: var(--bg-secondary); border-radius: var(--radius-lg); border: 1px solid var(--border-color);">
                                 <i class="bi bi-file-earmark-pdf me-3" style="font-size: 1.5rem; color: var(--danger-color);"></i>
-                                <div class="grow">
-                                    <p class="mb-0 font-bold" style="font-size: 0.875rem; color: var(--text-primary);">@Model.OriginalFileName</p>
+                                <div class="flex-grow-1">
+                                    <p class="mb-0 fw-bold" style="font-size: 0.875rem; color: var(--text-primary);">@Model.OriginalFileName</p>
                                 </div>
                                 <a href="@Model.FileUrl" target="_blank" class="btn btn-sm btn-outline-primary">
                                     <i class="bi bi-eye"></i> View
@@ -126,7 +126,7 @@
     </div>
 
     <!-- Form Actions -->
-    <div class="flex justify-end gap-2">
+    <div class="d-flex justify-content-end gap-2">
         <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-secondary">
             Cancel
         </a>

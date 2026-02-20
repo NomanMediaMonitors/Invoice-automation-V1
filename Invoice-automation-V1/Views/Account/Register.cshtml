@@ -7,7 +7,7 @@
     <div class="card auth-card" style="width: 100%; max-width: 480px;">
         <div class="card-body">
             <div class="text-center mb-4">
-                <h2 class="font-bold mb-2">Create your account</h2>
+                <h2 class="fw-bold mb-2">Create your account</h2>
                 <p class="text-muted mb-0">Get started with Invoice Automation</p>
             </div>
 
@@ -15,7 +15,7 @@
                 <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
 
                 <div class="mb-4">
-                    <p class="font-semibold text-muted mb-3" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">Personal Information</p>
+                    <p class="fw-semibold text-muted mb-3" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">Personal Information</p>
 
                     <div class="mb-3">
                         <label asp-for="FullName" class="form-label">Full name</label>
@@ -30,14 +30,14 @@
                     </div>
 
                     <div class="mb-0">
-                        <label asp-for="Phone" class="form-label">Phone number <span class="text-muted font-normal">(optional)</span></label>
+                        <label asp-for="Phone" class="form-label">Phone number <span class="text-muted fw-normal">(optional)</span></label>
                         <input asp-for="Phone" class="form-control" placeholder="+1 (555) 000-0000" />
                         <span asp-validation-for="Phone" class="text-danger"></span>
                     </div>
                 </div>
 
                 <div class="mb-4">
-                    <p class="font-semibold text-muted mb-3" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">Security</p>
+                    <p class="fw-semibold text-muted mb-3" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">Security</p>
 
                     <div class="mb-3">
                         <label asp-for="Password" class="form-label">Password</label>
@@ -52,14 +52,14 @@
                     </div>
                 </div>
 
-                <div class="grid mb-3">
+                <div class="d-grid mb-3">
                     <button type="submit" class="btn btn-primary btn-lg">Create account</button>
                 </div>
 
                 <div class="text-center">
                     <p class="text-muted mb-0">
                         Already have an account?
-                        <a asp-action="Login" class="font-semibold">Sign in</a>
+                        <a asp-action="Login" class="fw-semibold">Sign in</a>
                     </p>
                 </div>
             </form>

@@ -17,14 +17,14 @@
 </nav>
 
 <div class="page-header">
-    <div class="flex justify-between items-start flex-wrap gap-3">
-        <div class="flex items-center gap-3">
+    <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+        <div class="d-flex align-items-center gap-3">
             <div class="stat-card-icon bg-primary">
                 <i class="bi bi-building"></i>
             </div>
             <div>
                 <h2 class="page-title mb-1">@Model.Name</h2>
-                <div class="flex gap-2 items-center flex-wrap">
+                <div class="d-flex gap-2 align-items-center flex-wrap">
                     <span class="badge bg-primary">
                         <i class="bi bi-person-badge"></i> @userRole
                     </span>
@@ -37,7 +37,7 @@
                 </div>
             </div>
         </div>
-        <div class="flex gap-2">
+        <div class="d-flex gap-2">
             @if (isAdminOrAbove)
             {
                 <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">
@@ -81,7 +81,7 @@
                     <div class="col-md-6">
                         <div class="info-row">
                             <span class="info-label">NTN</span>
-                            <span class="info-value font-bold">@Model.Ntn</span>
+                            <span class="info-value fw-bold">@Model.Ntn</span>
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -203,12 +203,12 @@
                 <div class="row g-3">
                     <div class="col-md-6">
                         <a asp-controller="Employee" asp-action="Index" asp-route-companyId="@Model.Id" class="quick-link-card">
-                            <div class="flex items-center">
+                            <div class="d-flex align-items-center">
                                 <div class="quick-link-icon bg-primary">
                                     <i class="bi bi-people"></i>
                                 </div>
                                 <div class="ms-3">
-                                    <div class="font-bold">Employees</div>
+                                    <div class="fw-bold">Employees</div>
                                     <small class="text-muted">Manage team members</small>
                                 </div>
                             </div>
@@ -216,12 +216,12 @@
                     </div>
                     <div class="col-md-6">
                         <a asp-controller="Vendor" asp-action="Index" asp-route-companyId="@Model.Id" class="quick-link-card">
-                            <div class="flex items-center">
+                            <div class="d-flex align-items-center">
                                 <div class="quick-link-icon bg-info">
                                     <i class="bi bi-truck"></i>
                                 </div>
                                 <div class="ms-3">
-                                    <div class="font-bold">Vendors</div>
+                                    <div class="fw-bold">Vendors</div>
                                     <small class="text-muted">Manage suppliers</small>
                                 </div>
                             </div>
@@ -231,12 +231,12 @@
                     {
                         <div class="col-md-6">
                             <a asp-action="ViewChartOfAccounts" asp-route-id="@Model.Id" class="quick-link-card">
-                                <div class="flex items-center">
+                                <div class="d-flex align-items-center">
                                     <div class="quick-link-icon bg-success">
                                         <i class="bi bi-list-ul"></i>
                                     </div>
                                     <div class="ms-3">
-                                        <div class="font-bold">Chart of Accounts</div>
+                                        <div class="fw-bold">Chart of Accounts</div>
                                         <small class="text-muted">View synced accounts</small>
                                     </div>
                                 </div>
@@ -245,12 +245,12 @@
                     }
                     <div class="col-md-6">
                         <a asp-controller="Invoice" asp-action="Index" class="quick-link-card">
-                            <div class="flex items-center">
+                            <div class="d-flex align-items-center">
                                 <div class="quick-link-icon bg-warning">
                                     <i class="bi bi-receipt"></i>
                                 </div>
                                 <div class="ms-3">
-                                    <div class="font-bold">Invoices</div>
+                                    <div class="fw-bold">Invoices</div>
                                     <small class="text-muted">Manage invoices</small>
                                 </div>
                             </div>
@@ -282,7 +282,7 @@
 
                 @if (isAdminOrAbove)
                 {
-                    <a asp-action="ConnectIndraaj" asp-route-id="@Model.Id" class="btn btn-primary w-full">
+                    <a asp-action="ConnectIndraaj" asp-route-id="@Model.Id" class="btn btn-primary w-100">
                         <i class="bi bi-link-45deg"></i> Connect Indraaj
                     </a>
                 }
@@ -291,7 +291,7 @@
             {
                 <form asp-action="SyncCoa" asp-route-id="@Model.Id" method="post" class="mb-2">
                     @Html.AntiForgeryToken()
-                    <button type="submit" class="btn btn-success w-full" disabled="@(!canSync)">
+                    <button type="submit" class="btn btn-success w-100" disabled="@(!canSync)">
                         <i class="bi bi-arrow-repeat"></i>
                         @if (canSync)
                         {
@@ -306,19 +306,19 @@
 
                 @if (!canSync)
                 {
-                    <small class="text-muted block mb-3">
+                    <small class="text-muted d-block mb-3">
                         <i class="bi bi-info-circle"></i> Sync is available once every 7 days
                     </small>
                 }
 
-                <a asp-action="ViewChartOfAccounts" asp-route-id="@Model.Id" class="btn btn-outline-primary w-full mb-2">
+                <a asp-action="ViewChartOfAccounts" asp-route-id="@Model.Id" class="btn btn-outline-primary w-100 mb-2">
                     <i class="bi bi-list-ul"></i> View Chart of Accounts
                 </a>
 
                 @if (isAdminOrAbove)
                 {
                     <hr />
-                    <a asp-action="ConnectIndraaj" asp-route-id="@Model.Id" class="btn btn-outline-secondary w-full">
+                    <a asp-action="ConnectIndraaj" asp-route-id="@Model.Id" class="btn btn-outline-secondary w-100">
                         <i class="bi bi-arrow-repeat"></i> Update Access Token
                     </a>
                 }
@@ -331,7 +331,7 @@
                 <i class="bi bi-people"></i>
                 Team Management
             </h5>
-            <div class="grid gap-2">
+            <div class="d-grid gap-2">
                 <a asp-controller="Employee" asp-action="Index" asp-route-companyId="@Model.Id" class="btn btn-outline-primary">
                     <i class="bi bi-people"></i> Manage Employees
                 </a>
@@ -351,7 +351,7 @@
                 <i class="bi bi-truck"></i>
                 Vendor Management
             </h5>
-            <div class="grid gap-2">
+            <div class="d-grid gap-2">
                 <a asp-controller="Vendor" asp-action="Index" asp-route-companyId="@Model.Id" class="btn btn-outline-primary">
                     <i class="bi bi-truck"></i> Manage Vendors
                 </a>
@@ -365,7 +365,7 @@
         <!-- Metadata -->
         <div class="card">
             <div class="card-body">
-                <h6 class="font-bold mb-3">
+                <h6 class="fw-bold mb-3">
                     <i class="bi bi-info-circle me-2"></i>Metadata
                 </h6>
                 <div class="info-row">
