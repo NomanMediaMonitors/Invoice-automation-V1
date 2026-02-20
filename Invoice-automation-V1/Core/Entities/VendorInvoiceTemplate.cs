@@ -25,10 +25,22 @@ public class VendorInvoiceTemplate
     public string? TaxLabel { get; set; }              // e.g., "GST", "Tax", "VAT", "Sales Tax"
     public string? TotalLabel { get; set; }            // e.g., "Total", "Grand Total", "Amount Due"
 
+    // GL Account configuration - which account categories does this vendor use?
+    public bool HasExpenseAccount { get; set; } = true;
+    public bool HasAdvanceTaxAccount { get; set; } = true;
+    public bool HasSalesTaxInputAccount { get; set; } = true;
+    public bool HasPayableVendorsAccount { get; set; } = true;
+
+    // Default GL accounts for this vendor's invoices
+    public Guid? DefaultExpenseAccountId { get; set; }
+    public Guid? DefaultAdvanceTaxAccountId { get; set; }
+    public Guid? DefaultSalesTaxInputAccountId { get; set; }
+    public Guid? DefaultPayableVendorsAccountId { get; set; }
+
     // Default tax rate for this vendor (if not extracted from OCR)
     public decimal? DefaultTaxRate { get; set; }
 
-    // Default chart of account for this vendor's invoices
+    // Default chart of account for this vendor's invoices (legacy - for line items)
     public Guid? DefaultChartOfAccountId { get; set; }
 
     // Notes about this template
@@ -43,4 +55,8 @@ public class VendorInvoiceTemplate
     // Navigation Properties
     public virtual Vendor Vendor { get; set; } = null!;
     public virtual ChartOfAccount? DefaultChartOfAccount { get; set; }
+    public virtual ChartOfAccount? DefaultExpenseAccount { get; set; }
+    public virtual ChartOfAccount? DefaultAdvanceTaxAccount { get; set; }
+    public virtual ChartOfAccount? DefaultSalesTaxInputAccount { get; set; }
+    public virtual ChartOfAccount? DefaultPayableVendorsAccount { get; set; }
 }

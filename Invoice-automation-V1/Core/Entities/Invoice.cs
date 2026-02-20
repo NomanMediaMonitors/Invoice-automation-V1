@@ -40,6 +40,17 @@ public class Invoice
     public string? PaymentReference { get; set; }
     public Guid? PaidBy { get; set; }
 
+    // GL Account Assignments
+    public Guid? ExpenseAccountId { get; set; }
+    public Guid? AdvanceTaxAccountId { get; set; }
+    public Guid? SalesTaxInputAccountId { get; set; }
+    public Guid? PayableVendorsAccountId { get; set; }
+
+    // GL Posting
+    public bool IsPostedToGL { get; set; }
+    public DateTime? PostedToGLAt { get; set; }
+    public Guid? PostedToGLBy { get; set; }
+
     // Indraaj Integration
     public string? IndraajVoucherNo { get; set; }
     public DateTime? SyncedToIndraajAt { get; set; }
@@ -53,6 +64,10 @@ public class Invoice
     // Navigation Properties
     public Company? Company { get; set; }
     public Vendor? Vendor { get; set; }
+    public ChartOfAccount? ExpenseAccount { get; set; }
+    public ChartOfAccount? AdvanceTaxAccount { get; set; }
+    public ChartOfAccount? SalesTaxInputAccount { get; set; }
+    public ChartOfAccount? PayableVendorsAccount { get; set; }
     public ICollection<InvoiceLineItem> LineItems { get; set; } = new List<InvoiceLineItem>();
 }
 

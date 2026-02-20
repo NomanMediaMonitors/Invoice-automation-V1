@@ -137,6 +137,27 @@ public class InvoiceDetailsViewModel
     public string? PaymentReference { get; set; }
     public string? PaidByName { get; set; }
 
+    // GL Account Assignments
+    public Guid? ExpenseAccountId { get; set; }
+    public string? ExpenseAccountName { get; set; }
+    public Guid? AdvanceTaxAccountId { get; set; }
+    public string? AdvanceTaxAccountName { get; set; }
+    public Guid? SalesTaxInputAccountId { get; set; }
+    public string? SalesTaxInputAccountName { get; set; }
+    public Guid? PayableVendorsAccountId { get; set; }
+    public string? PayableVendorsAccountName { get; set; }
+
+    // GL Posting
+    public bool IsPostedToGL { get; set; }
+    public DateTime? PostedToGLAt { get; set; }
+    public string? PostedToGLByName { get; set; }
+
+    // Vendor Template visibility flags
+    public bool HasExpenseAccount { get; set; } = true;
+    public bool HasAdvanceTaxAccount { get; set; } = true;
+    public bool HasSalesTaxInputAccount { get; set; } = true;
+    public bool HasPayableVendorsAccount { get; set; } = true;
+
     // Indraaj Integration
     public string? IndraajVoucherNo { get; set; }
     public DateTime? SyncedToIndraajAt { get; set; }
