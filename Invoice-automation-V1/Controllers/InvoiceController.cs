@@ -432,6 +432,92 @@ public class InvoiceController : Controller
         return RedirectToAction(nameof(Details), new { id });
     }
 
+    // POST: Invoice/PostToGL/5
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> PostToGL(Guid id)
+    {
+        try
+        {
+            var userId = GetCurrentUserId();
+            var result = await _invoiceService.PostToGLAsync(id, userId);
+
+            if (result.Success)
+            {
+                TempData["Success"] = result.Message;
+            }
+            else
+            {
+                TempData["Error"] = result.Message;
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error posting invoice to GL");
+            TempData["Error"] = "An error occurred while posting to General Ledger";
+        }
+
+        return RedirectToAction(nameof(Details), new { id });
+    }
+
+    // POST: Invoice/UpdateInvoiceAccount (AJAX - for inline GL account assignment)
+    [HttpPost]
+    public async Task<IActionResult> UpdateInvoiceAccount([FromBody] UpdateInvoiceAccountRequest request)
+    {
+        try
+        {
+            var invoice = await _context.Invoices.FindAsync(request.InvoiceId);
+            if (invoice == null)
+                return Json(new { success = false, message = "Invoice not found" });
+
+            var userId = GetCurrentUserId();
+            if (!await _invoiceService.CanUserAccessInvoiceAsync(request.InvoiceId, userId))
+                return Json(new { success = false, message = "Access denied" });
+
+            if (invoice.IsPostedToGL)
+                return Json(new { success = false, message = "Cannot change accounts after posting to GL" });
+
+            Guid? accountId = null;
+            string? accountName = null;
+            if (Guid.TryParse(request.AccountId, out var parsedId) && parsedId != Guid.Empty)
+            {
+                var account = await _context.ChartOfAccounts.FindAsync(parsedId);
+                if (account == null)
+                    return Json(new { success = false, message = "Account not found" });
+                accountId = account.Id;
+                accountName = account.DisplayName;
+            }
+
+            switch (request.AccountType.ToLower())
+            {
+                case "expense":
+                    invoice.ExpenseAccountId = accountId;
+                    break;
+                case "advancetax":
+                    invoice.AdvanceTaxAccountId = accountId;
+                    break;
+                case "salestaxinput":
+                    invoice.SalesTaxInputAccountId = accountId;
+                    break;
+                case "payablevendors":
+                    invoice.PayableVendorsAccountId = accountId;
+                    break;
+                default:
+                    return Json(new { success = false, message = "Unknown account type" });
+            }
+
+            invoice.UpdatedAt = DateTime.UtcNow;
+            await _context.SaveChangesAsync();
+
+            return Json(new { success = true, accountName = accountName ?? "" });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error updating invoice account");
+            return Json(new { success = false, message = "An error occurred" });
+        }
+    }
+
     // POST: Invoice/ProcessOcr/5
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -952,5 +1038,12 @@ public class InvoiceController : Controller
         public Guid InvoiceId { get; set; }
         public string Field { get; set; } = string.Empty;
         public string? Value { get; set; }
+    }
+
+    public class UpdateInvoiceAccountRequest
+    {
+        public Guid InvoiceId { get; set; }
+        public string AccountType { get; set; } = string.Empty;
+        public string? AccountId { get; set; }
     }
 }

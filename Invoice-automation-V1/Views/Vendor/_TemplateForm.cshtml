@@ -62,7 +62,7 @@
                         <input asp-for="DefaultTaxRate" type="number" class="form-control" min="0" max="100" step="0.01" placeholder="e.g., 17">
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label asp-for="DefaultChartOfAccountId" class="form-label">Default Account</label>
+                        <label asp-for="DefaultChartOfAccountId" class="form-label">Default Line Item Account</label>
                         <select asp-for="DefaultChartOfAccountId" class="form-select" asp-items="ViewBag.ChartOfAccounts">
                             <option value="">-- None --</option>
                         </select>
@@ -77,8 +77,70 @@
         </div>
     </div>
 
-    <!-- Right Column: OCR Label Mapping -->
+    <!-- Right Column: OCR Label Mapping + GL Accounts -->
     <div class="col-md-6">
+        <!-- GL Account Configuration -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="fw-semibold mb-3">GL Account Configuration</h5>
+
+                <div class="alert alert-info py-2 small">
+                    <i class="bi bi-info-circle me-1"></i>
+                    Toggle which GL account categories apply for this vendor's invoices.
+                    Disabled accounts will not appear on the invoice details page.
+                </div>
+
+                <div class="mb-3">
+                    <div class="form-check form-switch mb-2">
+                        <input asp-for="HasExpenseAccount" class="form-check-input" id="hasExpenseAccount">
+                        <label asp-for="HasExpenseAccount" class="form-check-label fw-semibold">Expense</label>
+                    </div>
+                    <div id="expenseAccountSection">
+                        <select asp-for="DefaultExpenseAccountId" class="form-select form-select-sm" asp-items="ViewBag.ChartOfAccounts">
+                            <option value="">-- Default Expense Account --</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <div class="form-check form-switch mb-2">
+                        <input asp-for="HasAdvanceTaxAccount" class="form-check-input" id="hasAdvanceTaxAccount">
+                        <label asp-for="HasAdvanceTaxAccount" class="form-check-label fw-semibold">Advance Tax</label>
+                    </div>
+                    <div id="advanceTaxAccountSection">
+                        <select asp-for="DefaultAdvanceTaxAccountId" class="form-select form-select-sm" asp-items="ViewBag.ChartOfAccounts">
+                            <option value="">-- Default Advance Tax Account --</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <div class="form-check form-switch mb-2">
+                        <input asp-for="HasSalesTaxInputAccount" class="form-check-input" id="hasSalesTaxInputAccount">
+                        <label asp-for="HasSalesTaxInputAccount" class="form-check-label fw-semibold">Sales Tax Input</label>
+                    </div>
+                    <div id="salesTaxInputAccountSection">
+                        <select asp-for="DefaultSalesTaxInputAccountId" class="form-select form-select-sm" asp-items="ViewBag.ChartOfAccounts">
+                            <option value="">-- Default Sales Tax Input Account --</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mb-0">
+                    <div class="form-check form-switch mb-2">
+                        <input asp-for="HasPayableVendorsAccount" class="form-check-input" id="hasPayableVendorsAccount">
+                        <label asp-for="HasPayableVendorsAccount" class="form-check-label fw-semibold">Payable Vendors</label>
+                    </div>
+                    <div id="payableVendorsAccountSection">
+                        <select asp-for="DefaultPayableVendorsAccountId" class="form-select form-select-sm" asp-items="ViewBag.ChartOfAccounts">
+                            <option value="">-- Default Payable Vendors Account --</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- OCR Label Mapping -->
         <div class="card mb-4">
             <div class="card-body">
                 <h5 class="fw-semibold mb-3">OCR Label Mapping</h5>
@@ -125,3 +187,23 @@
 </div>
 
 <input type="hidden" asp-for="VendorId" />
+
+@section Scripts {
+    <script>
+        function toggleAccountSection(checkboxId, sectionId) {
+            var checkbox = document.getElementById(checkboxId);
+            var section = document.getElementById(sectionId);
+            if (checkbox && section) {
+                section.style.display = checkbox.checked ? '' : 'none';
+                checkbox.addEventListener('change', function() {
+                    section.style.display = this.checked ? '' : 'none';
+                });
+            }
+        }
+
+        toggleAccountSection('hasExpenseAccount', 'expenseAccountSection');
+        toggleAccountSection('hasAdvanceTaxAccount', 'advanceTaxAccountSection');
+        toggleAccountSection('hasSalesTaxInputAccount', 'salesTaxInputAccountSection');
+        toggleAccountSection('hasPayableVendorsAccount', 'payableVendorsAccountSection');
+    </script>
+}

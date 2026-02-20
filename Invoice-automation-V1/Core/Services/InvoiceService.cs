@@ -242,6 +242,10 @@ public class InvoiceService : IInvoiceService
         var invoice = await _context.Invoices
             .Include(i => i.Company)
             .Include(i => i.Vendor)
+            .Include(i => i.ExpenseAccount)
+            .Include(i => i.AdvanceTaxAccount)
+            .Include(i => i.SalesTaxInputAccount)
+            .Include(i => i.PayableVendorsAccount)
             .Include(i => i.LineItems)
                 .ThenInclude(li => li.ChartOfAccount)
             .FirstOrDefaultAsync(i => i.Id == invoiceId);
@@ -255,6 +259,22 @@ public class InvoiceService : IInvoiceService
         var createdByUser = await _context.Users.FindAsync(invoice.CreatedBy);
         var approvedByUser = invoice.ApprovedBy.HasValue ? await _context.Users.FindAsync(invoice.ApprovedBy.Value) : null;
         var paidByUser = invoice.PaidBy.HasValue ? await _context.Users.FindAsync(invoice.PaidBy.Value) : null;
+        var postedByUser = invoice.PostedToGLBy.HasValue ? await _context.Users.FindAsync(invoice.PostedToGLBy.Value) : null;
+
+        // Load vendor template visibility flags
+        bool hasExpenseAccount = true, hasAdvanceTaxAccount = true, hasSalesTaxInputAccount = true, hasPayableVendorsAccount = true;
+        if (invoice.VendorId.HasValue)
+        {
+            var vendorTemplate = await _context.VendorInvoiceTemplates
+                .FirstOrDefaultAsync(t => t.VendorId == invoice.VendorId.Value && t.IsActive);
+            if (vendorTemplate != null)
+            {
+                hasExpenseAccount = vendorTemplate.HasExpenseAccount;
+                hasAdvanceTaxAccount = vendorTemplate.HasAdvanceTaxAccount;
+                hasSalesTaxInputAccount = vendorTemplate.HasSalesTaxInputAccount;
+                hasPayableVendorsAccount = vendorTemplate.HasPayableVendorsAccount;
+            }
+        }
 
         var viewModel = new InvoiceDetailsViewModel
         {
@@ -283,6 +303,25 @@ public class InvoiceService : IInvoiceService
             OcrProcessedAt = invoice.OcrProcessedAt,
             OcrConfidenceScore = invoice.OcrConfidenceScore,
             OcrErrorMessage = invoice.OcrErrorMessage,
+            // GL Account assignments
+            ExpenseAccountId = invoice.ExpenseAccountId,
+            ExpenseAccountName = invoice.ExpenseAccount?.DisplayName,
+            AdvanceTaxAccountId = invoice.AdvanceTaxAccountId,
+            AdvanceTaxAccountName = invoice.AdvanceTaxAccount?.DisplayName,
+            SalesTaxInputAccountId = invoice.SalesTaxInputAccountId,
+            SalesTaxInputAccountName = invoice.SalesTaxInputAccount?.DisplayName,
+            PayableVendorsAccountId = invoice.PayableVendorsAccountId,
+            PayableVendorsAccountName = invoice.PayableVendorsAccount?.DisplayName,
+            // GL Posting
+            IsPostedToGL = invoice.IsPostedToGL,
+            PostedToGLAt = invoice.PostedToGLAt,
+            PostedToGLByName = postedByUser?.FullName,
+            // Vendor template visibility
+            HasExpenseAccount = hasExpenseAccount,
+            HasAdvanceTaxAccount = hasAdvanceTaxAccount,
+            HasSalesTaxInputAccount = hasSalesTaxInputAccount,
+            HasPayableVendorsAccount = hasPayableVendorsAccount,
+            // Approval/Payment
             ApprovedByName = approvedByUser?.FullName,
             ApprovedAt = invoice.ApprovedAt,
             ApprovalNotes = invoice.ApprovalNotes,
@@ -652,6 +691,19 @@ public class InvoiceService : IInvoiceService
                     defaultAccountCode = defaultAccount?.Code;
                 }
 
+                // Auto-populate GL accounts from vendor template defaults
+                if (vendorTemplate != null)
+                {
+                    if (vendorTemplate.HasExpenseAccount && vendorTemplate.DefaultExpenseAccountId.HasValue && !invoice.ExpenseAccountId.HasValue)
+                        invoice.ExpenseAccountId = vendorTemplate.DefaultExpenseAccountId;
+                    if (vendorTemplate.HasAdvanceTaxAccount && vendorTemplate.DefaultAdvanceTaxAccountId.HasValue && !invoice.AdvanceTaxAccountId.HasValue)
+                        invoice.AdvanceTaxAccountId = vendorTemplate.DefaultAdvanceTaxAccountId;
+                    if (vendorTemplate.HasSalesTaxInputAccount && vendorTemplate.DefaultSalesTaxInputAccountId.HasValue && !invoice.SalesTaxInputAccountId.HasValue)
+                        invoice.SalesTaxInputAccountId = vendorTemplate.DefaultSalesTaxInputAccountId;
+                    if (vendorTemplate.HasPayableVendorsAccount && vendorTemplate.DefaultPayableVendorsAccountId.HasValue && !invoice.PayableVendorsAccountId.HasValue)
+                        invoice.PayableVendorsAccountId = vendorTemplate.DefaultPayableVendorsAccountId;
+                }
+
                 // Clear existing OCR-extracted line items before adding new ones
                 var ocrLineItems = invoice.LineItems.Where(li => li.IsOcrExtracted).ToList();
                 if (ocrLineItems.Any())
@@ -751,6 +803,81 @@ public class InvoiceService : IInvoiceService
             }
 
             return (false, $"Error processing OCR: {ex.Message}");
+        }
+    }
+
+    public async Task<(bool Success, string Message)> PostToGLAsync(Guid invoiceId, Guid userId)
+    {
+        try
+        {
+            if (!await CanUserAccessInvoiceAsync(invoiceId, userId))
+            {
+                return (false, "Access denied");
+            }
+
+            var invoice = await _context.Invoices
+                .Include(i => i.Vendor)
+                .FirstOrDefaultAsync(i => i.Id == invoiceId);
+
+            if (invoice == null)
+            {
+                return (false, "Invoice not found");
+            }
+
+            if (invoice.IsPostedToGL)
+            {
+                return (false, "Invoice has already been posted to General Ledger");
+            }
+
+            if (invoice.Status != InvoiceStatus.Approved && invoice.Status != InvoiceStatus.Paid)
+            {
+                return (false, "Invoice must be Approved or Paid before posting to General Ledger");
+            }
+
+            // Load vendor template to check which accounts are required
+            VendorInvoiceTemplate? vendorTemplate = null;
+            if (invoice.VendorId.HasValue)
+            {
+                vendorTemplate = await _context.VendorInvoiceTemplates
+                    .FirstOrDefaultAsync(t => t.VendorId == invoice.VendorId.Value && t.IsActive);
+            }
+
+            // Validate that all enabled accounts are assigned
+            if (vendorTemplate == null || vendorTemplate.HasExpenseAccount)
+            {
+                if (!invoice.ExpenseAccountId.HasValue)
+                    return (false, "Expense account must be assigned before posting to GL");
+            }
+            if (vendorTemplate == null || vendorTemplate.HasAdvanceTaxAccount)
+            {
+                if (!invoice.AdvanceTaxAccountId.HasValue)
+                    return (false, "Advance Tax account must be assigned before posting to GL");
+            }
+            if (vendorTemplate == null || vendorTemplate.HasSalesTaxInputAccount)
+            {
+                if (!invoice.SalesTaxInputAccountId.HasValue)
+                    return (false, "Sales Tax Input account must be assigned before posting to GL");
+            }
+            if (vendorTemplate == null || vendorTemplate.HasPayableVendorsAccount)
+            {
+                if (!invoice.PayableVendorsAccountId.HasValue)
+                    return (false, "Payable Vendors account must be assigned before posting to GL");
+            }
+
+            invoice.IsPostedToGL = true;
+            invoice.PostedToGLAt = DateTime.UtcNow;
+            invoice.PostedToGLBy = userId;
+            invoice.UpdatedAt = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+
+            _logger.LogInformation("Invoice {InvoiceId} posted to GL by user {UserId}", invoiceId, userId);
+            return (true, "Invoice successfully posted to General Ledger");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error posting invoice to GL");
+            return (false, $"Error posting to General Ledger: {ex.Message}");
         }
     }
 
