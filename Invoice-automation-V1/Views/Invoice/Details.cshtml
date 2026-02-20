@@ -184,237 +184,6 @@
                 }
             </div>
         </div>
-
-        <!-- Line Items Card -->
-        <div class="card mb-4">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="mb-0"><i class="bi bi-list-ul"></i> Line Items</h5>
-                @if (canEdit)
-                {
-                    <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="collapse" data-bs-target="#addLineItemForm">
-                        <i class="bi bi-plus-circle"></i> Add Line Item
-                    </button>
-                }
-            </div>
-            <div class="card-body">
-                @if (canEdit)
-                {
-                    <!-- Add Line Item Form (collapsible) -->
-                    <div class="collapse mb-3" id="addLineItemForm">
-                        <div class="p-3" style="background: var(--bg-secondary); border-radius: var(--radius-lg); border: 1px solid var(--border-color);">
-                            <form asp-action="AddLineItem" method="post">
-                                <input type="hidden" name="invoiceId" value="@Model.Id" />
-                                <div class="row g-2">
-                                    <div class="col-md-3">
-                                        <label class="form-label form-label-sm">Description <span class="text-danger">*</span></label>
-                                        <input type="text" name="description" class="form-control form-control-sm" required placeholder="Item description">
-                                    </div>
-                                    <div class="col-md-1">
-                                        <label class="form-label form-label-sm">Qty <span class="text-danger">*</span></label>
-                                        <input type="number" name="quantity" class="form-control form-control-sm" value="1" min="0.01" step="0.01" required id="newQty">
-                                    </div>
-                                    <div class="col-md-2">
-                                        <label class="form-label form-label-sm">Unit Price <span class="text-danger">*</span></label>
-                                        <input type="number" name="unitPrice" class="form-control form-control-sm" min="0.01" step="0.01" required placeholder="0.00" id="newPrice">
-                                    </div>
-                                    <div class="col-md-1">
-                                        <label class="form-label form-label-sm">Tax %</label>
-                                        <input type="number" name="taxRate" class="form-control form-control-sm" value="0" min="0" max="100" step="0.01" id="newTaxRate">
-                                    </div>
-                                    <div class="col-md-3">
-                                        <label class="form-label form-label-sm">Account</label>
-                                        <select name="chartOfAccountId" class="form-select form-select-sm">
-                                            <option value="">-- Select --</option>
-                                            @if (ViewBag.ChartOfAccounts != null)
-                                            {
-                                                @foreach (var account in (List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>)ViewBag.ChartOfAccounts)
-                                                {
-                                                    <option value="@account.Value">@account.Text</option>
-                                                }
-                                            }
-                                        </select>
-                                    </div>
-                                    <div class="col-md-2 d-flex align-items-end">
-                                        <button type="submit" class="btn btn-primary btn-sm w-100">
-                                            <i class="bi bi-plus"></i> Add
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="row g-2 mt-1">
-                                    <div class="col-md-12">
-                                        <small id="lineItemPreview" style="color: var(--text-tertiary);"></small>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                }
-
-                @if (Model.LineItems.Any())
-                {
-                    <div class="table-responsive" style="overflow-x: auto;">
-                        <table class="table mb-0 line-items-table" id="lineItemsTable">
-                            <thead>
-                                <tr>
-                                    <th style="width: 50px;">#</th>
-                                    <th style="min-width: 250px;">Description</th>
-                                    <th style="min-width: 180px;">Account</th>
-                                    <th class="text-end" style="min-width: 90px;">Qty</th>
-                                    <th class="text-end" style="min-width: 120px;">Unit Price</th>
-                                    <th class="text-end" style="min-width: 80px;">Tax %</th>
-                                    <th class="text-end" style="min-width: 120px;">Amount</th>
-                                    <th class="text-end" style="min-width: 100px;">Tax</th>
-                                    <th class="text-end" style="min-width: 120px;">Total</th>
-                                    @if (canEdit)
-                                    {
-                                        <th style="width: 80px;" class="text-center">Actions</th>
-                                    }
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var item in Model.LineItems)
-                                {
-                                    <tr data-line-item-id="@item.Id">
-                                        <td>@item.LineNumber</td>
-                                        @if (canEdit)
-                                        {
-                                            <td>
-                                                <input type="text" class="form-control form-control-sm li-description"
-                                                       value="@item.Description" data-original="@item.Description"
-                                                       style="min-width: 220px;">
-                                                @if (item.IsOcrExtracted)
-                                                {
-                                                    <span class="badge mt-1" style="font-size:0.6rem; background-color: var(--info-light); color: var(--info-color);" title="Extracted by OCR">OCR</span>
-                                                }
-                                            </td>
-                                            <td>
-                                                <select class="form-select form-select-sm li-account" style="min-width: 170px;">
-                                                    <option value="">-- Select --</option>
-                                                    @if (ViewBag.ChartOfAccounts != null)
-                                                    {
-                                                        @foreach (var account in (List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>)ViewBag.ChartOfAccounts)
-                                                        {
-                                                            <option value="@account.Value"
-                                                                    selected="@(item.ChartOfAccountId?.ToString() == account.Value)">
-                                                                @account.Text
-                                                            </option>
-                                                        }
-                                                    }
-                                                </select>
-                                            </td>
-                                            <td>
-                                                <input type="number" class="form-control form-control-sm text-end li-qty"
-                                                       value="@item.Quantity" min="0.0001" step="0.01"
-                                                       data-original="@item.Quantity" style="min-width: 80px; width: 100%;">
-                                            </td>
-                                            <td>
-                                                <input type="number" class="form-control form-control-sm text-end li-unitprice"
-                                                       value="@item.UnitPrice" min="0" step="0.01"
-                                                       data-original="@item.UnitPrice" style="min-width: 110px; width: 100%;">
-                                            </td>
-                                            <td>
-                                                <input type="number" class="form-control form-control-sm text-end li-taxrate"
-                                                       value="@item.TaxRate" min="0" max="100" step="0.01"
-                                                       data-original="@item.TaxRate" style="min-width: 70px; width: 100%;">
-                                            </td>
-                                            <td class="text-end li-amount" style="white-space: nowrap;">@Model.Currency @item.Amount.ToString("N2")</td>
-                                            <td class="text-end li-taxamount" style="white-space: nowrap;">@Model.Currency @item.TaxAmount.ToString("N2")</td>
-                                            <td class="text-end fw-bold li-totalamount" style="white-space: nowrap;">@Model.Currency @item.TotalAmount.ToString("N2")</td>
-                                            <td class="text-center">
-                                                <div class="d-flex flex-column gap-1 align-items-center">
-                                                    <button type="button" class="btn btn-outline-success btn-sm save-line-item" title="Save changes" style="display:none;">
-                                                        <i class="bi bi-check-lg"></i>
-                                                    </button>
-                                                    <form asp-action="DeleteLineItem" method="post" class="d-inline"
-                                                          onsubmit="return confirm('Delete this line item?')">
-                                                        <input type="hidden" name="lineItemId" value="@item.Id" />
-                                                        <button type="submit" class="btn btn-outline-danger btn-sm" title="Delete">
-                                                            <i class="bi bi-trash"></i>
-                                                        </button>
-                                                    </form>
-                                                </div>
-                                            </td>
-                                        }
-                                        else
-                                        {
-                                            <td>
-                                                @item.Description
-                                                @if (item.IsOcrExtracted)
-                                                {
-                                                    <span class="badge ms-2" style="background-color: var(--info-light); color: var(--info-color);" title="Extracted by OCR">OCR</span>
-                                                }
-                                            </td>
-                                            <td>
-                                                @if (!string.IsNullOrEmpty(item.AccountCode))
-                                                {
-                                                    <small style="color: var(--text-tertiary);">@item.AccountCode - @item.AccountName</small>
-                                                }
-                                                else
-                                                {
-                                                    <small style="color: var(--text-muted);">Not assigned</small>
-                                                }
-                                            </td>
-                                            <td class="text-end" style="white-space: nowrap;">@item.Quantity.ToString("N2")</td>
-                                            <td class="text-end" style="white-space: nowrap;">@Model.Currency @item.UnitPrice.ToString("N2")</td>
-                                            <td class="text-end" style="white-space: nowrap;">@item.TaxRate.ToString("N2")%</td>
-                                            <td class="text-end" style="white-space: nowrap;">@Model.Currency @item.Amount.ToString("N2")</td>
-                                            <td class="text-end" style="white-space: nowrap;">@Model.Currency @item.TaxAmount.ToString("N2")</td>
-                                            <td class="text-end fw-bold" style="white-space: nowrap;">@Model.Currency @item.TotalAmount.ToString("N2")</td>
-                                        }
-                                    </tr>
-                                }
-                            </tbody>
-                            <tfoot>
-                                <tr style="background: var(--bg-secondary);">
-                                    <td colspan="@(canEdit ? 9 : 8)" class="text-end"><strong>Subtotal:</strong></td>
-                                    <td class="text-end fw-bold" id="invoiceSubTotal">@Model.Currency @Model.SubTotal.ToString("N2")</td>
-                                </tr>
-                                <tr style="background: var(--bg-secondary);">
-                                    <td colspan="@(canEdit ? 9 : 8)" class="text-end"><strong>Tax:</strong></td>
-                                    <td class="text-end fw-bold" id="invoiceTaxAmount">@Model.Currency @Model.TaxAmount.ToString("N2")</td>
-                                </tr>
-                                <tr style="background: var(--primary-50);">
-                                    <td colspan="@(canEdit ? 9 : 8)" class="text-end"><strong>Total Amount:</strong></td>
-                                    <td class="text-end fw-bold" style="font-size: 1.0625rem;" id="invoiceTotalAmount">@Model.Currency @Model.TotalAmount.ToString("N2")</td>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
-                }
-                else
-                {
-                    <div class="empty-state">
-                        <i class="bi bi-inbox"></i>
-                        <h5>No Line Items</h5>
-                        <p>@(canEdit ? "Click \"Add Line Item\" above or run OCR to extract them." : "No line items have been added yet.")</p>
-                    </div>
-                }
-            </div>
-        </div>
-
-        <!-- Attached File Card -->
-        @if (!string.IsNullOrEmpty(Model.FileUrl))
-        {
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h5 class="mb-0"><i class="bi bi-paperclip"></i> Attached File</h5>
-                </div>
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <i class="bi bi-file-earmark-pdf me-3" style="font-size: 2rem; color: var(--danger-color);"></i>
-                        <div class="flex-grow-1">
-                            <p class="mb-1 fw-bold" style="color: var(--text-primary); font-size: 0.875rem;">@Model.OriginalFileName</p>
-                            <p class="mb-0" style="color: var(--text-tertiary); font-size: 0.75rem;">
-                                Size: @(Model.FileSize.HasValue ? (Model.FileSize.Value / 1024.0).ToString("N2") + " KB" : "Unknown")
-                            </p>
-                        </div>
-                        <a href="@Model.FileUrl" target="_blank" class="btn btn-outline-primary">
-                            <i class="bi bi-download"></i> Download
-                        </a>
-                    </div>
-                </div>
-            </div>
-        }
     </div>
 
     <!-- Right Column -->
@@ -615,6 +384,236 @@
         </div>
     </div>
 </div>
+
+<!-- Line Items Card - Full Width -->
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0"><i class="bi bi-list-ul"></i> Line Items</h5>
+        @if (canEdit)
+        {
+            <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="collapse" data-bs-target="#addLineItemForm">
+                <i class="bi bi-plus-circle"></i> Add Line Item
+            </button>
+        }
+    </div>
+    <div class="card-body">
+        @if (canEdit)
+        {
+            <!-- Add Line Item Form (collapsible) -->
+            <div class="collapse mb-3" id="addLineItemForm">
+                <div class="p-3" style="background: var(--bg-secondary); border-radius: var(--radius-lg); border: 1px solid var(--border-color);">
+                    <form asp-action="AddLineItem" method="post">
+                        <input type="hidden" name="invoiceId" value="@Model.Id" />
+                        <div class="row g-2">
+                            <div class="col-md-3">
+                                <label class="form-label form-label-sm">Description <span class="text-danger">*</span></label>
+                                <input type="text" name="description" class="form-control form-control-sm" required placeholder="Item description">
+                            </div>
+                            <div class="col-md-1">
+                                <label class="form-label form-label-sm">Qty <span class="text-danger">*</span></label>
+                                <input type="number" name="quantity" class="form-control form-control-sm" value="1" min="0.01" step="0.01" required id="newQty">
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label form-label-sm">Unit Price <span class="text-danger">*</span></label>
+                                <input type="number" name="unitPrice" class="form-control form-control-sm" min="0.01" step="0.01" required placeholder="0.00" id="newPrice">
+                            </div>
+                            <div class="col-md-1">
+                                <label class="form-label form-label-sm">Tax %</label>
+                                <input type="number" name="taxRate" class="form-control form-control-sm" value="0" min="0" max="100" step="0.01" id="newTaxRate">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label form-label-sm">Account</label>
+                                <select name="chartOfAccountId" class="form-select form-select-sm">
+                                    <option value="">-- Select --</option>
+                                    @if (ViewBag.ChartOfAccounts != null)
+                                    {
+                                        @foreach (var account in (List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>)ViewBag.ChartOfAccounts)
+                                        {
+                                            <option value="@account.Value">@account.Text</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-md-2 d-flex align-items-end">
+                                <button type="submit" class="btn btn-primary btn-sm w-100">
+                                    <i class="bi bi-plus"></i> Add
+                                </button>
+                            </div>
+                        </div>
+                        <div class="row g-2 mt-1">
+                            <div class="col-md-12">
+                                <small id="lineItemPreview" style="color: var(--text-tertiary);"></small>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        }
+
+        @if (Model.LineItems.Any())
+        {
+            <div class="table-responsive" style="overflow-x: auto;">
+                <table class="table mb-0 line-items-table" id="lineItemsTable">
+                    <thead>
+                        <tr>
+                            <th style="width: 50px;">#</th>
+                            <th style="min-width: 250px;">Description</th>
+                            <th style="min-width: 180px;">Account</th>
+                            <th class="text-end" style="min-width: 90px;">Qty</th>
+                            <th class="text-end" style="min-width: 120px;">Unit Price</th>
+                            <th class="text-end" style="min-width: 80px;">Tax %</th>
+                            <th class="text-end" style="min-width: 120px;">Amount</th>
+                            <th class="text-end" style="min-width: 100px;">Tax</th>
+                            <th class="text-end" style="min-width: 120px;">Total</th>
+                            @if (canEdit)
+                            {
+                                <th style="width: 80px;" class="text-center">Actions</th>
+                            }
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.LineItems)
+                        {
+                            <tr data-line-item-id="@item.Id">
+                                <td>@item.LineNumber</td>
+                                @if (canEdit)
+                                {
+                                    <td>
+                                        <input type="text" class="form-control form-control-sm li-description"
+                                               value="@item.Description" data-original="@item.Description">
+                                        @if (item.IsOcrExtracted)
+                                        {
+                                            <span class="badge mt-1" style="font-size:0.6rem; background-color: var(--info-light); color: var(--info-color);" title="Extracted by OCR">OCR</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <select class="form-select form-select-sm li-account">
+                                            <option value="">-- Select --</option>
+                                            @if (ViewBag.ChartOfAccounts != null)
+                                            {
+                                                @foreach (var account in (List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>)ViewBag.ChartOfAccounts)
+                                                {
+                                                    <option value="@account.Value"
+                                                            selected="@(item.ChartOfAccountId?.ToString() == account.Value)">
+                                                        @account.Text
+                                                    </option>
+                                                }
+                                            }
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="number" class="form-control form-control-sm text-end li-qty"
+                                               value="@item.Quantity" min="0.0001" step="0.01"
+                                               data-original="@item.Quantity">
+                                    </td>
+                                    <td>
+                                        <input type="number" class="form-control form-control-sm text-end li-unitprice"
+                                               value="@item.UnitPrice" min="0" step="0.01"
+                                               data-original="@item.UnitPrice">
+                                    </td>
+                                    <td>
+                                        <input type="number" class="form-control form-control-sm text-end li-taxrate"
+                                               value="@item.TaxRate" min="0" max="100" step="0.01"
+                                               data-original="@item.TaxRate">
+                                    </td>
+                                    <td class="text-end li-amount" style="white-space: nowrap;">@Model.Currency @item.Amount.ToString("N2")</td>
+                                    <td class="text-end li-taxamount" style="white-space: nowrap;">@Model.Currency @item.TaxAmount.ToString("N2")</td>
+                                    <td class="text-end fw-bold li-totalamount" style="white-space: nowrap;">@Model.Currency @item.TotalAmount.ToString("N2")</td>
+                                    <td class="text-center">
+                                        <div class="d-flex flex-column gap-1 align-items-center">
+                                            <button type="button" class="btn btn-outline-success btn-sm save-line-item" title="Save changes" style="display:none;">
+                                                <i class="bi bi-check-lg"></i>
+                                            </button>
+                                            <form asp-action="DeleteLineItem" method="post" class="d-inline"
+                                                  onsubmit="return confirm('Delete this line item?')">
+                                                <input type="hidden" name="lineItemId" value="@item.Id" />
+                                                <button type="submit" class="btn btn-outline-danger btn-sm" title="Delete">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td>
+                                        @item.Description
+                                        @if (item.IsOcrExtracted)
+                                        {
+                                            <span class="badge ms-2" style="background-color: var(--info-light); color: var(--info-color);" title="Extracted by OCR">OCR</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(item.AccountCode))
+                                        {
+                                            <small style="color: var(--text-tertiary);">@item.AccountCode - @item.AccountName</small>
+                                        }
+                                        else
+                                        {
+                                            <small style="color: var(--text-muted);">Not assigned</small>
+                                        }
+                                    </td>
+                                    <td class="text-end" style="white-space: nowrap;">@item.Quantity.ToString("N2")</td>
+                                    <td class="text-end" style="white-space: nowrap;">@Model.Currency @item.UnitPrice.ToString("N2")</td>
+                                    <td class="text-end" style="white-space: nowrap;">@item.TaxRate.ToString("N2")%</td>
+                                    <td class="text-end" style="white-space: nowrap;">@Model.Currency @item.Amount.ToString("N2")</td>
+                                    <td class="text-end" style="white-space: nowrap;">@Model.Currency @item.TaxAmount.ToString("N2")</td>
+                                    <td class="text-end fw-bold" style="white-space: nowrap;">@Model.Currency @item.TotalAmount.ToString("N2")</td>
+                                }
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr style="background: var(--bg-secondary);">
+                            <td colspan="@(canEdit ? 9 : 8)" class="text-end"><strong>Subtotal:</strong></td>
+                            <td class="text-end fw-bold" id="invoiceSubTotal">@Model.Currency @Model.SubTotal.ToString("N2")</td>
+                        </tr>
+                        <tr style="background: var(--bg-secondary);">
+                            <td colspan="@(canEdit ? 9 : 8)" class="text-end"><strong>Tax:</strong></td>
+                            <td class="text-end fw-bold" id="invoiceTaxAmount">@Model.Currency @Model.TaxAmount.ToString("N2")</td>
+                        </tr>
+                        <tr style="background: var(--primary-50);">
+                            <td colspan="@(canEdit ? 9 : 8)" class="text-end"><strong>Total Amount:</strong></td>
+                            <td class="text-end fw-bold" style="font-size: 1.0625rem;" id="invoiceTotalAmount">@Model.Currency @Model.TotalAmount.ToString("N2")</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="empty-state">
+                <i class="bi bi-inbox"></i>
+                <h5>No Line Items</h5>
+                <p>@(canEdit ? "Click \"Add Line Item\" above or run OCR to extract them." : "No line items have been added yet.")</p>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Attached File Card - Full Width -->
+@if (!string.IsNullOrEmpty(Model.FileUrl))
+{
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0"><i class="bi bi-paperclip"></i> Attached File</h5>
+        </div>
+        <div class="card-body">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-file-earmark-pdf me-3" style="font-size: 2rem; color: var(--danger-color);"></i>
+                <div class="flex-grow-1">
+                    <p class="mb-1 fw-bold" style="color: var(--text-primary); font-size: 0.875rem;">@Model.OriginalFileName</p>
+                    <p class="mb-0" style="color: var(--text-tertiary); font-size: 0.75rem;">
+                        Size: @(Model.FileSize.HasValue ? (Model.FileSize.Value / 1024.0).ToString("N2") + " KB" : "Unknown")
+                    </p>
+                </div>
+                <a href="@Model.FileUrl" target="_blank" class="btn btn-outline-primary">
+                    <i class="bi bi-download"></i> Download
+                </a>
+            </div>
+        </div>
+    </div>
+}
 
 <!-- Payment Modal -->
 <div class="modal fade" id="paymentModal" tabindex="-1">
