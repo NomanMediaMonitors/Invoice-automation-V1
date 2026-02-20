@@ -3,165 +3,135 @@
     ViewData["Title"] = "Edit Invoice";
 }
 
-<!-- Breadcrumb -->
-<nav class="mb-4">
-    <ol class="flex items-center gap-2 text-sm">
-        <li><a asp-action="Index" class="text-gray-400 hover:text-blue-600 transition-colors">Invoices</a></li>
-        <li class="text-gray-300"><i class="bi bi-chevron-right text-xs"></i></li>
-        <li><a asp-action="Details" asp-route-id="@Model.Id" class="text-gray-400 hover:text-blue-600 transition-colors">@Model.InvoiceNumber</a></li>
-        <li class="text-gray-300"><i class="bi bi-chevron-right text-xs"></i></li>
-        <li class="text-gray-700 font-medium">Edit</li>
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-action="Index">Invoices</a></li>
+        <li class="breadcrumb-item"><a asp-action="Details" asp-route-id="@Model.Id">@Model.InvoiceNumber</a></li>
+        <li class="breadcrumb-item active">Edit</li>
     </ol>
 </nav>
 
-<!-- Page Header -->
-<div class="flex items-center justify-between mb-6">
+<div class="page-header flex justify-between items-center">
     <div>
-        <h1 class="text-2xl font-bold text-gray-900 tracking-tight flex items-center gap-2.5">
-            <span class="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-blue-600 text-white shadow-sm">
-                <i class="bi bi-pencil-square text-base"></i>
-            </span>
-            Edit Invoice
-        </h1>
-        <p class="mt-1 text-sm text-gray-500">Update invoice information and attached file</p>
+        <h2 class="page-title">
+            <i class="bi bi-pencil-square"></i> Edit Invoice
+        </h2>
+        <p class="page-subtitle mb-0">Update invoice information and attached file</p>
     </div>
-    <a asp-action="Details" asp-route-id="@Model.Id"
-       class="inline-flex items-center gap-2 px-4 py-2.5 border border-gray-200 text-gray-600 text-sm font-medium rounded-xl hover:bg-gray-50 transition-colors">
+    <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-secondary">
         <i class="bi bi-arrow-left"></i> Back to Details
     </a>
 </div>
 
 <form asp-action="Edit" method="post" enctype="multipart/form-data">
     <input type="hidden" asp-for="Id" />
-    <div asp-validation-summary="ModelOnly" class="mb-4 flex items-start gap-3 p-4 bg-red-50 border border-red-100 rounded-xl text-sm text-red-700"></div>
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-5 gap-5">
-
+    <div class="row">
         <!-- Left Column: Invoice Information -->
-        <div class="lg:col-span-3">
-            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-                <div class="px-6 py-4 border-b border-gray-100">
-                    <h3 class="text-sm font-semibold text-gray-800 flex items-center gap-2">
-                        <i class="bi bi-info-circle text-gray-400"></i> Invoice Information
-                    </h3>
+        <div class="col-lg-7">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-info-circle"></i> Invoice Information</h5>
                 </div>
-                <div class="p-5 space-y-4">
-                    <div>
-                        <label asp-for="CompanyId" class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">
-                            Company <span class="text-red-500">*</span>
-                        </label>
-                        <select asp-for="CompanyId" class="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-800 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-colors" asp-items="ViewBag.Companies" id="companySelect">
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label asp-for="CompanyId" class="form-label">Company <span class="text-danger">*</span></label>
+                        <select asp-for="CompanyId" class="form-select" asp-items="ViewBag.Companies" id="companySelect">
                         </select>
-                        <span asp-validation-for="CompanyId" class="block mt-1 text-xs text-red-500"></span>
+                        <span asp-validation-for="CompanyId" class="text-danger"></span>
                     </div>
 
-                    <div>
-                        <label asp-for="VendorId" class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">
-                            Vendor <span class="text-red-500">*</span>
-                        </label>
-                        <select asp-for="VendorId" class="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-800 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-colors" asp-items="ViewBag.Vendors" id="vendorSelect">
-                        </select>
-                        <span asp-validation-for="VendorId" class="block mt-1 text-xs text-red-500"></span>
+                    <div class="mb-3">
+                        <label asp-for="VendorId" class="form-label">Vendor <span class="text-danger">*</span></label>
+                        <select asp-for="VendorId" class="form-select" asp-items="ViewBag.Vendors" id="vendorSelect"></select>
+                        <span asp-validation-for="VendorId" class="text-danger"></span>
                     </div>
 
-                    <div>
-                        <label asp-for="InvoiceNumber" class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">
-                            Invoice Number <span class="text-red-500">*</span>
-                        </label>
-                        <input asp-for="InvoiceNumber" class="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500">
-                        <span asp-validation-for="InvoiceNumber" class="block mt-1 text-xs text-red-500"></span>
+                    <div class="mb-3">
+                        <label asp-for="InvoiceNumber" class="form-label">Invoice Number <span class="text-danger">*</span></label>
+                        <input asp-for="InvoiceNumber" class="form-control">
+                        <span asp-validation-for="InvoiceNumber" class="text-danger"></span>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label asp-for="InvoiceDate" class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">
-                                Invoice Date <span class="text-red-500">*</span>
-                            </label>
-                            <input asp-for="InvoiceDate" type="date" class="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500">
-                            <span asp-validation-for="InvoiceDate" class="block mt-1 text-xs text-red-500"></span>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="InvoiceDate" class="form-label">Invoice Date <span class="text-danger">*</span></label>
+                            <input asp-for="InvoiceDate" type="date" class="form-control">
+                            <span asp-validation-for="InvoiceDate" class="text-danger"></span>
                         </div>
-                        <div>
-                            <label asp-for="DueDate" class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Due Date</label>
-                            <input asp-for="DueDate" type="date" class="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500">
-                            <span asp-validation-for="DueDate" class="block mt-1 text-xs text-red-500"></span>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="DueDate" class="form-label">Due Date</label>
+                            <input asp-for="DueDate" type="date" class="form-control">
+                            <span asp-validation-for="DueDate" class="text-danger"></span>
                         </div>
                     </div>
 
-                    <div>
-                        <label asp-for="Description" class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Description</label>
-                        <textarea asp-for="Description" class="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 resize-none" rows="2"></textarea>
-                        <span asp-validation-for="Description" class="block mt-1 text-xs text-red-500"></span>
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label">Description</label>
+                        <textarea asp-for="Description" class="form-control" rows="2"></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
                     </div>
 
-                    <div>
-                        <label asp-for="Notes" class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Notes</label>
-                        <textarea asp-for="Notes" class="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 resize-none" rows="3"></textarea>
-                        <span asp-validation-for="Notes" class="block mt-1 text-xs text-red-500"></span>
+                    <div class="mb-0">
+                        <label asp-for="Notes" class="form-label">Notes</label>
+                        <textarea asp-for="Notes" class="form-control" rows="3"></textarea>
+                        <span asp-validation-for="Notes" class="text-danger"></span>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Right Column: File & Notice -->
-        <div class="lg:col-span-2 flex flex-col gap-4">
-            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-                <div class="px-6 py-4 border-b border-gray-100">
-                    <h3 class="text-sm font-semibold text-gray-800 flex items-center gap-2">
-                        <i class="bi bi-file-earmark text-gray-400"></i> Attached File
-                    </h3>
+        <div class="col-lg-5">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-file-earmark"></i> Attached File</h5>
                 </div>
-                <div class="p-5 space-y-4">
+                <div class="card-body">
                     @if (!string.IsNullOrEmpty(Model.OriginalFileName))
                     {
-                        <div>
-                            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Current File</label>
-                            <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-100">
-                                <div class="w-9 h-9 rounded-lg bg-red-50 flex items-center justify-center flex-shrink-0">
-                                    <i class="bi bi-file-earmark-pdf text-lg text-red-500"></i>
+                        <div class="mb-3">
+                            <label class="form-label">Current File</label>
+                            <div class="flex items-center p-3" style="background: var(--bg-secondary); border-radius: var(--radius-lg); border: 1px solid var(--border-color);">
+                                <i class="bi bi-file-earmark-pdf me-3" style="font-size: 1.5rem; color: var(--danger-color);"></i>
+                                <div class="grow">
+                                    <p class="mb-0 font-bold" style="font-size: 0.875rem; color: var(--text-primary);">@Model.OriginalFileName</p>
                                 </div>
-                                <div class="flex-1 min-w-0">
-                                    <p class="text-sm font-semibold text-gray-800 truncate">@Model.OriginalFileName</p>
-                                </div>
-                                <a href="@Model.FileUrl" target="_blank"
-                                   class="flex-shrink-0 inline-flex items-center gap-1 px-2.5 py-1.5 border border-gray-200 text-gray-600 text-xs font-medium rounded-lg hover:bg-gray-100 transition-colors">
+                                <a href="@Model.FileUrl" target="_blank" class="btn btn-sm btn-outline-primary">
                                     <i class="bi bi-eye"></i> View
                                 </a>
                             </div>
                         </div>
                     }
 
-                    <div>
-                        <label asp-for="NewInvoiceFile" class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">
-                            Replace with New File
-                        </label>
-                        <input asp-for="NewInvoiceFile" type="file"
-                               class="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-700 file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-600 hover:file:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-colors"
-                               accept=".pdf,.jpg,.jpeg,.png,.tif,.tiff">
-                        <span asp-validation-for="NewInvoiceFile" class="block mt-1 text-xs text-red-500"></span>
-                        <p class="mt-1.5 text-xs text-gray-400">Leave empty to keep the current file</p>
+                    <div class="mb-0">
+                        <label asp-for="NewInvoiceFile" class="form-label">Replace with New File</label>
+                        <input asp-for="NewInvoiceFile" type="file" class="form-control" accept=".pdf,.jpg,.jpeg,.png,.tif,.tiff">
+                        <span asp-validation-for="NewInvoiceFile" class="text-danger"></span>
+                        <p class="mb-0 mt-1" style="color: var(--text-tertiary); font-size: 0.75rem;">
+                            Leave empty to keep the current file
+                        </p>
                     </div>
                 </div>
             </div>
 
-            <div class="flex items-start gap-3 p-4 bg-amber-50 border border-amber-100 rounded-xl">
-                <i class="bi bi-exclamation-triangle text-amber-500 flex-shrink-0 text-base mt-0.5"></i>
+            <div class="alert alert-warning">
+                <i class="bi bi-exclamation-triangle flex-shrink-0"></i>
                 <div>
-                    <p class="text-xs font-semibold text-amber-800 mb-0.5">Note</p>
-                    <p class="text-xs text-amber-700">Editing the invoice will not affect existing line items. To change line items, use the Details page.</p>
+                    <strong>Note:</strong> Editing line items will remove the current items and you'll need to add them again after OCR processing or manually.
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Form Actions -->
-    <div class="flex items-center justify-end gap-3 mt-5">
-        <a asp-action="Details" asp-route-id="@Model.Id"
-           class="px-5 py-2.5 border border-gray-200 text-gray-600 text-sm font-medium rounded-xl hover:bg-gray-50 transition-colors">
+    <div class="flex justify-end gap-2">
+        <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-secondary">
             Cancel
         </a>
-        <button type="submit"
-                class="inline-flex items-center gap-2 px-6 py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-xl hover:bg-blue-700 transition-all shadow-sm">
-            <i class="bi bi-check-circle-fill"></i> Save Changes
+        <button type="submit" class="btn btn-primary">
+            <i class="bi bi-check-circle"></i> Save Changes
         </button>
     </div>
 </form>
@@ -170,11 +140,16 @@
     <partial name="_ValidationScriptsPartial" />
 
     <script>
+        // Reload vendors when company selection changes
         document.getElementById('companySelect').addEventListener('change', function() {
             var companyId = this.value;
             var vendorSelect = document.getElementById('vendorSelect');
+
+            // Clear current vendors
             vendorSelect.innerHTML = '<option value="">-- Select Vendor --</option>';
+
             if (!companyId) return;
+
             fetch('@Url.Action("GetVendorsByCompany", "Invoice")?companyId=' + companyId)
                 .then(function(response) {
                     if (!response.ok) throw new Error('Failed to load vendors');
@@ -188,7 +163,9 @@
                         vendorSelect.appendChild(option);
                     });
                 })
-                .catch(function(error) { console.error('Error loading vendors:', error); });
+                .catch(function(error) {
+                    console.error('Error loading vendors:', error);
+                });
         });
     </script>
 }
