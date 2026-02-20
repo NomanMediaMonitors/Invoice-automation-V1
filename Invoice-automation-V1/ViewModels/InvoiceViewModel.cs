@@ -33,8 +33,8 @@ public class CreateInvoiceViewModel
 {
     public Guid CompanyId { get; set; }
 
-    // Vendor is optional at upload time - OCR may match it
-    public Guid? VendorId { get; set; }
+    [Required(ErrorMessage = "Please select a vendor")]
+    public Guid VendorId { get; set; }
 
     // Invoice number is optional at upload time - OCR will extract it
     [StringLength(100)]

@@ -42,6 +42,23 @@
                 </div>
             </div>
 
+            <!-- Vendor Selection -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-shop"></i> Vendor</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-0">
+                        <label asp-for="VendorId" class="form-label">Select Vendor <span class="required">*</span></label>
+                        <select asp-for="VendorId" class="form-select" asp-items="ViewBag.Vendors" id="vendorSelect">
+                            <option value="">-- Select Vendor --</option>
+                        </select>
+                        <span asp-validation-for="VendorId" class="text-danger"></span>
+                        <small class="form-text" style="color: var(--text-tertiary);">The vendor's invoice template will be used for OCR matching.</small>
+                    </div>
+                </div>
+            </div>
+
             <!-- File Upload -->
             <div class="card mb-4">
                 <div class="card-header">
@@ -109,12 +126,6 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label asp-for="VendorId" class="form-label">Vendor</label>
-                                <select asp-for="VendorId" class="form-select" asp-items="ViewBag.Vendors" id="vendorSelect">
-                                    <option value="">-- OCR will match vendor --</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6 mb-3">
                                 <label asp-for="InvoiceNumber" class="form-label">Invoice Number</label>
                                 <input asp-for="InvoiceNumber" class="form-control" placeholder="OCR will extract this">
                             </div>
@@ -147,8 +158,9 @@
                 <div>
                     <strong>How it works:</strong>
                     <ol class="mb-0 mt-2" style="padding-left: 1rem;">
+                        <li>Select the company and vendor for this invoice</li>
                         <li>Upload your invoice file (PDF or image)</li>
-                        <li>OCR automatically extracts invoice number, dates, vendor, amounts & line items</li>
+                        <li>OCR extracts data using the vendor's template for accurate matching</li>
                         <li>Review and correct extracted data on the invoice details page</li>
                         <li>Assign chart of accounts and submit for approval</li>
                     </ol>
@@ -235,7 +247,7 @@
         document.getElementById('companySelect').addEventListener('change', function() {
             var companyId = this.value;
             var vendorSelect = document.getElementById('vendorSelect');
-            vendorSelect.innerHTML = '<option value="">-- OCR will match vendor --</option>';
+            vendorSelect.innerHTML = '<option value="">-- Select Vendor --</option>';
             if (!companyId) return;
 
             fetch('@Url.Action("GetVendorsByCompany", "Invoice")?companyId=' + companyId)
@@ -251,11 +263,25 @@
                 .catch(function(err) { console.error('Error loading vendors:', err); });
         });
 
-        // Show loading state on submit
-        document.getElementById('uploadForm').addEventListener('submit', function() {
+        // Show loading state on submit with vendor validation
+        document.getElementById('uploadForm').addEventListener('submit', function(e) {
+            var vendorSelect = document.getElementById('vendorSelect');
+            if (!vendorSelect.value) {
+                e.preventDefault();
+                vendorSelect.classList.add('is-invalid');
+                vendorSelect.focus();
+                return false;
+            }
             var btn = document.getElementById('submitBtn');
             btn.disabled = true;
             btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Uploading & Processing...';
+        });
+
+        // Clear validation state on vendor change
+        document.getElementById('vendorSelect').addEventListener('change', function() {
+            if (this.value) {
+                this.classList.remove('is-invalid');
+            }
         });
     </script>
 }
