@@ -29,6 +29,38 @@ public class EmployeeController : Controller
         return Guid.Parse(userIdClaim!);
     }
 
+    // GET: Employee/SelectCompany
+    public async Task<IActionResult> SelectCompany(string? target)
+    {
+        var userId = GetCurrentUserId();
+        var companies = await _companyService.GetUserCompaniesAsync(userId);
+
+        if (companies == null || !companies.Any())
+        {
+            TempData["ErrorMessage"] = "Please set up a company first.";
+            return RedirectToAction("Index", "Company");
+        }
+
+        // If user has only one company, skip selection and go directly
+        if (companies.Count == 1)
+        {
+            var action = target == "Invite" ? "Invite" : "Index";
+            return RedirectToAction(action, new { companyId = companies[0].Id });
+        }
+
+        var targetAction = target == "Invite" ? "Invite" : "Index";
+        ViewData["Title"] = "Select Company - Employees";
+        ViewData["TargetAction"] = targetAction;
+        ViewData["TargetController"] = "Employee";
+        ViewData["SectionTitle"] = "Employees";
+        ViewData["SectionDescription"] = target == "Invite"
+            ? "Select a company to invite a team member"
+            : "Select a company to manage its employees";
+        ViewData["SectionIcon"] = "bi-people";
+
+        return View(companies);
+    }
+
     // GET: Employee?companyId=xxx
     public async Task<IActionResult> Index(Guid companyId)
     {

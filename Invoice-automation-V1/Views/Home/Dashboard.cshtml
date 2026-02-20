@@ -38,7 +38,7 @@
         </a>
     </div>
     <div class="col-6 col-lg-3">
-        <a asp-controller="Vendor" asp-action="Index" asp-route-companyId="@Model.DefaultCompanyId" class="text-decoration-none d-block">
+        <a asp-controller="Vendor" asp-action="SelectCompany" class="text-decoration-none d-block">
             <div class="stat-card">
                 <div class="stat-card-icon" style="background-color: var(--success-light); color: var(--success-color);">
                     <i class="bi bi-truck"></i>
@@ -49,7 +49,7 @@
         </a>
     </div>
     <div class="col-6 col-lg-3">
-        <a asp-controller="Invoice" asp-action="Index" class="text-decoration-none d-block">
+        <a asp-controller="Invoice" asp-action="SelectCompany" class="text-decoration-none d-block">
             <div class="stat-card">
                 <div class="stat-card-icon" style="background-color: var(--info-light); color: var(--info-color);">
                     <i class="bi bi-receipt"></i>
@@ -60,7 +60,7 @@
         </a>
     </div>
     <div class="col-6 col-lg-3">
-        <a asp-controller="Invoice" asp-action="Index" asp-route-status="Approved" class="text-decoration-none d-block">
+        <a asp-controller="Invoice" asp-action="SelectCompany" class="text-decoration-none d-block">
             <div class="stat-card">
                 <div class="stat-card-icon" style="background-color: #ecfdf5; color: #059669;">
                     <i class="bi bi-check-circle"></i>
@@ -91,18 +91,18 @@
                     </a>
                     @if (Model.HasAnyCompanies)
                     {
-                        <a asp-controller="Vendor" asp-action="Create" asp-route-companyId="@Model.DefaultCompanyId" class="btn btn-sm btn-outline-primary text-start d-flex align-items-center gap-2">
+                        <a asp-controller="Vendor" asp-action="SelectCompany" class="btn btn-sm btn-outline-primary text-start d-flex align-items-center gap-2">
                             <i class="bi bi-truck"></i>
                             <span>
                                 <span class="fw-semibold d-block" style="font-size: 0.8125rem;">Add Vendor</span>
-                                <span style="font-size: 0.6875rem; color: var(--text-tertiary);">Register a new supplier</span>
+                                <span style="font-size: 0.6875rem; color: var(--text-tertiary);">Select a company, then register a supplier</span>
                             </span>
                         </a>
-                        <a asp-controller="Employee" asp-action="Invite" asp-route-companyId="@Model.DefaultCompanyId" class="btn btn-sm btn-outline-primary text-start d-flex align-items-center gap-2">
+                        <a asp-controller="Employee" asp-action="SelectCompany" asp-route-target="Invite" class="btn btn-sm btn-outline-primary text-start d-flex align-items-center gap-2">
                             <i class="bi bi-person-plus"></i>
                             <span>
                                 <span class="fw-semibold d-block" style="font-size: 0.8125rem;">Invite Team Member</span>
-                                <span style="font-size: 0.6875rem; color: var(--text-tertiary);">Add users to your company</span>
+                                <span style="font-size: 0.6875rem; color: var(--text-tertiary);">Select a company, then invite users</span>
                             </span>
                         </a>
                     }

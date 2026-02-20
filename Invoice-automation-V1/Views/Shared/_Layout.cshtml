@@ -39,12 +39,12 @@
                         <span>Companies</span>
                     </a>
                     <a class="sidebar-nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Invoice" ? "active" : "")"
-                       asp-controller="Invoice" asp-action="Index">
+                       asp-controller="Invoice" asp-action="SelectCompany">
                         <i class="bi bi-file-text"></i>
                         <span>Invoices</span>
                     </a>
                     <a class="sidebar-nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Vendor" ? "active" : "")"
-                       asp-controller="Vendor" asp-action="Index">
+                       asp-controller="Vendor" asp-action="SelectCompany">
                         <i class="bi bi-truck"></i>
                         <span>Vendors</span>
                     </a>
