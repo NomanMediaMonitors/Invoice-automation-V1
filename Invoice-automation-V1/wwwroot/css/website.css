@@ -420,7 +420,7 @@ a:hover {
 .app-main {
     flex: 1;
     padding: 1.5rem;
-    max-width: 1400px;
+    /*max-width: 1400px;*/
     width: 100%;
 }
 
@@ -1607,7 +1607,11 @@ select option,
     white-space: nowrap;
     font-variant-numeric: tabular-nums;
 }
-
+.required {
+    color: var(--danger-color);
+    display: inline;
+    margin-left: 2px;
+}
 /* ===================================
    Main Content Area (for public pages)
    =================================== */

@@ -25,13 +25,13 @@
                     <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
                     <div class="mb-3">
-                        <label asp-for="FullName" class="form-label">Full Name <span class="text-danger">*</span></label>
+                        <label asp-for="FullName" class="form-label">Full Name <span class="required">*</span></label>
                         <input asp-for="FullName" class="form-control" placeholder="Enter your full name" />
                         <span asp-validation-for="FullName" class="text-danger"></span>
                     </div>
 
                     <div class="mb-3">
-                        <label asp-for="Email" class="form-label">Email <span class="text-danger">*</span></label>
+                        <label asp-for="Email" class="form-label">Email <span class="required">*</span></label>
                         <input asp-for="Email" class="form-control" placeholder="your@email.com" />
                         <span asp-validation-for="Email" class="text-danger"></span>
                         <small class="form-text text-muted">

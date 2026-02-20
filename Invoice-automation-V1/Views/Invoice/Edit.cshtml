@@ -36,27 +36,27 @@
                 </div>
                 <div class="card-body">
                     <div class="mb-3">
-                        <label asp-for="CompanyId" class="form-label">Company <span class="text-danger">*</span></label>
+                        <label asp-for="CompanyId" class="form-label">Company <span class="required">*</span></label>
                         <select asp-for="CompanyId" class="form-select" asp-items="ViewBag.Companies" id="companySelect">
                         </select>
                         <span asp-validation-for="CompanyId" class="text-danger"></span>
                     </div>
 
                     <div class="mb-3">
-                        <label asp-for="VendorId" class="form-label">Vendor <span class="text-danger">*</span></label>
+                        <label asp-for="VendorId" class="form-label">Vendor <span class="required">*</span></label>
                         <select asp-for="VendorId" class="form-select" asp-items="ViewBag.Vendors" id="vendorSelect"></select>
                         <span asp-validation-for="VendorId" class="text-danger"></span>
                     </div>
 
                     <div class="mb-3">
-                        <label asp-for="InvoiceNumber" class="form-label">Invoice Number <span class="text-danger">*</span></label>
+                        <label asp-for="InvoiceNumber" class="form-label">Invoice Number <span class="required">*</span></label>
                         <input asp-for="InvoiceNumber" class="form-control">
                         <span asp-validation-for="InvoiceNumber" class="text-danger"></span>
                     </div>
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label asp-for="InvoiceDate" class="form-label">Invoice Date <span class="text-danger">*</span></label>
+                            <label asp-for="InvoiceDate" class="form-label">Invoice Date <span class="required">*</span></label>
                             <input asp-for="InvoiceDate" type="date" class="form-control">
                             <span asp-validation-for="InvoiceDate" class="text-danger"></span>
                         </div>

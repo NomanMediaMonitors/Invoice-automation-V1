@@ -34,7 +34,7 @@
                 </div>
                 <div class="card-body">
                     <div class="mb-0">
-                        <label asp-for="CompanyId" class="form-label">Select Company <span class="text-danger">*</span></label>
+                        <label asp-for="CompanyId" class="form-label">Select Company <span class="required">*</span></label>
                         <select asp-for="CompanyId" class="form-select" asp-items="ViewBag.Companies" id="companySelect">
                         </select>
                         <span asp-validation-for="CompanyId" class="text-danger"></span>
@@ -49,7 +49,7 @@
                 </div>
                 <div class="card-body">
                     <div class="mb-3">
-                        <label class="form-label">Upload Invoice <span class="text-danger">*</span></label>
+                        <label class="form-label">Upload Invoice <span class="required">*</span></label>
                         <div id="dropZone" style="border: 2px dashed var(--border-color); border-radius: var(--radius-xl); padding: 2rem; text-align: center; cursor: pointer; transition: all 0.2s ease;">
                             <i class="bi bi-cloud-arrow-up" style="font-size: 2.5rem; color: var(--primary-color);"></i>
                             <p class="mt-2 mb-1 fw-bold" style="color: var(--text-primary);">Drag & drop your invoice here</p>

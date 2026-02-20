@@ -37,13 +37,13 @@
                     <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
 
                     <div class="mb-3">
-                        <label asp-for="Email" class="form-label">Email Address <span class="text-danger">*</span></label>
+                        <label asp-for="Email" class="form-label">Email Address <span class="required">*</span></label>
                         <input asp-for="Email" class="form-control" placeholder="Enter employee email" />
                         <span asp-validation-for="Email" class="text-danger"></span>
                     </div>
 
                     <div class="mb-3">
-                        <label asp-for="FullName" class="form-label">Full Name <span class="text-danger">*</span></label>
+                        <label asp-for="FullName" class="form-label">Full Name <span class="required">*</span></label>
                         <input asp-for="FullName" class="form-control" placeholder="Enter full name" />
                         <span asp-validation-for="FullName" class="text-danger"></span>
                     </div>
@@ -55,7 +55,7 @@
                     </div>
 
                     <div class="mb-4">
-                        <label asp-for="Role" class="form-label">Role <span class="text-danger">*</span></label>
+                        <label asp-for="Role" class="form-label">Role <span class="required">*</span></label>
                         <select asp-for="Role" class="form-select">
                             <option value="">Select a role...</option>
                             <option value="Manager">Manager - Can manage invoices and view reports</option>

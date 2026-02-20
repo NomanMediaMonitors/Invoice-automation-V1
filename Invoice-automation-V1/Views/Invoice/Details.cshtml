@@ -206,15 +206,15 @@
                                 <input type="hidden" name="invoiceId" value="@Model.Id" />
                                 <div class="row g-2">
                                     <div class="col-md-3">
-                                        <label class="form-label form-label-sm">Description <span class="text-danger">*</span></label>
+                                        <label class="form-label form-label-sm">Description <span class="required">*</span></label>
                                         <input type="text" name="description" class="form-control form-control-sm" required placeholder="Item description">
                                     </div>
                                     <div class="col-md-1">
-                                        <label class="form-label form-label-sm">Qty <span class="text-danger">*</span></label>
+                                        <label class="form-label form-label-sm">Qty <span class="required">*</span></label>
                                         <input type="number" name="quantity" class="form-control form-control-sm" value="1" min="0.01" step="0.01" required id="newQty">
                                     </div>
                                     <div class="col-md-2">
-                                        <label class="form-label form-label-sm">Unit Price <span class="text-danger">*</span></label>
+                                        <label class="form-label form-label-sm">Unit Price <span class="required">*</span></label>
                                         <input type="number" name="unitPrice" class="form-control form-control-sm" min="0.01" step="0.01" required placeholder="0.00" id="newPrice">
                                     </div>
                                     <div class="col-md-1">
