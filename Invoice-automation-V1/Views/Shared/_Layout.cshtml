@@ -8,11 +8,12 @@
     <script>
         tailwind.config = {
             theme: {
-                extend: {},
-                container: {
-                    center: true,
-                    padding: '1rem',
-                }
+                extend: {
+                    colors: {
+                        brand: { DEFAULT: '#2563eb', dark: '#1d4ed8', light: '#3b82f6', 50: '#eff6ff' }
+                    }
+                },
+                container: { center: true, padding: '1rem' }
             }
         }
     </script>
@@ -28,12 +29,13 @@
             <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
             <aside class="app-sidebar" id="appSidebar">
+                <!-- Brand -->
                 <a class="sidebar-brand" asp-controller="Home" asp-action="Dashboard">
                     <div class="sidebar-brand-icon">
                         <i class="bi bi-receipt"></i>
                     </div>
                     <div>
-                        <span class="sidebar-brand-text">Invoice Automation</span>
+                        <span class="sidebar-brand-text">InvoiceAuto</span>
                         <span class="sidebar-brand-sub">Enterprise Platform</span>
                     </div>
                 </a>
@@ -91,12 +93,16 @@
             </aside>
 
             <div class="app-content">
+                <!-- Top Bar -->
                 <header class="app-topbar">
                     <div class="topbar-left">
                         <button class="sidebar-toggle" id="sidebarToggle" type="button">
                             <i class="bi bi-list"></i>
                         </button>
-                        <span class="topbar-breadcrumb">@ViewData["Title"]</span>
+                        <div class="flex items-center gap-1.5 text-xs text-gray-400">
+                            <i class="bi bi-house text-gray-300"></i>
+                            <span class="topbar-breadcrumb">@ViewData["Title"]</span>
+                        </div>
                     </div>
                     <div class="topbar-right">
                         <div class="relative" id="userDropdown">
@@ -104,9 +110,10 @@
                                 <div class="topbar-user-avatar">
                                     <i class="bi bi-person-fill" style="font-size: 0.75rem;"></i>
                                 </div>
-                                <span class="hidden sm:inline">@User.Identity?.Name</span>
+                                <span class="hidden sm:inline text-sm">@User.Identity?.Name</span>
+                                <i class="bi bi-chevron-down text-xs text-gray-400 hidden sm:inline"></i>
                             </button>
-                            <ul class="dropdown-menu dropdown-menu-end" id="userDropdownMenu" style="display:none; position:absolute; right:0; top:100%; margin-top:0.25rem;">
+                            <ul class="dropdown-menu dropdown-menu-end" id="userDropdownMenu" style="display:none; position:absolute; right:0; top:100%; margin-top:0.375rem; z-index:9999;">
                                 <li class="dropdown-header">Signed in as <strong>@User.Identity?.Name</strong></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
@@ -154,15 +161,16 @@
                             </div>
                         </a>
 
-                        <button class="navbar-toggler-btn border border-gray-200 rounded p-2 lg:hidden" type="button" id="navbarToggleBtn" aria-expanded="false">
-                            <i class="bi bi-list text-lg"></i>
+                        <button class="navbar-toggler-btn border border-gray-200 rounded-lg p-2 lg:hidden transition-colors hover:bg-gray-50" type="button" id="navbarToggleBtn" aria-expanded="false">
+                            <i class="bi bi-list text-lg text-gray-600"></i>
                         </button>
 
                         <div class="hidden lg:flex items-center gap-1" id="navbarPublic">
                             <a class="nav-link" asp-controller="Home" asp-action="Index">Home</a>
                             <a class="nav-link" asp-controller="Home" asp-action="Privacy">Privacy</a>
                             <a class="nav-link" asp-controller="Account" asp-action="Login">Sign in</a>
-                            <a class="btn btn-primary btn-sm ml-2" asp-controller="Account" asp-action="Register">
+                            <a class="inline-flex items-center gap-1.5 ml-2 px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-xl hover:bg-blue-700 transition-all shadow-sm"
+                               asp-controller="Account" asp-action="Register">
                                 Get Started
                             </a>
                         </div>
@@ -174,7 +182,8 @@
                             <a class="nav-link" asp-controller="Home" asp-action="Index">Home</a>
                             <a class="nav-link" asp-controller="Home" asp-action="Privacy">Privacy</a>
                             <a class="nav-link" asp-controller="Account" asp-action="Login">Sign in</a>
-                            <a class="btn btn-primary btn-sm mt-1" asp-controller="Account" asp-action="Register">
+                            <a class="inline-flex items-center justify-center gap-1.5 mt-2 px-4 py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-xl hover:bg-blue-700 transition-all"
+                               asp-controller="Account" asp-action="Register">
                                 Get Started
                             </a>
                         </div>
