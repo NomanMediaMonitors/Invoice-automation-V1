@@ -3,8 +3,8 @@
 }
 
 <div style="background: var(--bg-secondary); min-height: calc(100vh - 200px); display:flex; align-items:center; justify-content:center; padding: 2rem 1rem;">
-    <div class="bg-white border border-gray-200 rounded-xl shadow-lg w-full text-center" style="width: 100%; max-width: 440px;">
-        <div class="p-8">
+    <div class="card auth-card text-center" style="width: 100%; max-width: 440px;">
+        <div class="card-body">
             <div class="mb-4">
                 <div class="inline-flex items-center justify-center rounded-circle" style="width: 64px; height: 64px; background: var(--danger-light, #fef2f2);">
                     <i class="bi bi-shield-lock" style="font-size: 1.75rem; color: var(--danger-color, #ef4444);"></i>
@@ -16,7 +16,7 @@
                 Please contact your administrator if you believe this is an error.
             </p>
             <div class="grid">
-                <a asp-action="Index" asp-controller="Home" class="inline-flex items-center gap-1.5 px-5 py-2.5 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition-colors cursor-pointer">Go to home</a>
+                <a asp-action="Index" asp-controller="Home" class="btn btn-primary btn-lg">Go to home</a>
             </div>
         </div>
     </div>

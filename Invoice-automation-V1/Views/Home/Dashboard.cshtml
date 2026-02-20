@@ -17,7 +17,7 @@
         </div>
         @if (Model.HasAnyCompanies)
         {
-            <a asp-controller="Company" asp-action="Index" class="inline-flex items-center gap-1 px-3 py-1.5 border border-gray-200 text-gray-700 text-xs font-medium rounded-md hover:bg-blue-50 hover:border-blue-300 hover:text-blue-600 transition-colors cursor-pointer">
+            <a asp-controller="Company" asp-action="Index" class="btn btn-sm btn-outline-primary">
                 <i class="bi bi-building me-1"></i> Manage Companies
             </a>
         }
@@ -82,7 +82,7 @@
             </div>
             <div style="padding: 1rem 1.25rem;">
                 <div class="grid gap-2">
-                    <a asp-controller="Company" asp-action="Create" class="inline-flex items-center gap-1 px-3 py-1.5 border border-gray-200 text-gray-700 text-xs font-medium rounded-md hover:bg-blue-50 hover:border-blue-300 hover:text-blue-600 transition-colors cursor-pointer text-left w-full">
+                    <a asp-controller="Company" asp-action="Create" class="btn btn-sm btn-outline-primary text-left flex items-center gap-2">
                         <i class="bi bi-plus-circle"></i>
                         <span>
                             <span class="font-semibold block" style="font-size: 0.8125rem;">Add New Company</span>
@@ -91,14 +91,14 @@
                     </a>
                     @if (Model.HasAnyCompanies)
                     {
-                        <a asp-controller="Vendor" asp-action="Create" asp-route-companyId="@Model.DefaultCompanyId" class="inline-flex items-center gap-1 px-3 py-1.5 border border-gray-200 text-gray-700 text-xs font-medium rounded-md hover:bg-blue-50 hover:border-blue-300 hover:text-blue-600 transition-colors cursor-pointer text-left w-full">
+                        <a asp-controller="Vendor" asp-action="Create" asp-route-companyId="@Model.DefaultCompanyId" class="btn btn-sm btn-outline-primary text-left flex items-center gap-2">
                             <i class="bi bi-truck"></i>
                             <span>
                                 <span class="font-semibold block" style="font-size: 0.8125rem;">Add Vendor</span>
                                 <span style="font-size: 0.6875rem; color: var(--text-tertiary);">Register a new supplier</span>
                             </span>
                         </a>
-                        <a asp-controller="Employee" asp-action="Invite" asp-route-companyId="@Model.DefaultCompanyId" class="inline-flex items-center gap-1 px-3 py-1.5 border border-gray-200 text-gray-700 text-xs font-medium rounded-md hover:bg-blue-50 hover:border-blue-300 hover:text-blue-600 transition-colors cursor-pointer text-left w-full">
+                        <a asp-controller="Employee" asp-action="Invite" asp-route-companyId="@Model.DefaultCompanyId" class="btn btn-sm btn-outline-primary text-left flex items-center gap-2">
                             <i class="bi bi-person-plus"></i>
                             <span>
                                 <span class="font-semibold block" style="font-size: 0.8125rem;">Invite Team Member</span>
@@ -108,14 +108,14 @@
                     }
                     else
                     {
-                        <button class="inline-flex items-center gap-1.5 px-3 py-1.5 border border-gray-200 text-gray-400 text-xs font-medium rounded-md cursor-not-allowed opacity-60 text-left w-full" disabled>
+                        <button class="btn btn-sm btn-outline-secondary text-left flex items-center gap-2" disabled>
                             <i class="bi bi-upload"></i>
                             <span>
                                 <span class="font-semibold block" style="font-size: 0.8125rem;">Upload Invoice</span>
                                 <span style="font-size: 0.6875rem; color: var(--text-tertiary);">Create a company first</span>
                             </span>
                         </button>
-                        <button class="inline-flex items-center gap-1.5 px-3 py-1.5 border border-gray-200 text-gray-400 text-xs font-medium rounded-md cursor-not-allowed opacity-60 text-left w-full" disabled>
+                        <button class="btn btn-sm btn-outline-secondary text-left flex items-center gap-2" disabled>
                             <i class="bi bi-truck"></i>
                             <span>
                                 <span class="font-semibold block" style="font-size: 0.8125rem;">Add Vendor</span>
@@ -135,13 +135,13 @@
                 <h6 class="font-semibold mb-0" style="color: var(--text-primary); font-size: 0.8125rem; text-transform: uppercase; letter-spacing: 0.04em;">Recent Activity</h6>
                 @if (Model.RecentActivities.Any())
                 {
-                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">@Model.RecentActivities.Count</span>
+                    <span class="badge bg-primary">@Model.RecentActivities.Count</span>
                 }
             </div>
             <div style="padding: 0;">
                 @if (Model.RecentActivities.Any())
                 {
-                    <table class="min-w-full divide-y divide-gray-200 text-sm">
+                    <table class="table table-hover mb-0">
                         <thead>
                             <tr>
                                 <th style="width: 40px;"></th>
@@ -175,7 +175,7 @@
                         <p>Your recent activities will appear here as you start using the platform.</p>
                         @if (!Model.HasAnyCompanies)
                         {
-                            <a asp-controller="Company" asp-action="Create" class="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-600 text-white text-xs font-medium rounded-md hover:bg-blue-700 transition-colors cursor-pointer">
+                            <a asp-controller="Company" asp-action="Create" class="btn btn-sm btn-primary">
                                 <i class="bi bi-plus-circle me-1"></i> Create Your First Company
                             </a>
                         }
