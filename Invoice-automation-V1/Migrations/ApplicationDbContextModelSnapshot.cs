@@ -377,7 +377,7 @@ namespace InvoiceAutomation.Migrations
                         .HasColumnType("CHAR(36)")
                         .HasColumnName("updated_by");
 
-                    b.Property<Guid>("VendorId")
+                    b.Property<Guid?>("VendorId")
                         .HasColumnType("CHAR(36)")
                         .HasColumnName("vendor_id");
 
@@ -853,6 +853,135 @@ namespace InvoiceAutomation.Migrations
                     b.ToTable("vendors", (string)null);
                 });
 
+            modelBuilder.Entity("InvoiceAutomation.Core.Entities.VendorInvoiceTemplate", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("CHAR(36)")
+                        .HasColumnName("id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("DATETIME")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<Guid?>("DefaultChartOfAccountId")
+                        .HasColumnType("CHAR(36)")
+                        .HasColumnName("default_chart_of_account_id");
+
+                    b.Property<decimal?>("DefaultTaxRate")
+                        .HasColumnType("DECIMAL(5,2)")
+                        .HasColumnName("default_tax_rate");
+
+                    b.Property<string>("DueDateLabel")
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)")
+                        .HasColumnName("due_date_label");
+
+                    b.Property<bool>("HasDescription")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TINYINT(1)")
+                        .HasDefaultValue(true)
+                        .HasColumnName("has_description");
+
+                    b.Property<bool>("HasDueDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TINYINT(1)")
+                        .HasDefaultValue(true)
+                        .HasColumnName("has_due_date");
+
+                    b.Property<bool>("HasInvoiceDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TINYINT(1)")
+                        .HasDefaultValue(true)
+                        .HasColumnName("has_invoice_date");
+
+                    b.Property<bool>("HasInvoiceNumber")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TINYINT(1)")
+                        .HasDefaultValue(true)
+                        .HasColumnName("has_invoice_number");
+
+                    b.Property<bool>("HasLineItems")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TINYINT(1)")
+                        .HasDefaultValue(true)
+                        .HasColumnName("has_line_items");
+
+                    b.Property<bool>("HasSubTotal")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TINYINT(1)")
+                        .HasDefaultValue(true)
+                        .HasColumnName("has_sub_total");
+
+                    b.Property<bool>("HasTaxRate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TINYINT(1)")
+                        .HasDefaultValue(true)
+                        .HasColumnName("has_tax_rate");
+
+                    b.Property<string>("InvoiceDateLabel")
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)")
+                        .HasColumnName("invoice_date_label");
+
+                    b.Property<string>("InvoiceNumberLabel")
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)")
+                        .HasColumnName("invoice_number_label");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TINYINT(1)")
+                        .HasDefaultValue(true)
+                        .HasColumnName("is_active");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar(1000)")
+                        .HasColumnName("notes");
+
+                    b.Property<string>("SubTotalLabel")
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)")
+                        .HasColumnName("sub_total_label");
+
+                    b.Property<string>("TaxLabel")
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)")
+                        .HasColumnName("tax_label");
+
+                    b.Property<string>("TemplateName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)")
+                        .HasColumnName("template_name");
+
+                    b.Property<string>("TotalLabel")
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)")
+                        .HasColumnName("total_label");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("DATETIME")
+                        .HasColumnName("updated_at")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP");
+
+                    b.Property<Guid>("VendorId")
+                        .HasColumnType("CHAR(36)")
+                        .HasColumnName("vendor_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DefaultChartOfAccountId");
+
+                    b.HasIndex("VendorId");
+
+                    b.ToTable("vendor_invoice_templates", (string)null);
+                });
+
             modelBuilder.Entity("InvoiceAutomation.Core.Entities.ChartOfAccount", b =>
                 {
                     b.HasOne("InvoiceAutomation.Core.Entities.Company", "Company")
@@ -879,8 +1008,7 @@ namespace InvoiceAutomation.Migrations
                     b.HasOne("InvoiceAutomation.Core.Entities.Vendor", "Vendor")
                         .WithMany()
                         .HasForeignKey("VendorId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Company");
 
@@ -948,6 +1076,24 @@ namespace InvoiceAutomation.Migrations
                         .IsRequired();
 
                     b.Navigation("Company");
+                });
+
+            modelBuilder.Entity("InvoiceAutomation.Core.Entities.VendorInvoiceTemplate", b =>
+                {
+                    b.HasOne("InvoiceAutomation.Core.Entities.ChartOfAccount", "DefaultChartOfAccount")
+                        .WithMany()
+                        .HasForeignKey("DefaultChartOfAccountId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("InvoiceAutomation.Core.Entities.Vendor", "Vendor")
+                        .WithMany()
+                        .HasForeignKey("VendorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("DefaultChartOfAccount");
+
+                    b.Navigation("Vendor");
                 });
 
             modelBuilder.Entity("InvoiceAutomation.Core.Entities.Company", b =>

@@ -3,24 +3,24 @@
 }
 
 <div style="background: var(--bg-secondary); min-height: calc(100vh - 200px); display:flex; align-items:center; justify-content:center; padding: 2rem 1rem;">
-    <div class="card auth-card text-center" style="width: 100%; max-width: 440px;">
-        <div class="card-body">
+    <div class="bg-white border border-gray-200 rounded-xl shadow-lg w-full text-center" style="width: 100%; max-width: 440px;">
+        <div class="p-8">
             <div class="mb-4">
-                <div class="d-inline-flex align-items-center justify-content-center rounded-circle" style="width: 64px; height: 64px; background: var(--primary-50);">
+                <div class="inline-flex items-center justify-center rounded-circle" style="width: 64px; height: 64px; background: var(--primary-50);">
                     <i class="bi bi-envelope-check" style="font-size: 1.75rem; color: var(--primary-color);"></i>
                 </div>
             </div>
-            <h2 class="fw-bold mb-2">Check your email</h2>
+            <h2 class="font-bold mb-2">Check your email</h2>
             <p class="text-muted mb-4">
                 We've sent a verification link to your email address.
                 Please click the link to verify your account.
             </p>
-            <div class="alert alert-info text-start" role="alert">
+            <div class="flex items-start gap-2 p-3 bg-sky-50 border border-sky-200 rounded-lg text-sky-800 text-sm font-medium mb-4 text-left" role="alert">
                 <strong>Note:</strong> The verification link will expire in 7 days.
             </div>
             <p class="text-muted mb-0">
                 Didn't receive the email? Check your spam folder or
-                <a asp-action="Register" class="fw-semibold">register again</a>.
+                <a asp-action="Register" class="font-semibold">register again</a>.
             </p>
         </div>
     </div>

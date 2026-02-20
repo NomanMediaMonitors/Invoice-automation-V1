@@ -148,6 +148,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVmVuZG9yXENyZWF0ZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
+[F:/Invoice-automation-V1/Invoice-automation-V1/Views/Vendor/CreateTemplate.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVmVuZG9yXENyZWF0ZVRlbXBsYXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
 [F:/Invoice-automation-V1/Invoice-automation-V1/Views/Vendor/Details.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVmVuZG9yXERldGFpbHMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
@@ -156,8 +160,20 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVmVuZG9yXEVkaXQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
+[F:/Invoice-automation-V1/Invoice-automation-V1/Views/Vendor/EditTemplate.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVmVuZG9yXEVkaXRUZW1wbGF0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
 [F:/Invoice-automation-V1/Invoice-automation-V1/Views/Vendor/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVmVuZG9yXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[F:/Invoice-automation-V1/Invoice-automation-V1/Views/Vendor/Templates.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVmVuZG9yXFRlbXBsYXRlcy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[F:/Invoice-automation-V1/Invoice-automation-V1/Views/Vendor/_TemplateForm.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVmVuZG9yXF9UZW1wbGF0ZUZvcm0uY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
 [F:/Invoice-automation-V1/Invoice-automation-V1/Views/_ViewImports.cshtml]

@@ -3,42 +3,69 @@
     ViewData["Title"] = "Invoices";
 }
 
-<div class="page-header d-flex justify-content-between align-items-center">
-    <div>
-        <h2 class="page-title">
-            <i class="bi bi-file-text"></i> Invoices
-        </h2>
-        <p class="page-subtitle mb-0">Manage and track all your invoices</p>
+<!-- Page Header -->
+<div class="mb-6">
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900 tracking-tight flex items-center gap-2.5">
+                <span class="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-blue-600 text-white shadow-sm">
+                    <i class="bi bi-file-text text-base"></i>
+                </span>
+                Invoices
+            </h1>
+            <p class="mt-1 text-sm text-gray-500">Manage and track all your invoices</p>
+        </div>
+        <a asp-action="Create"
+           class="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-xl hover:bg-blue-700 active:bg-blue-800 transition-all shadow-sm hover:shadow-md">
+            <i class="bi bi-plus-lg"></i> New Invoice
+        </a>
     </div>
-    <a asp-action="Create" class="btn btn-primary">
-        <i class="bi bi-plus-circle"></i> New Invoice
-    </a>
 </div>
 
-<!-- Filters -->
-<div class="card mb-4">
-    <div class="card-body">
-        <form method="get" asp-action="Index" class="row g-3 align-items-end">
-            <div class="col-md-3">
-                <label class="form-label">Status</label>
-                <select name="status" class="form-select" onchange="this.form.submit()">
-                    <option value="">All Statuses</option>
-                    <option value="Draft" selected="@(Model.StatusFilter == "Draft")">Draft</option>
-                    <option value="PendingApproval" selected="@(Model.StatusFilter == "PendingApproval")">Pending Approval</option>
-                    <option value="Approved" selected="@(Model.StatusFilter == "Approved")">Approved</option>
-                    <option value="Rejected" selected="@(Model.StatusFilter == "Rejected")">Rejected</option>
-                    <option value="Paid" selected="@(Model.StatusFilter == "Paid")">Paid</option>
-                    <option value="Overdue" selected="@(Model.StatusFilter == "Overdue")">Overdue</option>
-                </select>
-            </div>
-            <div class="col-md-7">
-                <label class="form-label">Search</label>
-                <input type="text" name="search" class="form-control" placeholder="Search by invoice number or vendor..." value="@Model.SearchQuery">
-            </div>
-            <div class="col-md-2">
-                <button type="submit" class="btn btn-primary w-100">
-                    <i class="bi bi-search"></i> Search
-                </button>
+<!-- Filters Card -->
+<div class="bg-white rounded-2xl border border-gray-100 shadow-sm mb-5">
+    <div class="p-5">
+        <form method="get" asp-action="Index">
+            <div class="flex flex-wrap gap-3 items-end">
+                <div class="flex-1 min-w-[160px]">
+                    <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Status</label>
+                    <select name="status"
+                            class="block w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-800 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-colors"
+                            onchange="this.form.submit()">
+                        <option value="">All Statuses</option>
+                        <option value="Draft" selected="@(Model.StatusFilter == "Draft")">Draft</option>
+                        <option value="PendingApproval" selected="@(Model.StatusFilter == "PendingApproval")">Pending Approval</option>
+                        <option value="Approved" selected="@(Model.StatusFilter == "Approved")">Approved</option>
+                        <option value="Rejected" selected="@(Model.StatusFilter == "Rejected")">Rejected</option>
+                        <option value="Paid" selected="@(Model.StatusFilter == "Paid")">Paid</option>
+                        <option value="Overdue" selected="@(Model.StatusFilter == "Overdue")">Overdue</option>
+                    </select>
+                </div>
+                <div class="flex-[3] min-w-[220px]">
+                    <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Search</label>
+                    <div class="relative">
+                        <i class="bi bi-search absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none"></i>
+                        <input type="text" name="search"
+                               class="block w-full border border-gray-200 rounded-xl pl-9 pr-4 py-2.5 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-colors"
+                               placeholder="Search by invoice number or vendor..."
+                               value="@Model.SearchQuery">
+                    </div>
+                </div>
+                <div>
+                    <button type="submit"
+                            class="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-xl hover:bg-blue-700 transition-all shadow-sm">
+                        <i class="bi bi-search"></i> Search
+                    </button>
+                </div>
+                @if (!string.IsNullOrWhiteSpace(Model.SearchQuery) || !string.IsNullOrWhiteSpace(Model.StatusFilter))
+                {
+                    <div>
+                        <a asp-action="Index"
+                           class="inline-flex items-center gap-1.5 px-4 py-2.5 border border-gray-200 text-gray-600 text-sm font-medium rounded-xl hover:bg-gray-50 transition-colors">
+                            <i class="bi bi-x-circle"></i> Clear
+                        </a>
+                    </div>
+                }
             </div>
         </form>
     </div>
@@ -46,84 +73,94 @@
 
 @if (Model.Invoices.Any())
 {
-    <div class="card">
-        <div class="table-responsive">
-            <table class="table table-hover mb-0">
+    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="min-w-full">
                 <thead>
-                    <tr>
-                        <th>Invoice #</th>
-                        <th>Vendor</th>
-                        <th>Date</th>
-                        <th>Due Date</th>
-                        <th>Amount</th>
-                        <th>Status</th>
-                        <th>OCR</th>
-                        <th>Actions</th>
+                    <tr class="border-b border-gray-100">
+                        <th class="px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider bg-gray-50/70">Invoice #</th>
+                        <th class="px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider bg-gray-50/70">Vendor</th>
+                        <th class="px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider bg-gray-50/70">Date</th>
+                        <th class="px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider bg-gray-50/70">Due Date</th>
+                        <th class="px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider bg-gray-50/70">Amount</th>
+                        <th class="px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider bg-gray-50/70">Status</th>
+                        <th class="px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider bg-gray-50/70">OCR</th>
+                        <th class="px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider bg-gray-50/70">Actions</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="divide-y divide-gray-50">
                     @foreach (var invoice in Model.Invoices)
                     {
-                        <tr>
-                            <td>
-                                <a asp-action="Details" asp-route-id="@invoice.Id" class="fw-bold" style="color: var(--primary-color);">
+                        <tr class="hover:bg-blue-50/30 transition-colors group">
+                            <td class="px-5 py-4">
+                                <a asp-action="Details" asp-route-id="@invoice.Id"
+                                   class="font-bold text-blue-600 hover:text-blue-800 text-sm transition-colors">
                                     @invoice.InvoiceNumber
                                 </a>
                             </td>
-                            <td>@invoice.VendorName</td>
-                            <td>@invoice.InvoiceDate.ToString("MMM dd, yyyy")</td>
-                            <td>
+                            <td class="px-5 py-4 text-sm text-gray-700">@invoice.VendorName</td>
+                            <td class="px-5 py-4 text-sm text-gray-500">@invoice.InvoiceDate.ToString("MMM dd, yyyy")</td>
+                            <td class="px-5 py-4 text-sm">
                                 @if (invoice.DueDate.HasValue)
                                 {
-                                    <span class="@(invoice.IsOverdue ? "text-danger fw-medium" : "")">
+                                    <span class="@(invoice.IsOverdue ? "text-red-600 font-semibold" : "text-gray-500")">
                                         @invoice.DueDate.Value.ToString("MMM dd, yyyy")
                                         @if (invoice.IsOverdue)
                                         {
-                                            <i class="bi bi-exclamation-triangle-fill ms-1"></i>
+                                            <i class="bi bi-exclamation-triangle-fill ml-1 text-red-500"></i>
                                         }
                                     </span>
                                 }
                                 else
                                 {
-                                    <span style="color: var(--text-muted);">&mdash;</span>
+                                    <span class="text-gray-300">&mdash;</span>
                                 }
                             </td>
-                            <td class="fw-bold">@invoice.Currency @invoice.TotalAmount.ToString("N2")</td>
-                            <td>
+                            <td class="px-5 py-4 text-sm font-semibold text-gray-800">
+                                @invoice.Currency @invoice.TotalAmount.ToString("N2")
+                            </td>
+                            <td class="px-5 py-4">
                                 @{
-                                    var badgeClass = invoice.Status switch
+                                    var (badgeBg, badgeText, badgeDot) = invoice.Status switch
                                     {
-                                        "Draft" => "bg-secondary",
-                                        "PendingApproval" => "bg-warning",
-                                        "Approved" => "bg-success",
-                                        "Rejected" => "bg-danger",
-                                        "Paid" => "bg-primary",
-                                        "Overdue" => "bg-danger",
-                                        _ => "bg-secondary"
+                                        "Draft" => ("bg-gray-100", "text-gray-600", "bg-gray-400"),
+                                        "PendingApproval" => ("bg-amber-50", "text-amber-700", "bg-amber-400"),
+                                        "Approved" => ("bg-emerald-50", "text-emerald-700", "bg-emerald-500"),
+                                        "Rejected" => ("bg-red-50", "text-red-700", "bg-red-500"),
+                                        "Paid" => ("bg-blue-50", "text-blue-700", "bg-blue-500"),
+                                        "Overdue" => ("bg-red-50", "text-red-700", "bg-red-500"),
+                                        _ => ("bg-gray-100", "text-gray-600", "bg-gray-400")
                                     };
                                 }
-                                <span class="badge @badgeClass">@invoice.Status</span>
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold @badgeBg @badgeText">
+                                    <span class="w-1.5 h-1.5 rounded-full @badgeDot"></span>
+                                    @invoice.Status
+                                </span>
                             </td>
-                            <td>
+                            <td class="px-5 py-4">
                                 @if (invoice.IsOcrProcessed)
                                 {
-                                    <span class="badge" style="background-color: var(--success-light); color: #065f46;">
-                                        <i class="bi bi-check-circle"></i> Processed
+                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700">
+                                        <i class="bi bi-check-circle-fill text-emerald-500"></i> Done
                                     </span>
                                 }
                                 else
                                 {
-                                    <span class="badge" style="background-color: var(--gray-100); color: var(--text-tertiary);">
+                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-500">
                                         <i class="bi bi-hourglass-split"></i> Pending
                                     </span>
                                 }
                             </td>
-                            <td>
-                                <div class="d-flex gap-1">
-                                    <a asp-action="Details" asp-route-id="@invoice.Id" class="btn btn-sm btn-outline-primary" title="View Details">
-                                        <i class="bi bi-eye"></i>
+                            <td class="px-5 py-4">
+                                <div class="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <a asp-action="Details" asp-route-id="@invoice.Id"
+                                       class="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-50 border border-blue-100 text-blue-600 text-xs font-semibold rounded-lg hover:bg-blue-100 transition-colors"
+                                       title="View Details">
+                                        <i class="bi bi-eye"></i> View
                                     </a>
-                                    <a asp-action="Edit" asp-route-id="@invoice.Id" class="btn btn-sm btn-outline-secondary" title="Edit">
+                                    <a asp-action="Edit" asp-route-id="@invoice.Id"
+                                       class="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-50 border border-gray-200 text-gray-600 text-xs font-medium rounded-lg hover:bg-gray-100 transition-colors"
+                                       title="Edit">
                                         <i class="bi bi-pencil"></i>
                                     </a>
                                 </div>
@@ -134,55 +171,55 @@
             </table>
         </div>
 
-        <!-- Pagination -->
-        @if (Model.TotalCount > Model.PageSize)
-        {
-            var totalPages = (int)Math.Ceiling((double)Model.TotalCount / Model.PageSize);
-            <div class="card-body" style="border-top: 1px solid var(--border-color);">
-                <nav>
-                    <ul class="pagination justify-content-center mb-0">
-                        <li class="page-item @(Model.PageNumber <= 1 ? "disabled" : "")">
-                            <a class="page-link" asp-action="Index" asp-route-page="@(Model.PageNumber - 1)" asp-route-status="@Model.StatusFilter" asp-route-search="@Model.SearchQuery">Previous</a>
-                        </li>
-                        @for (int i = 1; i <= totalPages; i++)
-                        {
-                            <li class="page-item @(i == Model.PageNumber ? "active" : "")">
-                                <a class="page-link" asp-action="Index" asp-route-page="@i" asp-route-status="@Model.StatusFilter" asp-route-search="@Model.SearchQuery">@i</a>
-                            </li>
-                        }
-                        <li class="page-item @(Model.PageNumber >= totalPages ? "disabled" : "")">
-                            <a class="page-link" asp-action="Index" asp-route-page="@(Model.PageNumber + 1)" asp-route-status="@Model.StatusFilter" asp-route-search="@Model.SearchQuery">Next</a>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
-        }
-
-        <div class="card-body pt-0" style="@(Model.TotalCount <= Model.PageSize ? "border-top: 1px solid var(--border-color);" : "")">
-            <p class="mb-0 text-center" style="color: var(--text-tertiary); font-size: 0.8125rem;">
-                Showing @Model.Invoices.Count of @Model.TotalCount total invoices
+        <!-- Footer: Pagination + Count -->
+        <div class="px-5 py-4 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <p class="text-xs text-gray-400">
+                Showing <span class="font-semibold text-gray-600">@Model.Invoices.Count</span> of <span class="font-semibold text-gray-600">@Model.TotalCount</span> invoices
             </p>
+
+            @if (Model.TotalCount > Model.PageSize)
+            {
+                var totalPages = (int)Math.Ceiling((double)Model.TotalCount / Model.PageSize);
+                <nav class="flex items-center gap-1">
+                    <a class="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-lg transition-colors @(Model.PageNumber <= 1 ? "text-gray-300 pointer-events-none" : "text-gray-600 border border-gray-200 hover:bg-gray-50")"
+                       asp-action="Index" asp-route-page="@(Model.PageNumber - 1)" asp-route-status="@Model.StatusFilter" asp-route-search="@Model.SearchQuery">
+                        <i class="bi bi-chevron-left mr-1"></i> Prev
+                    </a>
+                    @for (int i = 1; i <= totalPages; i++)
+                    {
+                        <a class="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-lg transition-colors @(i == Model.PageNumber ? "bg-blue-600 text-white shadow-sm" : "text-gray-600 border border-gray-200 hover:bg-gray-50")"
+                           asp-action="Index" asp-route-page="@i" asp-route-status="@Model.StatusFilter" asp-route-search="@Model.SearchQuery">@i</a>
+                    }
+                    <a class="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-lg transition-colors @(Model.PageNumber >= totalPages ? "text-gray-300 pointer-events-none" : "text-gray-600 border border-gray-200 hover:bg-gray-50")"
+                       asp-action="Index" asp-route-page="@(Model.PageNumber + 1)" asp-route-status="@Model.StatusFilter" asp-route-search="@Model.SearchQuery">
+                        Next <i class="bi bi-chevron-right ml-1"></i>
+                    </a>
+                </nav>
+            }
         </div>
     </div>
 }
 else
 {
-    <div class="card">
-        <div class="empty-state">
-            <i class="bi bi-file-text"></i>
-            <h5>No Invoices Found</h5>
-            <p>
+    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm">
+        <div class="flex flex-col items-center justify-center py-20 px-6 text-center">
+            <div class="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center mb-4">
+                <i class="bi bi-file-text text-3xl text-gray-300"></i>
+            </div>
+            <h3 class="text-base font-semibold text-gray-800 mb-1">No Invoices Found</h3>
+            <p class="text-sm text-gray-400 max-w-xs mb-5">
                 @if (!string.IsNullOrWhiteSpace(Model.SearchQuery) || !string.IsNullOrWhiteSpace(Model.StatusFilter))
                 {
                     <span>No invoices match your search criteria. Try adjusting your filters.</span>
                 }
                 else
                 {
-                    <span>Get started by uploading your first invoice.</span>
+                    <span>Get started by uploading your first invoice for processing.</span>
                 }
             </p>
-            <a asp-action="Create" class="btn btn-primary">
-                <i class="bi bi-plus-circle"></i> Upload New Invoice
+            <a asp-action="Create"
+               class="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-xl hover:bg-blue-700 transition-all shadow-sm">
+                <i class="bi bi-plus-lg"></i> Upload New Invoice
             </a>
         </div>
     </div>
