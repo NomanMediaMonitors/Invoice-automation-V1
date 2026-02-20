@@ -599,16 +599,28 @@ public class InvoiceService : IInvoiceService
                     invoice.DueDate = ocrResult.ExtractedData.DueDate.Value;
                 }
 
-                // Try to match vendor by name from OCR text
+                // Use the pre-selected vendor's template for OCR matching
                 VendorInvoiceTemplate? vendorTemplate = null;
-                if (!string.IsNullOrWhiteSpace(ocrResult.ExtractedData.VendorName))
+                if (invoice.VendorId.HasValue && invoice.VendorId.Value != Guid.Empty)
                 {
+                    // Vendor was selected at upload time - use their template directly
+                    vendorTemplate = await _context.VendorInvoiceTemplates
+                        .FirstOrDefaultAsync(t => t.VendorId == invoice.VendorId.Value && t.IsActive);
+
+                    if (vendorTemplate != null)
+                    {
+                        _logger.LogInformation("Using vendor template '{TemplateName}' for OCR processing (vendor pre-selected)",
+                            vendorTemplate.TemplateName);
+                    }
+                }
+                else if (!string.IsNullOrWhiteSpace(ocrResult.ExtractedData.VendorName))
+                {
+                    // Fallback: try to match vendor by name from OCR text
                     var vendorName = ocrResult.ExtractedData.VendorName;
                     var matchedVendor = await _context.Vendors
                         .Where(v => v.CompanyId == invoice.CompanyId && v.IsActive)
                         .ToListAsync();
 
-                    // Do matching in memory for case-insensitive partial matching
                     var matched = matchedVendor.FirstOrDefault(v =>
                         v.Name.Contains(vendorName, StringComparison.OrdinalIgnoreCase) ||
                         vendorName.Contains(v.Name, StringComparison.OrdinalIgnoreCase));
@@ -619,7 +631,6 @@ public class InvoiceService : IInvoiceService
                         _logger.LogInformation("Matched vendor '{VendorName}' (Id: {VendorId}) from OCR text",
                             matched.Name, matched.Id);
 
-                        // Load vendor's active invoice template
                         vendorTemplate = await _context.VendorInvoiceTemplates
                             .FirstOrDefaultAsync(t => t.VendorId == matched.Id && t.IsActive);
 
@@ -629,12 +640,6 @@ public class InvoiceService : IInvoiceService
                                 vendorTemplate.TemplateName);
                         }
                     }
-                }
-                // Also try to load template if vendor was already set on the invoice
-                else if (invoice.VendorId.HasValue && invoice.VendorId.Value != Guid.Empty)
-                {
-                    vendorTemplate = await _context.VendorInvoiceTemplates
-                        .FirstOrDefaultAsync(t => t.VendorId == invoice.VendorId.Value && t.IsActive);
                 }
 
                 // Apply template defaults
