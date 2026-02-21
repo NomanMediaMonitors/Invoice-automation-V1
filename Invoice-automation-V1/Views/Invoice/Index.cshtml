@@ -10,7 +10,7 @@
         </h2>
         <p class="page-subtitle mb-0">Manage and track all your invoices</p>
     </div>
-    <a asp-action="Create" class="btn btn-primary">
+    <a asp-action="Create" asp-route-companyId="@ViewBag.CompanyId" class="btn btn-primary">
         <i class="bi bi-plus-circle"></i> New Invoice
     </a>
 </div>
@@ -19,6 +19,7 @@
 <div class="card mb-4">
     <div class="card-body">
         <form method="get" asp-action="Index" class="row g-3 align-items-end">
+            <input type="hidden" name="companyId" value="@ViewBag.CompanyId" />
             <div class="col-md-3">
                 <label class="form-label">Status</label>
                 <select name="status" class="form-select" onchange="this.form.submit()">
@@ -142,16 +143,16 @@
                 <nav>
                     <ul class="pagination justify-content-center mb-0">
                         <li class="page-item @(Model.PageNumber <= 1 ? "disabled" : "")">
-                            <a class="page-link" asp-action="Index" asp-route-page="@(Model.PageNumber - 1)" asp-route-status="@Model.StatusFilter" asp-route-search="@Model.SearchQuery">Previous</a>
+                            <a class="page-link" asp-action="Index" asp-route-companyId="@ViewBag.CompanyId" asp-route-page="@(Model.PageNumber - 1)" asp-route-status="@Model.StatusFilter" asp-route-search="@Model.SearchQuery">Previous</a>
                         </li>
                         @for (int i = 1; i <= totalPages; i++)
                         {
                             <li class="page-item @(i == Model.PageNumber ? "active" : "")">
-                                <a class="page-link" asp-action="Index" asp-route-page="@i" asp-route-status="@Model.StatusFilter" asp-route-search="@Model.SearchQuery">@i</a>
+                                <a class="page-link" asp-action="Index" asp-route-companyId="@ViewBag.CompanyId" asp-route-page="@i" asp-route-status="@Model.StatusFilter" asp-route-search="@Model.SearchQuery">@i</a>
                             </li>
                         }
                         <li class="page-item @(Model.PageNumber >= totalPages ? "disabled" : "")">
-                            <a class="page-link" asp-action="Index" asp-route-page="@(Model.PageNumber + 1)" asp-route-status="@Model.StatusFilter" asp-route-search="@Model.SearchQuery">Next</a>
+                            <a class="page-link" asp-action="Index" asp-route-companyId="@ViewBag.CompanyId" asp-route-page="@(Model.PageNumber + 1)" asp-route-status="@Model.StatusFilter" asp-route-search="@Model.SearchQuery">Next</a>
                         </li>
                     </ul>
                 </nav>
@@ -181,7 +182,7 @@ else
                     <span>Get started by uploading your first invoice.</span>
                 }
             </p>
-            <a asp-action="Create" class="btn btn-primary">
+            <a asp-action="Create" asp-route-companyId="@ViewBag.CompanyId" class="btn btn-primary">
                 <i class="bi bi-plus-circle"></i> Upload New Invoice
             </a>
         </div>

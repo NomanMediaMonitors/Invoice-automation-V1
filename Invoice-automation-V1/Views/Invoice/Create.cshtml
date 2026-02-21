@@ -5,7 +5,7 @@
 
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a asp-action="Index">Invoices</a></li>
+        <li class="breadcrumb-item"><a asp-action="Index" asp-route-companyId="@Model.CompanyId">Invoices</a></li>
         <li class="breadcrumb-item active">Upload New Invoice</li>
     </ol>
 </nav>
@@ -17,7 +17,7 @@
         </h2>
         <p class="page-subtitle mb-0">Upload an invoice file to process with OCR</p>
     </div>
-    <a asp-action="Index" class="btn btn-outline-secondary">
+    <a asp-action="Index" asp-route-companyId="@Model.CompanyId" class="btn btn-outline-secondary">
         <i class="bi bi-arrow-left"></i> Back to List
     </a>
 </div>
@@ -169,7 +169,7 @@
 
             <!-- Submit -->
             <div class="d-flex justify-content-end gap-2">
-                <a asp-action="Index" class="btn btn-outline-secondary">
+                <a asp-action="Index" asp-route-companyId="@Model.CompanyId" class="btn btn-outline-secondary">
                     Cancel
                 </a>
                 <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
