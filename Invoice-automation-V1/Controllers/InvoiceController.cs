@@ -52,38 +52,85 @@ public class InvoiceController : Controller
         return userCompany?.CompanyId ?? Guid.Empty;
     }
 
-    // GET: Invoice
-    public async Task<IActionResult> Index(string? status, string? search, int page = 1)
+    // GET: Invoice/SelectCompany
+    public async Task<IActionResult> SelectCompany()
     {
-        var companyId = await GetDefaultCompanyIdAsync();
-        if (companyId == Guid.Empty)
+        var userId = GetCurrentUserId();
+        var companies = await _context.UserCompanies
+            .Include(uc => uc.Company)
+            .Where(uc => uc.UserId == userId && uc.Company!.IsActive)
+            .OrderByDescending(uc => uc.IsUserDefault)
+            .ThenBy(uc => uc.Company!.Name)
+            .Select(uc => new InvoiceAutomation.Core.DTOs.Company.CompanyDropdownDto
+            {
+                Id = uc.CompanyId,
+                Name = uc.Company!.Name,
+                Ntn = uc.Company.Ntn,
+                IsUserDefault = uc.IsUserDefault,
+                Role = uc.Role.ToString()
+            })
+            .ToListAsync();
+
+        if (companies == null || !companies.Any())
         {
             TempData["Error"] = "Please set up a company first.";
             return RedirectToAction("Index", "Company");
+        }
+
+        // If user has only one company, skip selection and go directly
+        if (companies.Count == 1)
+        {
+            return RedirectToAction(nameof(Index), new { companyId = companies[0].Id });
+        }
+
+        ViewData["Title"] = "Select Company - Invoices";
+        ViewData["TargetAction"] = "Index";
+        ViewData["TargetController"] = "Invoice";
+        ViewData["SectionTitle"] = "Invoices";
+        ViewData["SectionDescription"] = "Select a company to manage its invoices";
+        ViewData["SectionIcon"] = "bi-receipt";
+
+        return View(companies);
+    }
+
+    // GET: Invoice
+    public async Task<IActionResult> Index(Guid? companyId, string? status, string? search, int page = 1)
+    {
+        Guid resolvedCompanyId;
+        if (companyId.HasValue && companyId.Value != Guid.Empty)
+        {
+            resolvedCompanyId = companyId.Value;
+        }
+        else
+        {
+            return RedirectToAction(nameof(SelectCompany));
         }
 
         const int pageSize = 20;
-        var viewModel = await _invoiceService.GetInvoicesAsync(companyId, page, pageSize, status, search);
+        var viewModel = await _invoiceService.GetInvoicesAsync(resolvedCompanyId, page, pageSize, status, search);
 
-        ViewBag.CompanyId = companyId;
+        ViewBag.CompanyId = resolvedCompanyId;
         return View(viewModel);
     }
 
-    // GET: Invoice/Create
-    public async Task<IActionResult> Create()
+    // GET: Invoice/Create?companyId=xxx
+    public async Task<IActionResult> Create(Guid? companyId)
     {
-        var companyId = await GetDefaultCompanyIdAsync();
-        if (companyId == Guid.Empty)
+        Guid resolvedCompanyId;
+        if (companyId.HasValue && companyId.Value != Guid.Empty)
         {
-            TempData["Error"] = "Please set up a company first.";
-            return RedirectToAction("Index", "Company");
+            resolvedCompanyId = companyId.Value;
+        }
+        else
+        {
+            return RedirectToAction(nameof(SelectCompany));
         }
 
-        await PopulateDropdownsAsync(companyId);
+        await PopulateDropdownsAsync(resolvedCompanyId);
 
         var model = new CreateInvoiceViewModel
         {
-            CompanyId = companyId,
+            CompanyId = resolvedCompanyId,
             InvoiceDate = DateTime.Today,
             DueDate = DateTime.Today.AddDays(30),
             ProcessWithOcr = true

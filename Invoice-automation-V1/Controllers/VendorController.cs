@@ -49,6 +49,34 @@ public class VendorController : Controller
         return userCompany?.CompanyId ?? Guid.Empty;
     }
 
+    // GET: Vendor/SelectCompany
+    public async Task<IActionResult> SelectCompany()
+    {
+        var userId = GetCurrentUserId();
+        var companies = await _companyService.GetUserCompaniesAsync(userId);
+
+        if (companies == null || !companies.Any())
+        {
+            TempData["ErrorMessage"] = "Please set up a company first.";
+            return RedirectToAction("Index", "Company");
+        }
+
+        // If user has only one company, skip selection and go directly
+        if (companies.Count == 1)
+        {
+            return RedirectToAction(nameof(Index), new { companyId = companies[0].Id });
+        }
+
+        ViewData["Title"] = "Select Company - Vendors";
+        ViewData["TargetAction"] = "Index";
+        ViewData["TargetController"] = "Vendor";
+        ViewData["SectionTitle"] = "Vendors";
+        ViewData["SectionDescription"] = "Select a company to manage its vendors";
+        ViewData["SectionIcon"] = "bi-truck";
+
+        return View(companies);
+    }
+
     // GET: Vendor?companyId=xxx
     public async Task<IActionResult> Index(Guid? companyId)
     {
@@ -56,16 +84,11 @@ public class VendorController : Controller
         {
             var currentUserId = GetCurrentUserId();
 
-            // If no companyId provided, use the user's default company
+            // If no companyId provided, redirect to company selection
             var resolvedCompanyId = companyId ?? Guid.Empty;
             if (resolvedCompanyId == Guid.Empty)
             {
-                resolvedCompanyId = await GetDefaultCompanyIdAsync();
-                if (resolvedCompanyId == Guid.Empty)
-                {
-                    TempData["ErrorMessage"] = "Please set up a company first.";
-                    return RedirectToAction("Index", "Company");
-                }
+                return RedirectToAction(nameof(SelectCompany));
             }
 
             // Check if user has access to this company
