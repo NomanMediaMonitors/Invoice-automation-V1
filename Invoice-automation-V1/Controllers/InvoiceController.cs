@@ -53,7 +53,7 @@ public class InvoiceController : Controller
     }
 
     // GET: Invoice/SelectCompany
-    public async Task<IActionResult> SelectCompany()
+    public async Task<IActionResult> SelectCompany(string? returnAction)
     {
         var userId = GetCurrentUserId();
         var companies = await _context.UserCompanies
@@ -77,17 +77,24 @@ public class InvoiceController : Controller
             return RedirectToAction("Index", "Company");
         }
 
+        // Determine which action to redirect to
+        var targetAction = string.Equals(returnAction, "Create", StringComparison.OrdinalIgnoreCase)
+            ? nameof(Create)
+            : nameof(Index);
+
         // If user has only one company, skip selection and go directly
         if (companies.Count == 1)
         {
-            return RedirectToAction(nameof(Index), new { companyId = companies[0].Id });
+            return RedirectToAction(targetAction, new { companyId = companies[0].Id });
         }
 
         ViewData["Title"] = "Select Company - Invoices";
-        ViewData["TargetAction"] = "Index";
+        ViewData["TargetAction"] = targetAction;
         ViewData["TargetController"] = "Invoice";
         ViewData["SectionTitle"] = "Invoices";
-        ViewData["SectionDescription"] = "Select a company to manage its invoices";
+        ViewData["SectionDescription"] = targetAction == nameof(Create)
+            ? "Select a company to upload an invoice for"
+            : "Select a company to manage its invoices";
         ViewData["SectionIcon"] = "bi-receipt";
 
         return View(companies);
@@ -123,7 +130,7 @@ public class InvoiceController : Controller
         }
         else
         {
-            return RedirectToAction(nameof(SelectCompany));
+            return RedirectToAction(nameof(SelectCompany), new { returnAction = "Create" });
         }
 
         await PopulateDropdownsAsync(resolvedCompanyId);

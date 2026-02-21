@@ -5,7 +5,7 @@
 
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a asp-action="Index">Invoices</a></li>
+        <li class="breadcrumb-item"><a asp-action="Index" asp-route-companyId="@Model.CompanyId">Invoices</a></li>
         <li class="breadcrumb-item"><a asp-action="Details" asp-route-id="@Model.Id">@Model.InvoiceNumber</a></li>
         <li class="breadcrumb-item active">Edit</li>
     </ol>
