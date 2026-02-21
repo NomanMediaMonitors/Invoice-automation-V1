@@ -13,7 +13,6 @@ public interface IInvoiceService
     Task<(bool Success, string Message)> ApproveInvoiceAsync(Guid invoiceId, Guid userId, string? approvalNotes);
     Task<(bool Success, string Message)> RejectInvoiceAsync(Guid invoiceId, Guid userId, string? rejectionNotes);
     Task<(bool Success, string Message)> MarkAsPaidAsync(Guid invoiceId, Guid userId, DateTime paymentDate, string paymentReference);
-    Task<(bool Success, string Message)> SyncToIndraajAsync(Guid invoiceId, Guid userId);
     Task<(bool Success, string Message)> ProcessOcrAsync(Guid invoiceId);
     Task<(bool Success, string Message)> PostToGLAsync(Guid invoiceId, Guid userId);
     Task<bool> CanUserAccessInvoiceAsync(Guid invoiceId, Guid userId);

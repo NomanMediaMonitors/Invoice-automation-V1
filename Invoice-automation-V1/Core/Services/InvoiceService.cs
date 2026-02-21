@@ -133,10 +133,10 @@ public class InvoiceService : IInvoiceService
                 return (false, "You don't have permission to edit this invoice");
             }
 
-            // Don't allow editing if invoice is paid or synced
-            if (invoice.Status == InvoiceStatus.Paid || invoice.SyncedToIndraajAt.HasValue)
+            // Don't allow editing if invoice is paid
+            if (invoice.Status == InvoiceStatus.Paid)
             {
-                return (false, "Cannot edit a paid or synced invoice");
+                return (false, "Cannot edit a paid invoice");
             }
 
             // Update invoice fields
@@ -212,10 +212,10 @@ public class InvoiceService : IInvoiceService
                 return (false, "You don't have permission to delete this invoice");
             }
 
-            // Don't allow deleting paid or synced invoices
-            if (invoice.Status == InvoiceStatus.Paid || invoice.SyncedToIndraajAt.HasValue)
+            // Don't allow deleting paid invoices
+            if (invoice.Status == InvoiceStatus.Paid)
             {
-                return (false, "Cannot delete a paid or synced invoice");
+                return (false, "Cannot delete a paid invoice");
             }
 
             _context.Invoices.Remove(invoice);
@@ -328,8 +328,6 @@ public class InvoiceService : IInvoiceService
             PaidAt = invoice.PaidAt,
             PaymentReference = invoice.PaymentReference,
             PaidByName = paidByUser?.FullName,
-            IndraajVoucherNo = invoice.IndraajVoucherNo,
-            SyncedToIndraajAt = invoice.SyncedToIndraajAt,
             CreatedByName = createdByUser?.FullName ?? "",
             CreatedAt = invoice.CreatedAt,
             UpdatedAt = invoice.UpdatedAt,
@@ -535,57 +533,6 @@ public class InvoiceService : IInvoiceService
         {
             _logger.LogError(ex, "Error marking invoice as paid");
             return (false, $"Error marking invoice as paid: {ex.Message}");
-        }
-    }
-
-    public async Task<(bool Success, string Message)> SyncToIndraajAsync(Guid invoiceId, Guid userId)
-    {
-        try
-        {
-            var invoice = await _context.Invoices
-                .Include(i => i.Company)
-                .Include(i => i.Vendor)
-                .Include(i => i.LineItems)
-                .FirstOrDefaultAsync(i => i.Id == invoiceId);
-
-            if (invoice == null)
-            {
-                return (false, "Invoice not found");
-            }
-
-            if (!await CanUserAccessInvoiceAsync(invoiceId, userId))
-            {
-                return (false, "You don't have permission to sync this invoice");
-            }
-
-            if (invoice.Status != InvoiceStatus.Approved && invoice.Status != InvoiceStatus.Paid)
-            {
-                return (false, "Only approved or paid invoices can be synced to Indraaj");
-            }
-
-            if (string.IsNullOrWhiteSpace(invoice.Company?.IndraajAccessToken))
-            {
-                return (false, "Company is not connected to Indraaj");
-            }
-
-            // TODO: Implement actual Indraaj API integration
-            // For now, simulate the sync
-            await Task.Delay(500);
-
-            invoice.IndraajVoucherNo = $"VCH-{DateTime.Now:yyyyMMdd}-{new Random().Next(1000, 9999)}";
-            invoice.SyncedToIndraajAt = DateTime.UtcNow;
-            invoice.UpdatedAt = DateTime.UtcNow;
-
-            await _context.SaveChangesAsync();
-
-            _logger.LogInformation("Invoice {InvoiceId} synced to Indraaj with voucher {VoucherNo}", invoiceId, invoice.IndraajVoucherNo);
-
-            return (true, $"Invoice synced to Indraaj successfully. Voucher No: {invoice.IndraajVoucherNo}");
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error syncing invoice to Indraaj");
-            return (false, $"Error syncing to Indraaj: {ex.Message}");
         }
     }
 

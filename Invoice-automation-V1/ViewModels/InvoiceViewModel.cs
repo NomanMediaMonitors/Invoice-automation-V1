@@ -158,10 +158,6 @@ public class InvoiceDetailsViewModel
     public bool HasSalesTaxInputAccount { get; set; } = true;
     public bool HasPayableVendorsAccount { get; set; } = true;
 
-    // Indraaj Integration
-    public string? IndraajVoucherNo { get; set; }
-    public DateTime? SyncedToIndraajAt { get; set; }
-
     // Audit
     public string CreatedByName { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; }
@@ -236,7 +232,6 @@ public class PayInvoiceViewModel
     [StringLength(100)]
     public string PaymentReference { get; set; } = string.Empty;
 
-    public bool SyncToIndraaj { get; set; }
 }
 
 public class OcrResultViewModel

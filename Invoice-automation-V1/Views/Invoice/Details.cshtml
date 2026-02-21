@@ -1,10 +1,9 @@
 @model Invoice_automation_V1.ViewModels.InvoiceDetailsViewModel
 @{
     ViewData["Title"] = "Invoice Details";
-    var canEdit = Model.Status != "Paid" && !Model.SyncedToIndraajAt.HasValue;
+    var canEdit = Model.Status != "Paid";
     var canApprove = Model.Status == "Draft" || Model.Status == "PendingApproval";
     var canPay = Model.Status == "Approved";
-    var canSync = (Model.Status == "Approved" || Model.Status == "Paid") && !Model.SyncedToIndraajAt.HasValue;
     var canPostGL = (Model.Status == "Approved" || Model.Status == "Paid") && !Model.IsPostedToGL;
     var canEditAccounts = !Model.IsPostedToGL;
 }
@@ -582,12 +581,9 @@
 
             @if (canPostGL)
             {
-                <form asp-action="PostToGL" method="post" class="mb-2">
-                    <input type="hidden" name="id" value="@Model.Id" />
-                    <button type="submit" class="btn btn-outline-success w-100" onclick="return confirm('Post this invoice to the General Ledger? This action cannot be undone.')">
-                        <i class="bi bi-journal-check"></i> Post to General Ledger
-                    </button>
-                </form>
+                <button type="button" class="btn btn-outline-success w-100 mb-2" id="btnShowGLPreview">
+                    <i class="bi bi-journal-check"></i> Post to General Ledger
+                </button>
             }
             @if (Model.IsPostedToGL)
             {
@@ -598,16 +594,6 @@
                         <br><small>@Model.PostedToGLAt.Value.ToString("MMM dd, yyyy HH:mm")</small>
                     }
                 </div>
-            }
-
-            @if (canSync)
-            {
-                <form asp-action="SyncToIndraaj" method="post" class="mb-2">
-                    <input type="hidden" name="id" value="@Model.Id" />
-                    <button type="submit" class="btn btn-info w-100" onclick="return confirm('Sync this invoice to Indraaj?')">
-                        <i class="bi bi-cloud-arrow-up"></i> Sync to Indraaj
-                    </button>
-                </form>
             }
 
             @if (!string.IsNullOrEmpty(Model.FileUrl))
@@ -727,26 +713,6 @@
             </div>
         }
 
-        <!-- Indraaj Sync Information -->
-        @if (Model.SyncedToIndraajAt.HasValue)
-        {
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h5 class="mb-0"><i class="bi bi-cloud-check"></i> Indraaj Sync</h5>
-                </div>
-                <div class="card-body">
-                    <div class="info-row">
-                        <span class="info-label">Voucher No</span>
-                        <span class="info-value">@Model.IndraajVoucherNo</span>
-                    </div>
-                    <div class="info-row">
-                        <span class="info-label">Synced</span>
-                        <span class="info-value">@Model.SyncedToIndraajAt.Value.ToString("MMM dd, yyyy HH:mm")</span>
-                    </div>
-                </div>
-            </div>
-        }
-
         <!-- Audit Information -->
         <div class="card">
             <div class="card-header">
@@ -795,6 +761,35 @@
                     <button type="submit" class="btn btn-primary">Mark as Paid</button>
                 </div>
             </form>
+        </div>
+    </div>
+</div>
+
+<!-- GL Preview Modal -->
+<div class="modal fade" id="glPreviewModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-journal-text"></i> GL Posting Preview</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="glPreviewBody">
+                <div class="text-center py-4">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2" style="color: var(--text-secondary);">Loading GL preview...</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form asp-action="PostToGL" method="post" class="d-inline">
+                    <input type="hidden" name="id" value="@Model.Id" />
+                    <button type="submit" class="btn btn-success" id="btnConfirmPostGL">
+                        <i class="bi bi-journal-check"></i> Confirm &amp; Post to GL
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
 </div>
@@ -1058,5 +1053,67 @@
         if (qtyEl) qtyEl.addEventListener('input', updatePreview);
         if (priceEl) priceEl.addEventListener('input', updatePreview);
         if (taxRateEl) taxRateEl.addEventListener('input', updatePreview);
+
+        // ===== GL Preview =====
+        var glPreviewBtn = document.getElementById('btnShowGLPreview');
+        if (glPreviewBtn) {
+            glPreviewBtn.addEventListener('click', function() {
+                var modal = new bootstrap.Modal(document.getElementById('glPreviewModal'));
+                var body = document.getElementById('glPreviewBody');
+                var confirmBtn = document.getElementById('btnConfirmPostGL');
+
+                // Show loading
+                body.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div><p class="mt-2" style="color: var(--text-secondary);">Loading GL preview...</p></div>';
+                confirmBtn.disabled = true;
+
+                modal.show();
+
+                fetch('@Url.Action("GetGLPreview", "Invoice")?id=' + invoiceId)
+                    .then(function(r) { return r.json(); })
+                    .then(function(result) {
+                        if (result.success) {
+                            var entries = result.entries;
+                            var html = '<div class="mb-3"><p style="color: var(--text-secondary);">The following journal entries will be posted to the General Ledger:</p></div>';
+                            html += '<table class="table table-bordered mb-3">';
+                            html += '<thead><tr><th>Account</th><th class="text-end">Debit</th><th class="text-end">Credit</th></tr></thead>';
+                            html += '<tbody>';
+                            var totalDebit = 0;
+                            var totalCredit = 0;
+                            for (var i = 0; i < entries.length; i++) {
+                                var e = entries[i];
+                                html += '<tr>';
+                                html += '<td>' + e.accountCode + ' - ' + e.accountName + '</td>';
+                                if (e.debit > 0) {
+                                    html += '<td class="text-end">' + currency + ' ' + e.debit.toFixed(2) + '</td>';
+                                    html += '<td class="text-end">-</td>';
+                                    totalDebit += e.debit;
+                                } else {
+                                    html += '<td class="text-end">-</td>';
+                                    html += '<td class="text-end">' + currency + ' ' + e.credit.toFixed(2) + '</td>';
+                                    totalCredit += e.credit;
+                                }
+                                html += '</tr>';
+                            }
+                            html += '</tbody>';
+                            html += '<tfoot><tr style="background: var(--bg-secondary); font-weight: bold;">';
+                            html += '<td>Total</td>';
+                            html += '<td class="text-end">' + currency + ' ' + totalDebit.toFixed(2) + '</td>';
+                            html += '<td class="text-end">' + currency + ' ' + totalCredit.toFixed(2) + '</td>';
+                            html += '</tr></tfoot>';
+                            html += '</table>';
+                            html += '<div class="alert alert-warning py-2 mb-0"><i class="bi bi-exclamation-triangle"></i> This action cannot be undone. Accounts cannot be changed after posting.</div>';
+                            body.innerHTML = html;
+                            confirmBtn.disabled = false;
+                        } else {
+                            body.innerHTML = '<div class="alert alert-danger"><i class="bi bi-exclamation-circle"></i> ' + result.message + '</div>';
+                            confirmBtn.disabled = true;
+                        }
+                    })
+                    .catch(function(err) {
+                        body.innerHTML = '<div class="alert alert-danger"><i class="bi bi-exclamation-circle"></i> Error loading GL preview.</div>';
+                        confirmBtn.disabled = true;
+                    });
+            });
+        }
     </script>
 }

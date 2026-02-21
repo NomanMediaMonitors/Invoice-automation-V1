@@ -458,34 +458,6 @@ public class InvoiceController : Controller
         return RedirectToAction(nameof(Details), new { id });
     }
 
-    // POST: Invoice/SyncToIndraaj/5
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> SyncToIndraaj(Guid id)
-    {
-        try
-        {
-            var userId = GetCurrentUserId();
-            var result = await _invoiceService.SyncToIndraajAsync(id, userId);
-
-            if (result.Success)
-            {
-                TempData["Success"] = result.Message;
-            }
-            else
-            {
-                TempData["Error"] = result.Message;
-            }
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error syncing invoice to Indraaj");
-            TempData["Error"] = "An error occurred while syncing to Indraaj";
-        }
-
-        return RedirectToAction(nameof(Details), new { id });
-    }
-
     // POST: Invoice/PostToGL/5
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -512,6 +484,86 @@ public class InvoiceController : Controller
         }
 
         return RedirectToAction(nameof(Details), new { id });
+    }
+
+    // GET: Invoice/GetGLPreview?id=xxx (AJAX - returns journal entries that will be posted)
+    [HttpGet]
+    public async Task<IActionResult> GetGLPreview(Guid id)
+    {
+        try
+        {
+            var userId = GetCurrentUserId();
+            if (!await _invoiceService.CanUserAccessInvoiceAsync(id, userId))
+                return Json(new { success = false, message = "Access denied" });
+
+            var invoice = await _context.Invoices
+                .Include(i => i.Vendor)
+                .Include(i => i.LineItems)
+                    .ThenInclude(li => li.ChartOfAccount)
+                .Include(i => i.ExpenseAccount)
+                .Include(i => i.AdvanceTaxAccount)
+                .Include(i => i.SalesTaxInputAccount)
+                .Include(i => i.PayableVendorsAccount)
+                .FirstOrDefaultAsync(i => i.Id == id);
+
+            if (invoice == null)
+                return Json(new { success = false, message = "Invoice not found" });
+
+            if (invoice.IsPostedToGL)
+                return Json(new { success = false, message = "Invoice has already been posted to GL" });
+
+            if (invoice.Status != InvoiceStatus.Approved && invoice.Status != InvoiceStatus.Paid)
+                return Json(new { success = false, message = "Invoice must be Approved or Paid before posting to GL" });
+
+            // Build journal entries preview
+            var entries = new List<GLPreviewEntry>();
+
+            // Debit: Expense Account (SubTotal)
+            if (invoice.ExpenseAccountId.HasValue && invoice.ExpenseAccount != null && invoice.SubTotal > 0)
+            {
+                entries.Add(new GLPreviewEntry
+                {
+                    AccountCode = invoice.ExpenseAccount.Code,
+                    AccountName = invoice.ExpenseAccount.Name,
+                    Debit = invoice.SubTotal,
+                    Credit = 0m
+                });
+            }
+
+            // Debit: Sales Tax Input Account (Tax Amount)
+            if (invoice.SalesTaxInputAccountId.HasValue && invoice.SalesTaxInputAccount != null && invoice.TaxAmount > 0)
+            {
+                entries.Add(new GLPreviewEntry
+                {
+                    AccountCode = invoice.SalesTaxInputAccount.Code,
+                    AccountName = invoice.SalesTaxInputAccount.Name,
+                    Debit = invoice.TaxAmount,
+                    Credit = 0m
+                });
+            }
+
+            // Credit: Payable Vendors Account (Total Amount)
+            if (invoice.PayableVendorsAccountId.HasValue && invoice.PayableVendorsAccount != null && invoice.TotalAmount > 0)
+            {
+                entries.Add(new GLPreviewEntry
+                {
+                    AccountCode = invoice.PayableVendorsAccount.Code,
+                    AccountName = invoice.PayableVendorsAccount.Name,
+                    Debit = 0m,
+                    Credit = invoice.TotalAmount
+                });
+            }
+
+            if (!entries.Any())
+                return Json(new { success = false, message = "No GL accounts are assigned. Please assign accounts before posting." });
+
+            return Json(new { success = true, entries });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error generating GL preview");
+            return Json(new { success = false, message = "An error occurred generating the GL preview" });
+        }
     }
 
     // POST: Invoice/UpdateInvoiceAccount (AJAX - for inline GL account assignment)
@@ -738,7 +790,7 @@ public class InvoiceController : Controller
 
             // Check invoice is editable
             var invoice = lineItem.Invoice!;
-            if (invoice.Status == InvoiceStatus.Paid || invoice.SyncedToIndraajAt.HasValue)
+            if (invoice.Status == InvoiceStatus.Paid)
                 return Json(new { success = false, message = "Invoice cannot be edited" });
 
             lineItem.Description = request.Description;
@@ -808,7 +860,7 @@ public class InvoiceController : Controller
             if (!await _invoiceService.CanUserAccessInvoiceAsync(request.InvoiceId, userId))
                 return Json(new { success = false, message = "Access denied" });
 
-            if (invoice.Status == InvoiceStatus.Paid || invoice.SyncedToIndraajAt.HasValue)
+            if (invoice.Status == InvoiceStatus.Paid)
                 return Json(new { success = false, message = "Invoice cannot be edited" });
 
             switch (request.Field.ToLower())
@@ -1099,5 +1151,13 @@ public class InvoiceController : Controller
         public Guid InvoiceId { get; set; }
         public string AccountType { get; set; } = string.Empty;
         public string? AccountId { get; set; }
+    }
+
+    public class GLPreviewEntry
+    {
+        public string AccountCode { get; set; } = string.Empty;
+        public string AccountName { get; set; } = string.Empty;
+        public decimal Debit { get; set; }
+        public decimal Credit { get; set; }
     }
 }
