@@ -98,7 +98,7 @@ public class InvoiceService : IInvoiceService
             // Calculate totals
             invoice.SubTotal = invoice.LineItems.Sum(li => li.Amount);
             invoice.TaxAmount = invoice.LineItems.Sum(li => li.TaxAmount);
-            invoice.TotalAmount = invoice.LineItems.Sum(li => li.TotalAmount);
+            invoice.TotalAmount = invoice.SubTotal + invoice.AdvanceTaxAmount + invoice.SalesTaxInputAmount;
 
             _context.Invoices.Add(invoice);
             await _context.SaveChangesAsync();
@@ -181,7 +181,7 @@ public class InvoiceService : IInvoiceService
             // Recalculate totals
             invoice.SubTotal = invoice.LineItems.Sum(li => li.Amount);
             invoice.TaxAmount = invoice.LineItems.Sum(li => li.TaxAmount);
-            invoice.TotalAmount = invoice.LineItems.Sum(li => li.TotalAmount);
+            invoice.TotalAmount = invoice.SubTotal + invoice.AdvanceTaxAmount + invoice.SalesTaxInputAmount;
 
             await _context.SaveChangesAsync();
 
@@ -310,8 +310,10 @@ public class InvoiceService : IInvoiceService
             // GL Account assignments
             AdvanceTaxAccountId = invoice.AdvanceTaxAccountId,
             AdvanceTaxAccountName = invoice.AdvanceTaxAccount?.DisplayName,
+            AdvanceTaxAmount = invoice.AdvanceTaxAmount,
             SalesTaxInputAccountId = invoice.SalesTaxInputAccountId,
             SalesTaxInputAccountName = invoice.SalesTaxInputAccount?.DisplayName,
+            SalesTaxInputAmount = invoice.SalesTaxInputAmount,
             PayableVendorsAccountId = invoice.PayableVendorsAccountId,
             PayableVendorsAccountName = invoice.PayableVendorsAccount?.DisplayName,
             // GL Posting
@@ -701,7 +703,7 @@ public class InvoiceService : IInvoiceService
                 var allLineItems = invoice.LineItems.Where(li => !li.IsOcrExtracted).Concat(newLineItems).ToList();
                 invoice.SubTotal = ocrResult.ExtractedData.SubTotal ?? allLineItems.Sum(li => li.Amount);
                 invoice.TaxAmount = ocrResult.ExtractedData.TaxAmount ?? allLineItems.Sum(li => li.TaxAmount);
-                invoice.TotalAmount = ocrResult.ExtractedData.TotalAmount ?? allLineItems.Sum(li => li.TotalAmount);
+                invoice.TotalAmount = ocrResult.ExtractedData.TotalAmount ?? (invoice.SubTotal + invoice.AdvanceTaxAmount + invoice.SalesTaxInputAmount);
 
                 await _context.SaveChangesAsync();
 

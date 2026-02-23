@@ -42,7 +42,9 @@ public class Invoice
 
     // GL Account Assignments
     public Guid? AdvanceTaxAccountId { get; set; }
+    public decimal AdvanceTaxAmount { get; set; }
     public Guid? SalesTaxInputAccountId { get; set; }
+    public decimal SalesTaxInputAmount { get; set; }
     public Guid? PayableVendorsAccountId { get; set; }
 
     // GL Posting

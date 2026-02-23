@@ -226,6 +226,12 @@ namespace InvoiceAutomation.Migrations
                         .HasColumnType("CHAR(36)")
                         .HasColumnName("advance_tax_account_id");
 
+                    b.Property<decimal>("AdvanceTaxAmount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("DECIMAL(18,2)")
+                        .HasDefaultValue(0m)
+                        .HasColumnName("advance_tax_amount");
+
                     b.Property<string>("ApprovalNotes")
                         .HasMaxLength(1000)
                         .HasColumnType("varchar(1000)")
@@ -370,6 +376,12 @@ namespace InvoiceAutomation.Migrations
                     b.Property<Guid?>("SalesTaxInputAccountId")
                         .HasColumnType("CHAR(36)")
                         .HasColumnName("sales_tax_input_account_id");
+
+                    b.Property<decimal>("SalesTaxInputAmount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("DECIMAL(18,2)")
+                        .HasDefaultValue(0m)
+                        .HasColumnName("sales_tax_input_amount");
 
                     b.Property<string>("Status")
                         .IsRequired()
