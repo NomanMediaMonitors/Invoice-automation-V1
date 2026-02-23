@@ -450,8 +450,6 @@ public class VendorController : Controller
 
             if (model.DefaultChartOfAccountId == Guid.Empty)
                 model.DefaultChartOfAccountId = null;
-            if (model.DefaultExpenseAccountId == Guid.Empty)
-                model.DefaultExpenseAccountId = null;
             if (model.DefaultAdvanceTaxAccountId == Guid.Empty)
                 model.DefaultAdvanceTaxAccountId = null;
             if (model.DefaultSalesTaxInputAccountId == Guid.Empty)
@@ -531,7 +529,6 @@ public class VendorController : Controller
             template.HasLineItems = model.HasLineItems;
             template.HasTaxRate = model.HasTaxRate;
             template.HasSubTotal = model.HasSubTotal;
-            template.HasExpenseAccount = model.HasExpenseAccount;
             template.HasAdvanceTaxAccount = model.HasAdvanceTaxAccount;
             template.HasSalesTaxInputAccount = model.HasSalesTaxInputAccount;
             template.HasPayableVendorsAccount = model.HasPayableVendorsAccount;
@@ -543,7 +540,6 @@ public class VendorController : Controller
             template.TotalLabel = model.TotalLabel;
             template.DefaultTaxRate = model.DefaultTaxRate;
             template.DefaultChartOfAccountId = (model.DefaultChartOfAccountId == Guid.Empty) ? null : model.DefaultChartOfAccountId;
-            template.DefaultExpenseAccountId = (model.DefaultExpenseAccountId == Guid.Empty) ? null : model.DefaultExpenseAccountId;
             template.DefaultAdvanceTaxAccountId = (model.DefaultAdvanceTaxAccountId == Guid.Empty) ? null : model.DefaultAdvanceTaxAccountId;
             template.DefaultSalesTaxInputAccountId = (model.DefaultSalesTaxInputAccountId == Guid.Empty) ? null : model.DefaultSalesTaxInputAccountId;
             template.DefaultPayableVendorsAccountId = (model.DefaultPayableVendorsAccountId == Guid.Empty) ? null : model.DefaultPayableVendorsAccountId;
