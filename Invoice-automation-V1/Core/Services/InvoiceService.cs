@@ -242,7 +242,6 @@ public class InvoiceService : IInvoiceService
         var invoice = await _context.Invoices
             .Include(i => i.Company)
             .Include(i => i.Vendor)
-            .Include(i => i.ExpenseAccount)
             .Include(i => i.AdvanceTaxAccount)
             .Include(i => i.SalesTaxInputAccount)
             .Include(i => i.PayableVendorsAccount)
@@ -262,14 +261,13 @@ public class InvoiceService : IInvoiceService
         var postedByUser = invoice.PostedToGLBy.HasValue ? await _context.Users.FindAsync(invoice.PostedToGLBy.Value) : null;
 
         // Load vendor template visibility flags
-        bool hasExpenseAccount = true, hasAdvanceTaxAccount = true, hasSalesTaxInputAccount = true, hasPayableVendorsAccount = true;
+        bool hasAdvanceTaxAccount = true, hasSalesTaxInputAccount = true, hasPayableVendorsAccount = true;
         if (invoice.VendorId.HasValue)
         {
             var vendorTemplate = await _context.VendorInvoiceTemplates
                 .FirstOrDefaultAsync(t => t.VendorId == invoice.VendorId.Value && t.IsActive);
             if (vendorTemplate != null)
             {
-                hasExpenseAccount = vendorTemplate.HasExpenseAccount;
                 hasAdvanceTaxAccount = vendorTemplate.HasAdvanceTaxAccount;
                 hasSalesTaxInputAccount = vendorTemplate.HasSalesTaxInputAccount;
                 hasPayableVendorsAccount = vendorTemplate.HasPayableVendorsAccount;
@@ -304,8 +302,6 @@ public class InvoiceService : IInvoiceService
             OcrConfidenceScore = invoice.OcrConfidenceScore,
             OcrErrorMessage = invoice.OcrErrorMessage,
             // GL Account assignments
-            ExpenseAccountId = invoice.ExpenseAccountId,
-            ExpenseAccountName = invoice.ExpenseAccount?.DisplayName,
             AdvanceTaxAccountId = invoice.AdvanceTaxAccountId,
             AdvanceTaxAccountName = invoice.AdvanceTaxAccount?.DisplayName,
             SalesTaxInputAccountId = invoice.SalesTaxInputAccountId,
@@ -317,7 +313,6 @@ public class InvoiceService : IInvoiceService
             PostedToGLAt = invoice.PostedToGLAt,
             PostedToGLByName = postedByUser?.FullName,
             // Vendor template visibility
-            HasExpenseAccount = hasExpenseAccount,
             HasAdvanceTaxAccount = hasAdvanceTaxAccount,
             HasSalesTaxInputAccount = hasSalesTaxInputAccount,
             HasPayableVendorsAccount = hasPayableVendorsAccount,
@@ -641,8 +636,6 @@ public class InvoiceService : IInvoiceService
                 // Auto-populate GL accounts from vendor template defaults
                 if (vendorTemplate != null)
                 {
-                    if (vendorTemplate.HasExpenseAccount && vendorTemplate.DefaultExpenseAccountId.HasValue && !invoice.ExpenseAccountId.HasValue)
-                        invoice.ExpenseAccountId = vendorTemplate.DefaultExpenseAccountId;
                     if (vendorTemplate.HasAdvanceTaxAccount && vendorTemplate.DefaultAdvanceTaxAccountId.HasValue && !invoice.AdvanceTaxAccountId.HasValue)
                         invoice.AdvanceTaxAccountId = vendorTemplate.DefaultAdvanceTaxAccountId;
                     if (vendorTemplate.HasSalesTaxInputAccount && vendorTemplate.DefaultSalesTaxInputAccountId.HasValue && !invoice.SalesTaxInputAccountId.HasValue)
@@ -764,6 +757,7 @@ public class InvoiceService : IInvoiceService
 
             var invoice = await _context.Invoices
                 .Include(i => i.Vendor)
+                .Include(i => i.LineItems)
                 .FirstOrDefaultAsync(i => i.Id == invoiceId);
 
             if (invoice == null)
@@ -789,12 +783,14 @@ public class InvoiceService : IInvoiceService
                     .FirstOrDefaultAsync(t => t.VendorId == invoice.VendorId.Value && t.IsActive);
             }
 
-            // Validate that all enabled accounts are assigned
-            if (vendorTemplate == null || vendorTemplate.HasExpenseAccount)
+            // Validate that all line items have accounts assigned (replaces expense account validation)
+            if (invoice.LineItems.Any())
             {
-                if (!invoice.ExpenseAccountId.HasValue)
-                    return (false, "Expense account must be assigned before posting to GL");
+                var unassignedItems = invoice.LineItems.Where(li => !li.ChartOfAccountId.HasValue).ToList();
+                if (unassignedItems.Any())
+                    return (false, $"All line items must have an account assigned before posting to GL. {unassignedItems.Count} line item(s) are missing an account.");
             }
+
             if (vendorTemplate == null || vendorTemplate.HasAdvanceTaxAccount)
             {
                 if (!invoice.AdvanceTaxAccountId.HasValue)

@@ -138,8 +138,6 @@ public class InvoiceDetailsViewModel
     public string? PaidByName { get; set; }
 
     // GL Account Assignments
-    public Guid? ExpenseAccountId { get; set; }
-    public string? ExpenseAccountName { get; set; }
     public Guid? AdvanceTaxAccountId { get; set; }
     public string? AdvanceTaxAccountName { get; set; }
     public Guid? SalesTaxInputAccountId { get; set; }
@@ -153,7 +151,6 @@ public class InvoiceDetailsViewModel
     public string? PostedToGLByName { get; set; }
 
     // Vendor Template visibility flags
-    public bool HasExpenseAccount { get; set; } = true;
     public bool HasAdvanceTaxAccount { get; set; } = true;
     public bool HasSalesTaxInputAccount { get; set; } = true;
     public bool HasPayableVendorsAccount { get; set; } = true;

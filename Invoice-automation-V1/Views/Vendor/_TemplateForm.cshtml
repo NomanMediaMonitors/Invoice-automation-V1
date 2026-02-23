@@ -92,18 +92,6 @@
 
                 <div class="mb-3">
                     <div class="form-check form-switch mb-2">
-                        <input asp-for="HasExpenseAccount" class="form-check-input" id="hasExpenseAccount">
-                        <label asp-for="HasExpenseAccount" class="form-check-label fw-semibold">Expense</label>
-                    </div>
-                    <div id="expenseAccountSection">
-                        <select asp-for="DefaultExpenseAccountId" class="form-select form-select-sm" asp-items="ViewBag.ChartOfAccounts">
-                            <option value="">-- Default Expense Account --</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="mb-3">
-                    <div class="form-check form-switch mb-2">
                         <input asp-for="HasAdvanceTaxAccount" class="form-check-input" id="hasAdvanceTaxAccount">
                         <label asp-for="HasAdvanceTaxAccount" class="form-check-label fw-semibold">Advance Tax</label>
                     </div>
@@ -201,7 +189,6 @@
             }
         }
 
-        toggleAccountSection('hasExpenseAccount', 'expenseAccountSection');
         toggleAccountSection('hasAdvanceTaxAccount', 'advanceTaxAccountSection');
         toggleAccountSection('hasSalesTaxInputAccount', 'salesTaxInputAccountSection');
         toggleAccountSection('hasPayableVendorsAccount', 'payableVendorsAccountSection');

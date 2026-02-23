@@ -270,10 +270,6 @@ namespace InvoiceAutomation.Migrations
                         .HasColumnType("DATE")
                         .HasColumnName("due_date");
 
-                    b.Property<Guid?>("ExpenseAccountId")
-                        .HasColumnType("CHAR(36)")
-                        .HasColumnName("expense_account_id");
-
                     b.Property<long?>("FileSize")
                         .HasColumnType("bigint")
                         .HasColumnName("file_size");
@@ -416,8 +412,6 @@ namespace InvoiceAutomation.Migrations
                     b.HasIndex("AdvanceTaxAccountId");
 
                     b.HasIndex("DueDate");
-
-                    b.HasIndex("ExpenseAccountId");
 
                     b.HasIndex("InvoiceDate");
 
@@ -912,10 +906,6 @@ namespace InvoiceAutomation.Migrations
                         .HasColumnType("CHAR(36)")
                         .HasColumnName("default_chart_of_account_id");
 
-                    b.Property<Guid?>("DefaultExpenseAccountId")
-                        .HasColumnType("CHAR(36)")
-                        .HasColumnName("default_expense_account_id");
-
                     b.Property<Guid?>("DefaultPayableVendorsAccountId")
                         .HasColumnType("CHAR(36)")
                         .HasColumnName("default_payable_vendors_account_id");
@@ -950,12 +940,6 @@ namespace InvoiceAutomation.Migrations
                         .HasColumnType("TINYINT(1)")
                         .HasDefaultValue(true)
                         .HasColumnName("has_due_date");
-
-                    b.Property<bool>("HasExpenseAccount")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("TINYINT(1)")
-                        .HasDefaultValue(true)
-                        .HasColumnName("has_expense_account");
 
                     b.Property<bool>("HasInvoiceDate")
                         .ValueGeneratedOnAdd()
@@ -1057,8 +1041,6 @@ namespace InvoiceAutomation.Migrations
 
                     b.HasIndex("DefaultChartOfAccountId");
 
-                    b.HasIndex("DefaultExpenseAccountId");
-
                     b.HasIndex("DefaultPayableVendorsAccountId");
 
                     b.HasIndex("DefaultSalesTaxInputAccountId");
@@ -1096,11 +1078,6 @@ namespace InvoiceAutomation.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("InvoiceAutomation.Core.Entities.ChartOfAccount", "ExpenseAccount")
-                        .WithMany()
-                        .HasForeignKey("ExpenseAccountId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
                     b.HasOne("InvoiceAutomation.Core.Entities.ChartOfAccount", "PayableVendorsAccount")
                         .WithMany()
                         .HasForeignKey("PayableVendorsAccountId")
@@ -1119,8 +1096,6 @@ namespace InvoiceAutomation.Migrations
                     b.Navigation("AdvanceTaxAccount");
 
                     b.Navigation("Company");
-
-                    b.Navigation("ExpenseAccount");
 
                     b.Navigation("PayableVendorsAccount");
 
@@ -1204,11 +1179,6 @@ namespace InvoiceAutomation.Migrations
                         .HasForeignKey("DefaultChartOfAccountId")
                         .OnDelete(DeleteBehavior.SetNull);
 
-                    b.HasOne("InvoiceAutomation.Core.Entities.ChartOfAccount", "DefaultExpenseAccount")
-                        .WithMany()
-                        .HasForeignKey("DefaultExpenseAccountId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
                     b.HasOne("InvoiceAutomation.Core.Entities.ChartOfAccount", "DefaultPayableVendorsAccount")
                         .WithMany()
                         .HasForeignKey("DefaultPayableVendorsAccountId")
@@ -1228,8 +1198,6 @@ namespace InvoiceAutomation.Migrations
                     b.Navigation("DefaultAdvanceTaxAccount");
 
                     b.Navigation("DefaultChartOfAccount");
-
-                    b.Navigation("DefaultExpenseAccount");
 
                     b.Navigation("DefaultPayableVendorsAccount");
 

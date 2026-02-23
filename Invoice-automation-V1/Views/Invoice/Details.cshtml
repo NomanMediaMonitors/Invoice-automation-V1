@@ -394,7 +394,7 @@
         </div>
 
         <!-- GL Account Assignments Card -->
-        @if (Model.HasExpenseAccount || Model.HasAdvanceTaxAccount || Model.HasSalesTaxInputAccount || Model.HasPayableVendorsAccount)
+        @if (Model.HasAdvanceTaxAccount || Model.HasSalesTaxInputAccount || Model.HasPayableVendorsAccount)
         {
             <div class="card mb-4">
                 <div class="card-header d-flex justify-content-between align-items-center">
@@ -405,35 +405,6 @@
                     }
                 </div>
                 <div class="card-body">
-                    @if (Model.HasExpenseAccount)
-                    {
-                        <div class="row mb-3 align-items-center">
-                            <div class="col-md-4">
-                                <strong>Expense</strong>
-                            </div>
-                            <div class="col-md-8">
-                                @if (canEditAccounts)
-                                {
-                                    <select class="form-select form-select-sm gl-account-select"
-                                            data-account-type="expense" data-invoice-id="@Model.Id">
-                                        <option value="">-- Select Expense Account --</option>
-                                        @if (ViewBag.ChartOfAccounts != null)
-                                        {
-                                            @foreach (var account in (List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>)ViewBag.ChartOfAccounts)
-                                            {
-                                                <option value="@account.Value"
-                                                        selected="@(Model.ExpenseAccountId?.ToString() == account.Value)">@account.Text</option>
-                                            }
-                                        }
-                                    </select>
-                                }
-                                else
-                                {
-                                    <span style="color: var(--text-primary);">@(Model.ExpenseAccountName ?? "Not assigned")</span>
-                                }
-                            </div>
-                        </div>
-                    }
                     @if (Model.HasAdvanceTaxAccount)
                     {
                         <div class="row mb-3 align-items-center">

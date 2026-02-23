@@ -500,7 +500,6 @@ public class InvoiceController : Controller
                 .Include(i => i.Vendor)
                 .Include(i => i.LineItems)
                     .ThenInclude(li => li.ChartOfAccount)
-                .Include(i => i.ExpenseAccount)
                 .Include(i => i.AdvanceTaxAccount)
                 .Include(i => i.SalesTaxInputAccount)
                 .Include(i => i.PayableVendorsAccount)
@@ -518,16 +517,25 @@ public class InvoiceController : Controller
             // Build journal entries preview
             var entries = new List<GLPreviewEntry>();
 
-            // Debit: Expense Account (SubTotal)
-            if (invoice.ExpenseAccountId.HasValue && invoice.ExpenseAccount != null && invoice.SubTotal > 0)
+            // Debit: Line item accounts (grouped by account)
+            var lineItemsByAccount = invoice.LineItems
+                .Where(li => li.ChartOfAccountId.HasValue && li.ChartOfAccount != null)
+                .GroupBy(li => new { li.ChartOfAccountId, li.ChartOfAccount!.Code, li.ChartOfAccount.Name })
+                .ToList();
+
+            foreach (var group in lineItemsByAccount)
             {
-                entries.Add(new GLPreviewEntry
+                var amount = group.Sum(li => li.Amount);
+                if (amount > 0)
                 {
-                    AccountCode = invoice.ExpenseAccount.Code,
-                    AccountName = invoice.ExpenseAccount.Name,
-                    Debit = invoice.SubTotal,
-                    Credit = 0m
-                });
+                    entries.Add(new GLPreviewEntry
+                    {
+                        AccountCode = group.Key.Code,
+                        AccountName = group.Key.Name,
+                        Debit = amount,
+                        Credit = 0m
+                    });
+                }
             }
 
             // Debit: Sales Tax Input Account (Tax Amount)
@@ -555,7 +563,7 @@ public class InvoiceController : Controller
             }
 
             if (!entries.Any())
-                return Json(new { success = false, message = "No GL accounts are assigned. Please assign accounts before posting." });
+                return Json(new { success = false, message = "No GL accounts are assigned. Please assign line item accounts before posting." });
 
             return Json(new { success = true, entries });
         }
@@ -596,9 +604,6 @@ public class InvoiceController : Controller
 
             switch (request.AccountType.ToLower())
             {
-                case "expense":
-                    invoice.ExpenseAccountId = accountId;
-                    break;
                 case "advancetax":
                     invoice.AdvanceTaxAccountId = accountId;
                     break;

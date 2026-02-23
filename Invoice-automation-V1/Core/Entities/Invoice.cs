@@ -41,7 +41,6 @@ public class Invoice
     public Guid? PaidBy { get; set; }
 
     // GL Account Assignments
-    public Guid? ExpenseAccountId { get; set; }
     public Guid? AdvanceTaxAccountId { get; set; }
     public Guid? SalesTaxInputAccountId { get; set; }
     public Guid? PayableVendorsAccountId { get; set; }
@@ -64,7 +63,6 @@ public class Invoice
     // Navigation Properties
     public Company? Company { get; set; }
     public Vendor? Vendor { get; set; }
-    public ChartOfAccount? ExpenseAccount { get; set; }
     public ChartOfAccount? AdvanceTaxAccount { get; set; }
     public ChartOfAccount? SalesTaxInputAccount { get; set; }
     public ChartOfAccount? PayableVendorsAccount { get; set; }
