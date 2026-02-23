@@ -261,6 +261,7 @@ public class InvoiceService : IInvoiceService
         var postedByUser = invoice.PostedToGLBy.HasValue ? await _context.Users.FindAsync(invoice.PostedToGLBy.Value) : null;
 
         // Load vendor template visibility flags
+        bool hasDueDate = true, hasDescription = true, hasLineItems = true, hasTaxRate = true, hasSubTotal = true;
         bool hasAdvanceTaxAccount = true, hasSalesTaxInputAccount = true, hasPayableVendorsAccount = true;
         if (invoice.VendorId.HasValue)
         {
@@ -268,6 +269,11 @@ public class InvoiceService : IInvoiceService
                 .FirstOrDefaultAsync(t => t.VendorId == invoice.VendorId.Value && t.IsActive);
             if (vendorTemplate != null)
             {
+                hasDueDate = vendorTemplate.HasDueDate;
+                hasDescription = vendorTemplate.HasDescription;
+                hasLineItems = vendorTemplate.HasLineItems;
+                hasTaxRate = vendorTemplate.HasTaxRate;
+                hasSubTotal = vendorTemplate.HasSubTotal;
                 hasAdvanceTaxAccount = vendorTemplate.HasAdvanceTaxAccount;
                 hasSalesTaxInputAccount = vendorTemplate.HasSalesTaxInputAccount;
                 hasPayableVendorsAccount = vendorTemplate.HasPayableVendorsAccount;
@@ -313,6 +319,11 @@ public class InvoiceService : IInvoiceService
             PostedToGLAt = invoice.PostedToGLAt,
             PostedToGLByName = postedByUser?.FullName,
             // Vendor template visibility
+            HasDueDate = hasDueDate,
+            HasDescription = hasDescription,
+            HasLineItems = hasLineItems,
+            HasTaxRate = hasTaxRate,
+            HasSubTotal = hasSubTotal,
             HasAdvanceTaxAccount = hasAdvanceTaxAccount,
             HasSalesTaxInputAccount = hasSalesTaxInputAccount,
             HasPayableVendorsAccount = hasPayableVendorsAccount,

@@ -151,6 +151,11 @@ public class InvoiceDetailsViewModel
     public string? PostedToGLByName { get; set; }
 
     // Vendor Template visibility flags
+    public bool HasDueDate { get; set; } = true;
+    public bool HasDescription { get; set; } = true;
+    public bool HasLineItems { get; set; } = true;
+    public bool HasTaxRate { get; set; } = true;
+    public bool HasSubTotal { get; set; } = true;
     public bool HasAdvanceTaxAccount { get; set; } = true;
     public bool HasSalesTaxInputAccount { get; set; } = true;
     public bool HasPayableVendorsAccount { get; set; } = true;
