@@ -538,14 +538,26 @@ public class InvoiceController : Controller
                 }
             }
 
-            // Debit: Sales Tax Input Account (Tax Amount)
-            if (invoice.SalesTaxInputAccountId.HasValue && invoice.SalesTaxInputAccount != null && invoice.TaxAmount > 0)
+            // Debit: Advance Tax Account (Advance Tax Amount)
+            if (invoice.AdvanceTaxAccountId.HasValue && invoice.AdvanceTaxAccount != null && invoice.AdvanceTaxAmount > 0)
+            {
+                entries.Add(new GLPreviewEntry
+                {
+                    AccountCode = invoice.AdvanceTaxAccount.Code,
+                    AccountName = invoice.AdvanceTaxAccount.Name,
+                    Debit = invoice.AdvanceTaxAmount,
+                    Credit = 0m
+                });
+            }
+
+            // Debit: Sales Tax Input Account (Sales Tax Input Amount)
+            if (invoice.SalesTaxInputAccountId.HasValue && invoice.SalesTaxInputAccount != null && invoice.SalesTaxInputAmount > 0)
             {
                 entries.Add(new GLPreviewEntry
                 {
                     AccountCode = invoice.SalesTaxInputAccount.Code,
                     AccountName = invoice.SalesTaxInputAccount.Name,
-                    Debit = invoice.TaxAmount,
+                    Debit = invoice.SalesTaxInputAmount,
                     Credit = 0m
                 });
             }
@@ -759,7 +771,7 @@ public class InvoiceController : Controller
             // Recalculate invoice totals
             invoice.SubTotal = invoice.LineItems.Sum(li => li.Amount);
             invoice.TaxAmount = invoice.LineItems.Sum(li => li.TaxAmount);
-            invoice.TotalAmount = invoice.LineItems.Sum(li => li.TotalAmount);
+            invoice.TotalAmount = invoice.SubTotal + invoice.AdvanceTaxAmount + invoice.SalesTaxInputAmount;
             invoice.UpdatedAt = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();
@@ -822,7 +834,7 @@ public class InvoiceController : Controller
             // Recalculate invoice totals
             invoice.SubTotal = invoice.LineItems.Sum(li => li.Amount);
             invoice.TaxAmount = invoice.LineItems.Sum(li => li.TaxAmount);
-            invoice.TotalAmount = invoice.LineItems.Sum(li => li.TotalAmount);
+            invoice.TotalAmount = invoice.SubTotal + invoice.AdvanceTaxAmount + invoice.SalesTaxInputAmount;
             invoice.UpdatedAt = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();
@@ -900,6 +912,22 @@ public class InvoiceController : Controller
                 case "notes":
                     invoice.Notes = request.Value;
                     break;
+                case "advancetaxamount":
+                    if (decimal.TryParse(request.Value, out var advanceTaxAmount) && advanceTaxAmount >= 0)
+                    {
+                        invoice.AdvanceTaxAmount = advanceTaxAmount;
+                        // Recalculate total: SubTotal + AdvanceTaxAmount + SalesTaxInputAmount
+                        invoice.TotalAmount = invoice.SubTotal + invoice.AdvanceTaxAmount + invoice.SalesTaxInputAmount;
+                    }
+                    break;
+                case "salestaxinputamount":
+                    if (decimal.TryParse(request.Value, out var salesTaxInputAmount) && salesTaxInputAmount >= 0)
+                    {
+                        invoice.SalesTaxInputAmount = salesTaxInputAmount;
+                        // Recalculate total: SubTotal + AdvanceTaxAmount + SalesTaxInputAmount
+                        invoice.TotalAmount = invoice.SubTotal + invoice.AdvanceTaxAmount + invoice.SalesTaxInputAmount;
+                    }
+                    break;
                 default:
                     return Json(new { success = false, message = "Unknown field" });
             }
@@ -907,7 +935,13 @@ public class InvoiceController : Controller
             invoice.UpdatedAt = DateTime.UtcNow;
             await _context.SaveChangesAsync();
 
-            return Json(new { success = true });
+            return Json(new
+            {
+                success = true,
+                totalAmount = invoice.TotalAmount,
+                advanceTaxAmount = invoice.AdvanceTaxAmount,
+                salesTaxInputAmount = invoice.SalesTaxInputAmount
+            });
         }
         catch (Exception ex)
         {
@@ -950,7 +984,7 @@ public class InvoiceController : Controller
             var remainingItems = invoice.LineItems.Where(li => li.Id != lineItemId).ToList();
             invoice.SubTotal = remainingItems.Sum(li => li.Amount);
             invoice.TaxAmount = remainingItems.Sum(li => li.TaxAmount);
-            invoice.TotalAmount = remainingItems.Sum(li => li.TotalAmount);
+            invoice.TotalAmount = invoice.SubTotal + invoice.AdvanceTaxAmount + invoice.SalesTaxInputAmount;
             invoice.UpdatedAt = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();

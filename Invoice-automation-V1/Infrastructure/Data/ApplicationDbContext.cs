@@ -446,7 +446,9 @@ public class ApplicationDbContext : DbContext
 
             // GL Account Fields
             entity.Property(e => e.AdvanceTaxAccountId).HasColumnName("advance_tax_account_id").HasColumnType("CHAR(36)");
+            entity.Property(e => e.AdvanceTaxAmount).HasColumnName("advance_tax_amount").HasColumnType("DECIMAL(18,2)").HasDefaultValue(0m);
             entity.Property(e => e.SalesTaxInputAccountId).HasColumnName("sales_tax_input_account_id").HasColumnType("CHAR(36)");
+            entity.Property(e => e.SalesTaxInputAmount).HasColumnName("sales_tax_input_amount").HasColumnType("DECIMAL(18,2)").HasDefaultValue(0m);
             entity.Property(e => e.PayableVendorsAccountId).HasColumnName("payable_vendors_account_id").HasColumnType("CHAR(36)");
 
             // GL Posting Fields

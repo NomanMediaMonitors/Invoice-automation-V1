@@ -140,8 +140,10 @@ public class InvoiceDetailsViewModel
     // GL Account Assignments
     public Guid? AdvanceTaxAccountId { get; set; }
     public string? AdvanceTaxAccountName { get; set; }
+    public decimal AdvanceTaxAmount { get; set; }
     public Guid? SalesTaxInputAccountId { get; set; }
     public string? SalesTaxInputAccountName { get; set; }
+    public decimal SalesTaxInputAmount { get; set; }
     public Guid? PayableVendorsAccountId { get; set; }
     public string? PayableVendorsAccountName { get; set; }
 

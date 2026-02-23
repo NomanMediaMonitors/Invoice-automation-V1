@@ -444,93 +444,133 @@
                     }
                 </div>
                 <div class="card-body">
-                    @if (Model.HasAdvanceTaxAccount)
-                    {
-                        <div class="row mb-3 align-items-center">
-                            <div class="col-md-4">
-                                <strong>Advance Tax</strong>
-                            </div>
-                            <div class="col-md-8">
-                                @if (canEditAccounts)
+                    <div class="table-responsive">
+                        <table class="table table-sm mb-0" style="color: var(--text-primary);">
+                            <thead>
+                                <tr>
+                                    <th style="width: 160px;">Category</th>
+                                    <th>Account</th>
+                                    <th class="text-end" style="width: 180px;">Amount (@Model.Currency)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Line Item Accounts (Expense) - always shown, read-only summary -->
+                                <tr>
+                                    <td><strong>Expense (Line Items)</strong></td>
+                                    <td><span class="text-muted fst-italic">Per line item accounts</span></td>
+                                    <td class="text-end fw-bold" id="glSubTotal">@Model.Currency @Model.SubTotal.ToString("N2")</td>
+                                </tr>
+                                @if (Model.HasAdvanceTaxAccount)
                                 {
-                                    <select class="form-select form-select-sm gl-account-select"
-                                            data-account-type="advancetax" data-invoice-id="@Model.Id">
-                                        <option value="">-- Select Advance Tax Account --</option>
-                                        @if (ViewBag.ChartOfAccounts != null)
-                                        {
-                                            @foreach (var account in (List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>)ViewBag.ChartOfAccounts)
+                                    <tr>
+                                        <td><strong>Advance Tax</strong></td>
+                                        <td>
+                                            @if (canEditAccounts)
                                             {
-                                                <option value="@account.Value"
-                                                        selected="@(Model.AdvanceTaxAccountId?.ToString() == account.Value)">@account.Text</option>
+                                                <select class="form-select form-select-sm gl-account-select"
+                                                        data-account-type="advancetax" data-invoice-id="@Model.Id">
+                                                    <option value="">-- Select Account --</option>
+                                                    @if (ViewBag.ChartOfAccounts != null)
+                                                    {
+                                                        @foreach (var account in (List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>)ViewBag.ChartOfAccounts)
+                                                        {
+                                                            <option value="@account.Value"
+                                                                    selected="@(Model.AdvanceTaxAccountId?.ToString() == account.Value)">@account.Text</option>
+                                                        }
+                                                    }
+                                                </select>
                                             }
-                                        }
-                                    </select>
-                                }
-                                else
-                                {
-                                    <span style="color: var(--text-primary);">@(Model.AdvanceTaxAccountName ?? "Not assigned")</span>
-                                }
-                            </div>
-                        </div>
-                    }
-                    @if (Model.HasSalesTaxInputAccount)
-                    {
-                        <div class="row mb-3 align-items-center">
-                            <div class="col-md-4">
-                                <strong>Sales Tax Input</strong>
-                            </div>
-                            <div class="col-md-8">
-                                @if (canEditAccounts)
-                                {
-                                    <select class="form-select form-select-sm gl-account-select"
-                                            data-account-type="salestaxinput" data-invoice-id="@Model.Id">
-                                        <option value="">-- Select Sales Tax Input Account --</option>
-                                        @if (ViewBag.ChartOfAccounts != null)
-                                        {
-                                            @foreach (var account in (List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>)ViewBag.ChartOfAccounts)
+                                            else
                                             {
-                                                <option value="@account.Value"
-                                                        selected="@(Model.SalesTaxInputAccountId?.ToString() == account.Value)">@account.Text</option>
+                                                <span>@(Model.AdvanceTaxAccountName ?? "Not assigned")</span>
                                             }
-                                        }
-                                    </select>
-                                }
-                                else
-                                {
-                                    <span style="color: var(--text-primary);">@(Model.SalesTaxInputAccountName ?? "Not assigned")</span>
-                                }
-                            </div>
-                        </div>
-                    }
-                    @if (Model.HasPayableVendorsAccount)
-                    {
-                        <div class="row mb-0 align-items-center">
-                            <div class="col-md-4">
-                                <strong>Payable Vendors</strong>
-                            </div>
-                            <div class="col-md-8">
-                                @if (canEditAccounts)
-                                {
-                                    <select class="form-select form-select-sm gl-account-select"
-                                            data-account-type="payablevendors" data-invoice-id="@Model.Id">
-                                        <option value="">-- Select Payable Vendors Account --</option>
-                                        @if (ViewBag.ChartOfAccounts != null)
-                                        {
-                                            @foreach (var account in (List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>)ViewBag.ChartOfAccounts)
+                                        </td>
+                                        <td class="text-end">
+                                            @if (canEditAccounts)
                                             {
-                                                <option value="@account.Value"
-                                                        selected="@(Model.PayableVendorsAccountId?.ToString() == account.Value)">@account.Text</option>
+                                                <input type="number" class="form-control form-control-sm text-end gl-amount-field"
+                                                       data-field="advancetaxamount" data-invoice-id="@Model.Id"
+                                                       value="@Model.AdvanceTaxAmount" min="0" step="0.01"
+                                                       style="width: 100%;">
                                             }
-                                        }
-                                    </select>
+                                            else
+                                            {
+                                                <span class="fw-bold">@Model.Currency @Model.AdvanceTaxAmount.ToString("N2")</span>
+                                            }
+                                        </td>
+                                    </tr>
                                 }
-                                else
+                                @if (Model.HasSalesTaxInputAccount)
                                 {
-                                    <span style="color: var(--text-primary);">@(Model.PayableVendorsAccountName ?? "Not assigned")</span>
+                                    <tr>
+                                        <td><strong>Sales Tax Input</strong></td>
+                                        <td>
+                                            @if (canEditAccounts)
+                                            {
+                                                <select class="form-select form-select-sm gl-account-select"
+                                                        data-account-type="salestaxinput" data-invoice-id="@Model.Id">
+                                                    <option value="">-- Select Account --</option>
+                                                    @if (ViewBag.ChartOfAccounts != null)
+                                                    {
+                                                        @foreach (var account in (List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>)ViewBag.ChartOfAccounts)
+                                                        {
+                                                            <option value="@account.Value"
+                                                                    selected="@(Model.SalesTaxInputAccountId?.ToString() == account.Value)">@account.Text</option>
+                                                        }
+                                                    }
+                                                </select>
+                                            }
+                                            else
+                                            {
+                                                <span>@(Model.SalesTaxInputAccountName ?? "Not assigned")</span>
+                                            }
+                                        </td>
+                                        <td class="text-end">
+                                            @if (canEditAccounts)
+                                            {
+                                                <input type="number" class="form-control form-control-sm text-end gl-amount-field"
+                                                       data-field="salestaxinputamount" data-invoice-id="@Model.Id"
+                                                       value="@Model.SalesTaxInputAmount" min="0" step="0.01"
+                                                       style="width: 100%;">
+                                            }
+                                            else
+                                            {
+                                                <span class="fw-bold">@Model.Currency @Model.SalesTaxInputAmount.ToString("N2")</span>
+                                            }
+                                        </td>
+                                    </tr>
                                 }
-                            </div>
-                        </div>
-                    }
+                                @if (Model.HasPayableVendorsAccount)
+                                {
+                                    <tr style="background: var(--primary-50);">
+                                        <td><strong>Payable Vendors</strong></td>
+                                        <td>
+                                            @if (canEditAccounts)
+                                            {
+                                                <select class="form-select form-select-sm gl-account-select"
+                                                        data-account-type="payablevendors" data-invoice-id="@Model.Id">
+                                                    <option value="">-- Select Account --</option>
+                                                    @if (ViewBag.ChartOfAccounts != null)
+                                                    {
+                                                        @foreach (var account in (List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>)ViewBag.ChartOfAccounts)
+                                                        {
+                                                            <option value="@account.Value"
+                                                                    selected="@(Model.PayableVendorsAccountId?.ToString() == account.Value)">@account.Text</option>
+                                                        }
+                                                    }
+                                                </select>
+                                            }
+                                            else
+                                            {
+                                                <span>@(Model.PayableVendorsAccountName ?? "Not assigned")</span>
+                                            }
+                                        </td>
+                                        <td class="text-end fw-bold" id="glTotalAmount" style="font-size: 1.0625rem;">@Model.Currency @Model.TotalAmount.ToString("N2")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         }
@@ -1037,6 +1077,53 @@
                 .catch(function(err) {
                     alert('Error saving account assignment');
                 });
+            });
+        });
+
+        // ===== GL Amount Fields (Advance Tax, Sales Tax Input) =====
+        document.querySelectorAll('.gl-amount-field').forEach(function(input) {
+            var debounceTimer;
+            input.addEventListener('change', function() {
+                var field = this.dataset.field;
+                var invoiceIdVal = this.dataset.invoiceId;
+                var inputEl = this;
+
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(function() {
+                    fetch('@Url.Action("UpdateInvoiceField", "Invoice")', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'RequestVerificationToken': antiForgeryToken
+                        },
+                        body: JSON.stringify({
+                            invoiceId: invoiceIdVal,
+                            field: field,
+                            value: inputEl.value
+                        })
+                    })
+                    .then(function(r) { return r.json(); })
+                    .then(function(result) {
+                        if (result.success) {
+                            inputEl.classList.add('is-valid');
+                            setTimeout(function() { inputEl.classList.remove('is-valid'); }, 2000);
+                            // Update Payable Vendors total (Gross Invoice Amount)
+                            var glTotal = document.getElementById('glTotalAmount');
+                            if (glTotal && result.totalAmount !== undefined) {
+                                glTotal.textContent = '@Model.Currency ' + parseFloat(result.totalAmount).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                            }
+                            var invoiceTotal = document.getElementById('invoiceTotalAmount');
+                            if (invoiceTotal && result.totalAmount !== undefined) {
+                                invoiceTotal.textContent = '@Model.Currency ' + parseFloat(result.totalAmount).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                            }
+                        } else {
+                            alert('Error: ' + (result.message || 'Failed to save'));
+                        }
+                    })
+                    .catch(function(err) {
+                        alert('Error saving amount');
+                    });
+                }, 300);
             });
         });
 
