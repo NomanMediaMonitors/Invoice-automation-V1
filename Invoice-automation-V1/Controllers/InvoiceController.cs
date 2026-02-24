@@ -766,6 +766,7 @@ public class InvoiceController : Controller
                 UpdatedAt = DateTime.UtcNow
             };
 
+            _context.InvoiceLineItems.Add(lineItem);
             invoice.LineItems.Add(lineItem);
 
             // Recalculate invoice totals
