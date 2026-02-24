@@ -513,6 +513,49 @@ public class InvoiceController : Controller
             if (invoice.Status != InvoiceStatus.Approved && invoice.Status != InvoiceStatus.Paid)
                 return Json(new { success = false, message = "Invoice must be Approved or Paid before posting to GL" });
 
+            // Get vendor template for Payable Vendors account
+            VendorInvoiceTemplate? vendorTemplate = null;
+            if (invoice.VendorId.HasValue)
+            {
+                vendorTemplate = await _context.VendorInvoiceTemplates
+                    .Include(t => t.DefaultPayableVendorsAccount)
+                    .FirstOrDefaultAsync(t => t.VendorId == invoice.VendorId.Value && t.IsActive);
+            }
+
+            // Validate: Line items sum must equal SubTotal
+            if (invoice.LineItems.Any())
+            {
+                var lineItemsSum = invoice.LineItems.Sum(li => li.Amount);
+                if (lineItemsSum != invoice.SubTotal)
+                    return Json(new { success = false, message = $"Line items total ({lineItemsSum:N2}) does not match SubTotal ({invoice.SubTotal:N2}). Please correct the amounts." });
+            }
+
+            // Validate: All line items must have accounts assigned
+            if (invoice.LineItems.Any())
+            {
+                var unassignedItems = invoice.LineItems.Where(li => !li.ChartOfAccountId.HasValue).ToList();
+                if (unassignedItems.Any())
+                    return Json(new { success = false, message = $"{unassignedItems.Count} line item(s) are missing a GL account assignment." });
+            }
+
+            // Validate: Advance Tax account required if amount > 0
+            if (vendorTemplate == null || vendorTemplate.HasAdvanceTaxAccount)
+            {
+                if (invoice.AdvanceTaxAmount > 0 && !invoice.AdvanceTaxAccountId.HasValue)
+                    return Json(new { success = false, message = "Advance Tax account must be assigned when Advance Tax amount is set." });
+            }
+
+            // Validate: Sales Tax Input account required if amount > 0
+            if (vendorTemplate == null || vendorTemplate.HasSalesTaxInputAccount)
+            {
+                if (invoice.SalesTaxInputAmount > 0 && !invoice.SalesTaxInputAccountId.HasValue)
+                    return Json(new { success = false, message = "Sales Tax Input account must be assigned when Sales Tax Input amount is set." });
+            }
+
+            // Validate: Payable Vendors account must be set in vendor template
+            if (vendorTemplate == null || !vendorTemplate.DefaultPayableVendorsAccountId.HasValue)
+                return Json(new { success = false, message = "Payable Vendors account must be configured in the vendor template before posting to GL." });
+
             // Build journal entries preview
             var entries = new List<GLPreviewEntry>();
 
@@ -561,8 +604,24 @@ public class InvoiceController : Controller
                 });
             }
 
-            if (!entries.Any())
-                return Json(new { success = false, message = "No GL accounts are assigned. Please assign line item accounts before posting." });
+            // Credit: Payable Vendors Account (Total Amount) - from vendor template
+            var payableAccount = vendorTemplate!.DefaultPayableVendorsAccount!;
+            entries.Add(new GLPreviewEntry
+            {
+                AccountCode = payableAccount.Code,
+                AccountName = payableAccount.Name,
+                Debit = 0m,
+                Credit = invoice.TotalAmount
+            });
+
+            // Final validation: Total Debits must equal Total Credits
+            var totalDebits = entries.Sum(e => e.Debit);
+            var totalCredits = entries.Sum(e => e.Credit);
+            if (totalDebits != totalCredits)
+                return Json(new { success = false, message = $"Accounting equation not balanced. Total Debits ({totalDebits:N2}) ≠ Total Credits ({totalCredits:N2}). Please verify amounts." });
+
+            if (!entries.Any(e => e.Debit > 0))
+                return Json(new { success = false, message = "No debit entries found. Please assign line item accounts and verify amounts before posting." });
 
             return Json(new { success = true, entries });
         }

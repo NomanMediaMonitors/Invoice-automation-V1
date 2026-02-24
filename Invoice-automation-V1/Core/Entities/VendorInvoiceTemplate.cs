@@ -33,6 +33,7 @@ public class VendorInvoiceTemplate
     // Default GL accounts for this vendor's invoices
     public Guid? DefaultAdvanceTaxAccountId { get; set; }
     public Guid? DefaultSalesTaxInputAccountId { get; set; }
+    public Guid? DefaultPayableVendorsAccountId { get; set; }
 
     // Default tax rate for this vendor (if not extracted from OCR)
     public decimal? DefaultTaxRate { get; set; }
@@ -54,4 +55,5 @@ public class VendorInvoiceTemplate
     public virtual ChartOfAccount? DefaultChartOfAccount { get; set; }
     public virtual ChartOfAccount? DefaultAdvanceTaxAccount { get; set; }
     public virtual ChartOfAccount? DefaultSalesTaxInputAccount { get; set; }
+    public virtual ChartOfAccount? DefaultPayableVendorsAccount { get; set; }
 }

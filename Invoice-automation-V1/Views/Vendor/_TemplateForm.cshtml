@@ -114,6 +114,16 @@
                     </div>
                 </div>
 
+                <hr class="my-3">
+
+                <div class="mb-0">
+                    <label asp-for="DefaultPayableVendorsAccountId" class="form-label fw-semibold">Payable Vendors Account</label>
+                    <div class="form-text mb-2">This account will be used as the credit entry (Total Amount) when posting to GL.</div>
+                    <select asp-for="DefaultPayableVendorsAccountId" class="form-select form-select-sm" asp-items="ViewBag.ChartOfAccounts">
+                        <option value="">-- Select Payable Vendors Account --</option>
+                    </select>
+                </div>
+
             </div>
         </div>
 
