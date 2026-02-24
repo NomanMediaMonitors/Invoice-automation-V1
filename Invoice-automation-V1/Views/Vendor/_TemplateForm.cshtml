@@ -114,17 +114,6 @@
                     </div>
                 </div>
 
-                <div class="mb-0">
-                    <div class="form-check form-switch mb-2">
-                        <input asp-for="HasPayableVendorsAccount" class="form-check-input" id="hasPayableVendorsAccount">
-                        <label asp-for="HasPayableVendorsAccount" class="form-check-label fw-semibold">Payable Vendors</label>
-                    </div>
-                    <div id="payableVendorsAccountSection">
-                        <select asp-for="DefaultPayableVendorsAccountId" class="form-select form-select-sm" asp-items="ViewBag.ChartOfAccounts">
-                            <option value="">-- Default Payable Vendors Account --</option>
-                        </select>
-                    </div>
-                </div>
             </div>
         </div>
 
@@ -165,9 +154,19 @@
                     <input asp-for="TaxLabel" class="form-control" placeholder="e.g., GST, Tax, VAT, Sales Tax">
                 </div>
 
-                <div class="mb-0">
+                <div class="mb-3">
                     <label asp-for="TotalLabel" class="form-label">Total Label</label>
                     <input asp-for="TotalLabel" class="form-control" placeholder="e.g., Total, Grand Total, Amount Due">
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="AdvanceTaxAmountLabel" class="form-label">Advance Tax Amount Label</label>
+                    <input asp-for="AdvanceTaxAmountLabel" class="form-control" placeholder="e.g., Advance Tax, WHT, Withholding Tax">
+                </div>
+
+                <div class="mb-0">
+                    <label asp-for="SalesTaxInputAmountLabel" class="form-label">Sales Tax Input Amount Label</label>
+                    <input asp-for="SalesTaxInputAmountLabel" class="form-control" placeholder="e.g., Sales Tax, GST, Input Tax">
                 </div>
             </div>
         </div>
@@ -191,6 +190,5 @@
 
         toggleAccountSection('hasAdvanceTaxAccount', 'advanceTaxAccountSection');
         toggleAccountSection('hasSalesTaxInputAccount', 'salesTaxInputAccountSection');
-        toggleAccountSection('hasPayableVendorsAccount', 'payableVendorsAccountSection');
     </script>
 }

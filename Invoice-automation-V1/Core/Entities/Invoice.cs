@@ -45,8 +45,6 @@ public class Invoice
     public decimal AdvanceTaxAmount { get; set; }
     public Guid? SalesTaxInputAccountId { get; set; }
     public decimal SalesTaxInputAmount { get; set; }
-    public Guid? PayableVendorsAccountId { get; set; }
-
     // GL Posting
     public bool IsPostedToGL { get; set; }
     public DateTime? PostedToGLAt { get; set; }
@@ -67,7 +65,6 @@ public class Invoice
     public Vendor? Vendor { get; set; }
     public ChartOfAccount? AdvanceTaxAccount { get; set; }
     public ChartOfAccount? SalesTaxInputAccount { get; set; }
-    public ChartOfAccount? PayableVendorsAccount { get; set; }
     public ICollection<InvoiceLineItem> LineItems { get; set; } = new List<InvoiceLineItem>();
 }
 

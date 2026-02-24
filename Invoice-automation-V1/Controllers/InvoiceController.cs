@@ -502,7 +502,6 @@ public class InvoiceController : Controller
                     .ThenInclude(li => li.ChartOfAccount)
                 .Include(i => i.AdvanceTaxAccount)
                 .Include(i => i.SalesTaxInputAccount)
-                .Include(i => i.PayableVendorsAccount)
                 .FirstOrDefaultAsync(i => i.Id == id);
 
             if (invoice == null)
@@ -562,18 +561,6 @@ public class InvoiceController : Controller
                 });
             }
 
-            // Credit: Payable Vendors Account (Total Amount)
-            if (invoice.PayableVendorsAccountId.HasValue && invoice.PayableVendorsAccount != null && invoice.TotalAmount > 0)
-            {
-                entries.Add(new GLPreviewEntry
-                {
-                    AccountCode = invoice.PayableVendorsAccount.Code,
-                    AccountName = invoice.PayableVendorsAccount.Name,
-                    Debit = 0m,
-                    Credit = invoice.TotalAmount
-                });
-            }
-
             if (!entries.Any())
                 return Json(new { success = false, message = "No GL accounts are assigned. Please assign line item accounts before posting." });
 
@@ -621,9 +608,6 @@ public class InvoiceController : Controller
                     break;
                 case "salestaxinput":
                     invoice.SalesTaxInputAccountId = accountId;
-                    break;
-                case "payablevendors":
-                    invoice.PayableVendorsAccountId = accountId;
                     break;
                 default:
                     return Json(new { success = false, message = "Unknown account type" });
