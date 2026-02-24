@@ -24,16 +24,15 @@ public class VendorInvoiceTemplate
     public string? SubTotalLabel { get; set; }         // e.g., "Sub Total", "Subtotal", "Net Amount"
     public string? TaxLabel { get; set; }              // e.g., "GST", "Tax", "VAT", "Sales Tax"
     public string? TotalLabel { get; set; }            // e.g., "Total", "Grand Total", "Amount Due"
+    public string? AdvanceTaxAmountLabel { get; set; }  // e.g., "Advance Tax", "WHT", "Withholding Tax"
+    public string? SalesTaxInputAmountLabel { get; set; } // e.g., "Sales Tax", "GST", "Input Tax"
 
     // GL Account configuration - which account categories does this vendor use?
     public bool HasAdvanceTaxAccount { get; set; } = true;
     public bool HasSalesTaxInputAccount { get; set; } = true;
-    public bool HasPayableVendorsAccount { get; set; } = true;
-
     // Default GL accounts for this vendor's invoices
     public Guid? DefaultAdvanceTaxAccountId { get; set; }
     public Guid? DefaultSalesTaxInputAccountId { get; set; }
-    public Guid? DefaultPayableVendorsAccountId { get; set; }
 
     // Default tax rate for this vendor (if not extracted from OCR)
     public decimal? DefaultTaxRate { get; set; }
@@ -55,5 +54,4 @@ public class VendorInvoiceTemplate
     public virtual ChartOfAccount? DefaultChartOfAccount { get; set; }
     public virtual ChartOfAccount? DefaultAdvanceTaxAccount { get; set; }
     public virtual ChartOfAccount? DefaultSalesTaxInputAccount { get; set; }
-    public virtual ChartOfAccount? DefaultPayableVendorsAccount { get; set; }
 }

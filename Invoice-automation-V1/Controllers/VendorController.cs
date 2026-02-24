@@ -454,9 +454,6 @@ public class VendorController : Controller
                 model.DefaultAdvanceTaxAccountId = null;
             if (model.DefaultSalesTaxInputAccountId == Guid.Empty)
                 model.DefaultSalesTaxInputAccountId = null;
-            if (model.DefaultPayableVendorsAccountId == Guid.Empty)
-                model.DefaultPayableVendorsAccountId = null;
-
             _context.VendorInvoiceTemplates.Add(model);
             await _context.SaveChangesAsync();
 
@@ -531,18 +528,18 @@ public class VendorController : Controller
             template.HasSubTotal = model.HasSubTotal;
             template.HasAdvanceTaxAccount = model.HasAdvanceTaxAccount;
             template.HasSalesTaxInputAccount = model.HasSalesTaxInputAccount;
-            template.HasPayableVendorsAccount = model.HasPayableVendorsAccount;
             template.InvoiceNumberLabel = model.InvoiceNumberLabel;
             template.InvoiceDateLabel = model.InvoiceDateLabel;
             template.DueDateLabel = model.DueDateLabel;
             template.SubTotalLabel = model.SubTotalLabel;
             template.TaxLabel = model.TaxLabel;
             template.TotalLabel = model.TotalLabel;
+            template.AdvanceTaxAmountLabel = model.AdvanceTaxAmountLabel;
+            template.SalesTaxInputAmountLabel = model.SalesTaxInputAmountLabel;
             template.DefaultTaxRate = model.DefaultTaxRate;
             template.DefaultChartOfAccountId = (model.DefaultChartOfAccountId == Guid.Empty) ? null : model.DefaultChartOfAccountId;
             template.DefaultAdvanceTaxAccountId = (model.DefaultAdvanceTaxAccountId == Guid.Empty) ? null : model.DefaultAdvanceTaxAccountId;
             template.DefaultSalesTaxInputAccountId = (model.DefaultSalesTaxInputAccountId == Guid.Empty) ? null : model.DefaultSalesTaxInputAccountId;
-            template.DefaultPayableVendorsAccountId = (model.DefaultPayableVendorsAccountId == Guid.Empty) ? null : model.DefaultPayableVendorsAccountId;
             template.Notes = model.Notes;
             template.IsActive = model.IsActive;
             template.UpdatedAt = DateTime.UtcNow;

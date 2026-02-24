@@ -144,9 +144,6 @@ public class InvoiceDetailsViewModel
     public Guid? SalesTaxInputAccountId { get; set; }
     public string? SalesTaxInputAccountName { get; set; }
     public decimal SalesTaxInputAmount { get; set; }
-    public Guid? PayableVendorsAccountId { get; set; }
-    public string? PayableVendorsAccountName { get; set; }
-
     // GL Posting
     public bool IsPostedToGL { get; set; }
     public DateTime? PostedToGLAt { get; set; }
@@ -160,8 +157,6 @@ public class InvoiceDetailsViewModel
     public bool HasSubTotal { get; set; } = true;
     public bool HasAdvanceTaxAccount { get; set; } = true;
     public bool HasSalesTaxInputAccount { get; set; } = true;
-    public bool HasPayableVendorsAccount { get; set; } = true;
-
     // Audit
     public string CreatedByName { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; }

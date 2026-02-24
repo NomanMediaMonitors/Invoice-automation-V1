@@ -244,7 +244,6 @@ public class InvoiceService : IInvoiceService
             .Include(i => i.Vendor)
             .Include(i => i.AdvanceTaxAccount)
             .Include(i => i.SalesTaxInputAccount)
-            .Include(i => i.PayableVendorsAccount)
             .Include(i => i.LineItems)
                 .ThenInclude(li => li.ChartOfAccount)
             .FirstOrDefaultAsync(i => i.Id == invoiceId);
@@ -262,7 +261,7 @@ public class InvoiceService : IInvoiceService
 
         // Load vendor template visibility flags
         bool hasDueDate = true, hasDescription = true, hasLineItems = true, hasTaxRate = true, hasSubTotal = true;
-        bool hasAdvanceTaxAccount = true, hasSalesTaxInputAccount = true, hasPayableVendorsAccount = true;
+        bool hasAdvanceTaxAccount = true, hasSalesTaxInputAccount = true;
         if (invoice.VendorId.HasValue)
         {
             var vendorTemplate = await _context.VendorInvoiceTemplates
@@ -276,7 +275,6 @@ public class InvoiceService : IInvoiceService
                 hasSubTotal = vendorTemplate.HasSubTotal;
                 hasAdvanceTaxAccount = vendorTemplate.HasAdvanceTaxAccount;
                 hasSalesTaxInputAccount = vendorTemplate.HasSalesTaxInputAccount;
-                hasPayableVendorsAccount = vendorTemplate.HasPayableVendorsAccount;
             }
         }
 
@@ -314,8 +312,6 @@ public class InvoiceService : IInvoiceService
             SalesTaxInputAccountId = invoice.SalesTaxInputAccountId,
             SalesTaxInputAccountName = invoice.SalesTaxInputAccount?.DisplayName,
             SalesTaxInputAmount = invoice.SalesTaxInputAmount,
-            PayableVendorsAccountId = invoice.PayableVendorsAccountId,
-            PayableVendorsAccountName = invoice.PayableVendorsAccount?.DisplayName,
             // GL Posting
             IsPostedToGL = invoice.IsPostedToGL,
             PostedToGLAt = invoice.PostedToGLAt,
@@ -328,7 +324,6 @@ public class InvoiceService : IInvoiceService
             HasSubTotal = hasSubTotal,
             HasAdvanceTaxAccount = hasAdvanceTaxAccount,
             HasSalesTaxInputAccount = hasSalesTaxInputAccount,
-            HasPayableVendorsAccount = hasPayableVendorsAccount,
             // Approval/Payment
             ApprovedByName = approvedByUser?.FullName,
             ApprovedAt = invoice.ApprovedAt,
@@ -653,8 +648,6 @@ public class InvoiceService : IInvoiceService
                         invoice.AdvanceTaxAccountId = vendorTemplate.DefaultAdvanceTaxAccountId;
                     if (vendorTemplate.HasSalesTaxInputAccount && vendorTemplate.DefaultSalesTaxInputAccountId.HasValue && !invoice.SalesTaxInputAccountId.HasValue)
                         invoice.SalesTaxInputAccountId = vendorTemplate.DefaultSalesTaxInputAccountId;
-                    if (vendorTemplate.HasPayableVendorsAccount && vendorTemplate.DefaultPayableVendorsAccountId.HasValue && !invoice.PayableVendorsAccountId.HasValue)
-                        invoice.PayableVendorsAccountId = vendorTemplate.DefaultPayableVendorsAccountId;
                 }
 
                 // Clear existing OCR-extracted line items before adding new ones
@@ -814,12 +807,6 @@ public class InvoiceService : IInvoiceService
                 if (!invoice.SalesTaxInputAccountId.HasValue)
                     return (false, "Sales Tax Input account must be assigned before posting to GL");
             }
-            if (vendorTemplate == null || vendorTemplate.HasPayableVendorsAccount)
-            {
-                if (!invoice.PayableVendorsAccountId.HasValue)
-                    return (false, "Payable Vendors account must be assigned before posting to GL");
-            }
-
             invoice.IsPostedToGL = true;
             invoice.PostedToGLAt = DateTime.UtcNow;
             invoice.PostedToGLBy = userId;

@@ -449,8 +449,6 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.AdvanceTaxAmount).HasColumnName("advance_tax_amount").HasColumnType("DECIMAL(18,2)").HasDefaultValue(0m);
             entity.Property(e => e.SalesTaxInputAccountId).HasColumnName("sales_tax_input_account_id").HasColumnType("CHAR(36)");
             entity.Property(e => e.SalesTaxInputAmount).HasColumnName("sales_tax_input_amount").HasColumnType("DECIMAL(18,2)").HasDefaultValue(0m);
-            entity.Property(e => e.PayableVendorsAccountId).HasColumnName("payable_vendors_account_id").HasColumnType("CHAR(36)");
-
             // GL Posting Fields
             entity.Property(e => e.IsPostedToGL).HasColumnName("is_posted_to_gl").HasColumnType("TINYINT(1)").HasDefaultValue(false);
             entity.Property(e => e.PostedToGLAt).HasColumnName("posted_to_gl_at").HasColumnType("DATETIME");
@@ -471,8 +469,6 @@ public class ApplicationDbContext : DbContext
             entity.HasOne(e => e.Vendor).WithMany().HasForeignKey(e => e.VendorId).IsRequired(false).OnDelete(DeleteBehavior.SetNull);
             entity.HasOne(e => e.AdvanceTaxAccount).WithMany().HasForeignKey(e => e.AdvanceTaxAccountId).IsRequired(false).OnDelete(DeleteBehavior.SetNull);
             entity.HasOne(e => e.SalesTaxInputAccount).WithMany().HasForeignKey(e => e.SalesTaxInputAccountId).IsRequired(false).OnDelete(DeleteBehavior.SetNull);
-            entity.HasOne(e => e.PayableVendorsAccount).WithMany().HasForeignKey(e => e.PayableVendorsAccountId).IsRequired(false).OnDelete(DeleteBehavior.SetNull);
-
             // Indexes
             entity.HasIndex(e => new { e.CompanyId, e.InvoiceNumber }).IsUnique();
             entity.HasIndex(e => e.VendorId);
@@ -538,17 +534,15 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.SubTotalLabel).HasMaxLength(100).HasColumnName("sub_total_label");
             entity.Property(e => e.TaxLabel).HasMaxLength(100).HasColumnName("tax_label");
             entity.Property(e => e.TotalLabel).HasMaxLength(100).HasColumnName("total_label");
+            entity.Property(e => e.AdvanceTaxAmountLabel).HasMaxLength(100).HasColumnName("advance_tax_amount_label");
+            entity.Property(e => e.SalesTaxInputAmountLabel).HasMaxLength(100).HasColumnName("sales_tax_input_amount_label");
 
             // GL Account configuration
             entity.Property(e => e.HasAdvanceTaxAccount).HasColumnName("has_advance_tax_account").HasColumnType("TINYINT(1)").HasDefaultValue(true);
             entity.Property(e => e.HasSalesTaxInputAccount).HasColumnName("has_sales_tax_input_account").HasColumnType("TINYINT(1)").HasDefaultValue(true);
-            entity.Property(e => e.HasPayableVendorsAccount).HasColumnName("has_payable_vendors_account").HasColumnType("TINYINT(1)").HasDefaultValue(true);
-
             // Default GL accounts
             entity.Property(e => e.DefaultAdvanceTaxAccountId).HasColumnName("default_advance_tax_account_id").HasColumnType("CHAR(36)");
             entity.Property(e => e.DefaultSalesTaxInputAccountId).HasColumnName("default_sales_tax_input_account_id").HasColumnType("CHAR(36)");
-            entity.Property(e => e.DefaultPayableVendorsAccountId).HasColumnName("default_payable_vendors_account_id").HasColumnType("CHAR(36)");
-
             // Defaults
             entity.Property(e => e.DefaultTaxRate).HasColumnName("default_tax_rate").HasColumnType("DECIMAL(5,2)");
             entity.Property(e => e.DefaultChartOfAccountId).HasColumnName("default_chart_of_account_id").HasColumnType("CHAR(36)");
@@ -563,8 +557,6 @@ public class ApplicationDbContext : DbContext
             entity.HasOne(e => e.DefaultChartOfAccount).WithMany().HasForeignKey(e => e.DefaultChartOfAccountId).IsRequired(false).OnDelete(DeleteBehavior.SetNull);
             entity.HasOne(e => e.DefaultAdvanceTaxAccount).WithMany().HasForeignKey(e => e.DefaultAdvanceTaxAccountId).IsRequired(false).OnDelete(DeleteBehavior.SetNull);
             entity.HasOne(e => e.DefaultSalesTaxInputAccount).WithMany().HasForeignKey(e => e.DefaultSalesTaxInputAccountId).IsRequired(false).OnDelete(DeleteBehavior.SetNull);
-            entity.HasOne(e => e.DefaultPayableVendorsAccount).WithMany().HasForeignKey(e => e.DefaultPayableVendorsAccountId).IsRequired(false).OnDelete(DeleteBehavior.SetNull);
-
             // Indexes
             entity.HasIndex(e => e.VendorId);
         });

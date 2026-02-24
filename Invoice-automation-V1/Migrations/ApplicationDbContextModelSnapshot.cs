@@ -356,10 +356,6 @@ namespace InvoiceAutomation.Migrations
                         .HasColumnType("CHAR(36)")
                         .HasColumnName("paid_by");
 
-                    b.Property<Guid?>("PayableVendorsAccountId")
-                        .HasColumnType("CHAR(36)")
-                        .HasColumnName("payable_vendors_account_id");
-
                     b.Property<string>("PaymentReference")
                         .HasMaxLength(100)
                         .HasColumnType("varchar(100)")
@@ -426,8 +422,6 @@ namespace InvoiceAutomation.Migrations
                     b.HasIndex("DueDate");
 
                     b.HasIndex("InvoiceDate");
-
-                    b.HasIndex("PayableVendorsAccountId");
 
                     b.HasIndex("SalesTaxInputAccountId");
 
@@ -918,10 +912,6 @@ namespace InvoiceAutomation.Migrations
                         .HasColumnType("CHAR(36)")
                         .HasColumnName("default_chart_of_account_id");
 
-                    b.Property<Guid?>("DefaultPayableVendorsAccountId")
-                        .HasColumnType("CHAR(36)")
-                        .HasColumnName("default_payable_vendors_account_id");
-
                     b.Property<Guid?>("DefaultSalesTaxInputAccountId")
                         .HasColumnType("CHAR(36)")
                         .HasColumnName("default_sales_tax_input_account_id");
@@ -970,12 +960,6 @@ namespace InvoiceAutomation.Migrations
                         .HasColumnType("TINYINT(1)")
                         .HasDefaultValue(true)
                         .HasColumnName("has_line_items");
-
-                    b.Property<bool>("HasPayableVendorsAccount")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("TINYINT(1)")
-                        .HasDefaultValue(true)
-                        .HasColumnName("has_payable_vendors_account");
 
                     b.Property<bool>("HasSalesTaxInputAccount")
                         .ValueGeneratedOnAdd()
@@ -1037,6 +1021,16 @@ namespace InvoiceAutomation.Migrations
                         .HasColumnType("varchar(100)")
                         .HasColumnName("total_label");
 
+                    b.Property<string>("AdvanceTaxAmountLabel")
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)")
+                        .HasColumnName("advance_tax_amount_label");
+
+                    b.Property<string>("SalesTaxInputAmountLabel")
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)")
+                        .HasColumnName("sales_tax_input_amount_label");
+
                     b.Property<DateTime>("UpdatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("DATETIME")
@@ -1052,8 +1046,6 @@ namespace InvoiceAutomation.Migrations
                     b.HasIndex("DefaultAdvanceTaxAccountId");
 
                     b.HasIndex("DefaultChartOfAccountId");
-
-                    b.HasIndex("DefaultPayableVendorsAccountId");
 
                     b.HasIndex("DefaultSalesTaxInputAccountId");
 
@@ -1090,11 +1082,6 @@ namespace InvoiceAutomation.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("InvoiceAutomation.Core.Entities.ChartOfAccount", "PayableVendorsAccount")
-                        .WithMany()
-                        .HasForeignKey("PayableVendorsAccountId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
                     b.HasOne("InvoiceAutomation.Core.Entities.ChartOfAccount", "SalesTaxInputAccount")
                         .WithMany()
                         .HasForeignKey("SalesTaxInputAccountId")
@@ -1108,8 +1095,6 @@ namespace InvoiceAutomation.Migrations
                     b.Navigation("AdvanceTaxAccount");
 
                     b.Navigation("Company");
-
-                    b.Navigation("PayableVendorsAccount");
 
                     b.Navigation("SalesTaxInputAccount");
 
@@ -1191,11 +1176,6 @@ namespace InvoiceAutomation.Migrations
                         .HasForeignKey("DefaultChartOfAccountId")
                         .OnDelete(DeleteBehavior.SetNull);
 
-                    b.HasOne("InvoiceAutomation.Core.Entities.ChartOfAccount", "DefaultPayableVendorsAccount")
-                        .WithMany()
-                        .HasForeignKey("DefaultPayableVendorsAccountId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
                     b.HasOne("InvoiceAutomation.Core.Entities.ChartOfAccount", "DefaultSalesTaxInputAccount")
                         .WithMany()
                         .HasForeignKey("DefaultSalesTaxInputAccountId")
@@ -1210,8 +1190,6 @@ namespace InvoiceAutomation.Migrations
                     b.Navigation("DefaultAdvanceTaxAccount");
 
                     b.Navigation("DefaultChartOfAccount");
-
-                    b.Navigation("DefaultPayableVendorsAccount");
 
                     b.Navigation("DefaultSalesTaxInputAccount");
 
