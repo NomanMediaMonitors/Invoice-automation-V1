@@ -789,7 +789,7 @@ public class InvoiceService : IInvoiceService
                     .FirstOrDefaultAsync(t => t.VendorId == invoice.VendorId.Value && t.IsActive);
             }
 
-            // Validate that all line items have accounts assigned (replaces expense account validation)
+            // Validate: All line items must have accounts assigned
             if (invoice.LineItems.Any())
             {
                 var unassignedItems = invoice.LineItems.Where(li => !li.ChartOfAccountId.HasValue).ToList();
@@ -797,16 +797,38 @@ public class InvoiceService : IInvoiceService
                     return (false, $"All line items must have an account assigned before posting to GL. {unassignedItems.Count} line item(s) are missing an account.");
             }
 
+            // Validate: Line items sum must equal SubTotal
+            if (invoice.LineItems.Any())
+            {
+                var lineItemsSum = invoice.LineItems.Sum(li => li.Amount);
+                if (lineItemsSum != invoice.SubTotal)
+                    return (false, $"Line items total ({lineItemsSum:N2}) does not match SubTotal ({invoice.SubTotal:N2}). Please correct the amounts before posting.");
+            }
+
+            // Validate: Advance Tax account required if enabled and amount > 0
             if (vendorTemplate == null || vendorTemplate.HasAdvanceTaxAccount)
             {
-                if (!invoice.AdvanceTaxAccountId.HasValue)
+                if (invoice.AdvanceTaxAmount > 0 && !invoice.AdvanceTaxAccountId.HasValue)
                     return (false, "Advance Tax account must be assigned before posting to GL");
             }
+
+            // Validate: Sales Tax Input account required if enabled and amount > 0
             if (vendorTemplate == null || vendorTemplate.HasSalesTaxInputAccount)
             {
-                if (!invoice.SalesTaxInputAccountId.HasValue)
+                if (invoice.SalesTaxInputAmount > 0 && !invoice.SalesTaxInputAccountId.HasValue)
                     return (false, "Sales Tax Input account must be assigned before posting to GL");
             }
+
+            // Validate: Payable Vendors account must be set in vendor template
+            if (vendorTemplate == null || !vendorTemplate.DefaultPayableVendorsAccountId.HasValue)
+                return (false, "Payable Vendors account must be configured in the vendor template before posting to GL");
+
+            // Validate: Total Debits must equal Total Credits (accounting equation)
+            var totalDebits = invoice.LineItems.Sum(li => li.Amount) + invoice.AdvanceTaxAmount + invoice.SalesTaxInputAmount;
+            var totalCredits = invoice.TotalAmount;
+            if (totalDebits != totalCredits)
+                return (false, $"Accounting equation not balanced. Total Debits ({totalDebits:N2}) ≠ Total Credits ({totalCredits:N2}). Please verify the amounts.");
+
             invoice.IsPostedToGL = true;
             invoice.PostedToGLAt = DateTime.UtcNow;
             invoice.PostedToGLBy = userId;

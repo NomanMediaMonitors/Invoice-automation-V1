@@ -62,16 +62,15 @@ namespace InvoiceAutomation.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            // Remove Payable Vendors from invoices table
+            // Remove Payable Vendors from invoices table (no longer needed on invoice - comes from template)
             DropForeignKeyIfExists(migrationBuilder, "invoices", "FK_invoices_chart_of_accounts_payable_vendors_account_id");
             DropIndexIfExists(migrationBuilder, "invoices", "IX_invoices_payable_vendors_account_id");
             DropColumnIfExists(migrationBuilder, "invoices", "payable_vendors_account_id");
 
-            // Remove Payable Vendors from vendor_invoice_templates table
-            DropForeignKeyIfExists(migrationBuilder, "vendor_invoice_templates", "FK_vendor_invoice_templates_chart_of_accounts_default_payable_v~");
-            DropIndexIfExists(migrationBuilder, "vendor_invoice_templates", "IX_vendor_invoice_templates_default_payable_vendors_account_id");
+            // Remove has_payable_vendors_account toggle from vendor_invoice_templates (always required now)
             DropColumnIfExists(migrationBuilder, "vendor_invoice_templates", "has_payable_vendors_account");
-            DropColumnIfExists(migrationBuilder, "vendor_invoice_templates", "default_payable_vendors_account_id");
+
+            // Keep default_payable_vendors_account_id in vendor_invoice_templates (it stays)
 
             // Add OCR label mapping columns for Advance Tax and Sales Tax Input amounts
             AddColumnIfNotExists(migrationBuilder, "vendor_invoice_templates", "advance_tax_amount_label", "VARCHAR(100) NULL");
@@ -84,9 +83,8 @@ namespace InvoiceAutomation.Migrations
             // Re-add Payable Vendors to invoices
             AddColumnIfNotExists(migrationBuilder, "invoices", "payable_vendors_account_id", "CHAR(36) NULL");
 
-            // Re-add Payable Vendors to vendor_invoice_templates
+            // Re-add has_payable_vendors_account toggle to vendor_invoice_templates
             AddColumnIfNotExists(migrationBuilder, "vendor_invoice_templates", "has_payable_vendors_account", "TINYINT(1) NOT NULL DEFAULT 1");
-            AddColumnIfNotExists(migrationBuilder, "vendor_invoice_templates", "default_payable_vendors_account_id", "CHAR(36) NULL");
 
             // Remove OCR label mapping columns
             DropColumnIfExists(migrationBuilder, "vendor_invoice_templates", "advance_tax_amount_label");

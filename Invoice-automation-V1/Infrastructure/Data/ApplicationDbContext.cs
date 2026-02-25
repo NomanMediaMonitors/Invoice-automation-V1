@@ -543,6 +543,7 @@ public class ApplicationDbContext : DbContext
             // Default GL accounts
             entity.Property(e => e.DefaultAdvanceTaxAccountId).HasColumnName("default_advance_tax_account_id").HasColumnType("CHAR(36)");
             entity.Property(e => e.DefaultSalesTaxInputAccountId).HasColumnName("default_sales_tax_input_account_id").HasColumnType("CHAR(36)");
+            entity.Property(e => e.DefaultPayableVendorsAccountId).HasColumnName("default_payable_vendors_account_id").HasColumnType("CHAR(36)");
             // Defaults
             entity.Property(e => e.DefaultTaxRate).HasColumnName("default_tax_rate").HasColumnType("DECIMAL(5,2)");
             entity.Property(e => e.DefaultChartOfAccountId).HasColumnName("default_chart_of_account_id").HasColumnType("CHAR(36)");
@@ -557,6 +558,7 @@ public class ApplicationDbContext : DbContext
             entity.HasOne(e => e.DefaultChartOfAccount).WithMany().HasForeignKey(e => e.DefaultChartOfAccountId).IsRequired(false).OnDelete(DeleteBehavior.SetNull);
             entity.HasOne(e => e.DefaultAdvanceTaxAccount).WithMany().HasForeignKey(e => e.DefaultAdvanceTaxAccountId).IsRequired(false).OnDelete(DeleteBehavior.SetNull);
             entity.HasOne(e => e.DefaultSalesTaxInputAccount).WithMany().HasForeignKey(e => e.DefaultSalesTaxInputAccountId).IsRequired(false).OnDelete(DeleteBehavior.SetNull);
+            entity.HasOne(e => e.DefaultPayableVendorsAccount).WithMany().HasForeignKey(e => e.DefaultPayableVendorsAccountId).IsRequired(false).OnDelete(DeleteBehavior.SetNull);
             // Indexes
             entity.HasIndex(e => e.VendorId);
         });

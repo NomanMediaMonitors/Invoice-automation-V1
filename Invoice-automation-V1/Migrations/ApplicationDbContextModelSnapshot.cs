@@ -916,6 +916,10 @@ namespace InvoiceAutomation.Migrations
                         .HasColumnType("CHAR(36)")
                         .HasColumnName("default_sales_tax_input_account_id");
 
+                    b.Property<Guid?>("DefaultPayableVendorsAccountId")
+                        .HasColumnType("CHAR(36)")
+                        .HasColumnName("default_payable_vendors_account_id");
+
                     b.Property<decimal?>("DefaultTaxRate")
                         .HasColumnType("DECIMAL(5,2)")
                         .HasColumnName("default_tax_rate");
@@ -1049,6 +1053,8 @@ namespace InvoiceAutomation.Migrations
 
                     b.HasIndex("DefaultSalesTaxInputAccountId");
 
+                    b.HasIndex("DefaultPayableVendorsAccountId");
+
                     b.HasIndex("VendorId");
 
                     b.ToTable("vendor_invoice_templates", (string)null);
@@ -1181,6 +1187,11 @@ namespace InvoiceAutomation.Migrations
                         .HasForeignKey("DefaultSalesTaxInputAccountId")
                         .OnDelete(DeleteBehavior.SetNull);
 
+                    b.HasOne("InvoiceAutomation.Core.Entities.ChartOfAccount", "DefaultPayableVendorsAccount")
+                        .WithMany()
+                        .HasForeignKey("DefaultPayableVendorsAccountId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("InvoiceAutomation.Core.Entities.Vendor", "Vendor")
                         .WithMany()
                         .HasForeignKey("VendorId")
@@ -1192,6 +1203,8 @@ namespace InvoiceAutomation.Migrations
                     b.Navigation("DefaultChartOfAccount");
 
                     b.Navigation("DefaultSalesTaxInputAccount");
+
+                    b.Navigation("DefaultPayableVendorsAccount");
 
                     b.Navigation("Vendor");
                 });
