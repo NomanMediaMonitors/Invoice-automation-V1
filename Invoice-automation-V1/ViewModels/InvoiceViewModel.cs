@@ -187,12 +187,7 @@ public class InvoiceLineItemViewModel
 
     public decimal Amount { get; set; }
 
-    [Range(0, 100)]
-    public decimal AdvanceTaxRate { get; set; }
     public decimal AdvanceTaxAmount { get; set; }
-
-    [Range(0, 100)]
-    public decimal SalesTaxRate { get; set; }
     public decimal SalesTaxAmount { get; set; }
 
     public decimal TotalAmount { get; set; }

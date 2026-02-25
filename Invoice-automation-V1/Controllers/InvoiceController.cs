@@ -759,7 +759,7 @@ public class InvoiceController : Controller
     // POST: Invoice/AddLineItem
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> AddLineItem(Guid invoiceId, string description, decimal quantity, decimal unitPrice, decimal advanceTaxRate, decimal salesTaxRate, Guid? chartOfAccountId)
+    public async Task<IActionResult> AddLineItem(Guid invoiceId, string description, decimal quantity, decimal unitPrice, decimal advanceTaxAmount, decimal salesTaxAmount, Guid? chartOfAccountId)
     {
         try
         {
@@ -781,8 +781,6 @@ public class InvoiceController : Controller
             }
 
             var amount = quantity * unitPrice;
-            var advanceTaxAmount = amount * (advanceTaxRate / 100);
-            var salesTaxAmount = amount * (salesTaxRate / 100);
             var totalAmount = amount + advanceTaxAmount + salesTaxAmount;
 
             string? accountCode = null;
@@ -801,9 +799,7 @@ public class InvoiceController : Controller
                 Quantity = quantity,
                 UnitPrice = unitPrice,
                 Amount = amount,
-                AdvanceTaxRate = advanceTaxRate,
                 AdvanceTaxAmount = advanceTaxAmount,
-                SalesTaxRate = salesTaxRate,
                 SalesTaxAmount = salesTaxAmount,
                 TotalAmount = totalAmount,
                 ChartOfAccountId = (chartOfAccountId.HasValue && chartOfAccountId.Value != Guid.Empty) ? chartOfAccountId : null,
@@ -863,10 +859,8 @@ public class InvoiceController : Controller
             lineItem.Quantity = request.Quantity;
             lineItem.UnitPrice = request.UnitPrice;
             lineItem.Amount = request.Quantity * request.UnitPrice;
-            lineItem.AdvanceTaxRate = request.AdvanceTaxRate;
-            lineItem.AdvanceTaxAmount = lineItem.Amount * (request.AdvanceTaxRate / 100);
-            lineItem.SalesTaxRate = request.SalesTaxRate;
-            lineItem.SalesTaxAmount = lineItem.Amount * (request.SalesTaxRate / 100);
+            lineItem.AdvanceTaxAmount = request.AdvanceTaxAmount;
+            lineItem.SalesTaxAmount = request.SalesTaxAmount;
             lineItem.TotalAmount = lineItem.Amount + lineItem.AdvanceTaxAmount + lineItem.SalesTaxAmount;
             lineItem.UpdatedAt = DateTime.UtcNow;
 
@@ -1213,8 +1207,8 @@ public class InvoiceController : Controller
         public string Description { get; set; } = string.Empty;
         public decimal Quantity { get; set; }
         public decimal UnitPrice { get; set; }
-        public decimal AdvanceTaxRate { get; set; }
-        public decimal SalesTaxRate { get; set; }
+        public decimal AdvanceTaxAmount { get; set; }
+        public decimal SalesTaxAmount { get; set; }
         public Guid? ChartOfAccountId { get; set; }
     }
 

@@ -75,8 +75,6 @@ public class InvoiceService : IInvoiceService
             foreach (var lineItem in model.LineItems)
             {
                 var amount = lineItem.Quantity * lineItem.UnitPrice;
-                var advanceTaxAmount = amount * (lineItem.AdvanceTaxRate / 100);
-                var salesTaxAmount = amount * (lineItem.SalesTaxRate / 100);
 
                 var invoiceLineItem = new InvoiceLineItem
                 {
@@ -87,11 +85,9 @@ public class InvoiceService : IInvoiceService
                     Quantity = lineItem.Quantity,
                     UnitPrice = lineItem.UnitPrice,
                     Amount = amount,
-                    AdvanceTaxRate = lineItem.AdvanceTaxRate,
-                    AdvanceTaxAmount = advanceTaxAmount,
-                    SalesTaxRate = lineItem.SalesTaxRate,
-                    SalesTaxAmount = salesTaxAmount,
-                    TotalAmount = amount + advanceTaxAmount + salesTaxAmount,
+                    AdvanceTaxAmount = lineItem.AdvanceTaxAmount,
+                    SalesTaxAmount = lineItem.SalesTaxAmount,
+                    TotalAmount = amount + lineItem.AdvanceTaxAmount + lineItem.SalesTaxAmount,
                     ChartOfAccountId = lineItem.ChartOfAccountId,
                     AccountCode = lineItem.AccountCode,
                     CreatedAt = DateTime.UtcNow,
@@ -165,8 +161,6 @@ public class InvoiceService : IInvoiceService
             foreach (var lineItem in model.LineItems)
             {
                 var amount = lineItem.Quantity * lineItem.UnitPrice;
-                var advanceTaxAmount = amount * (lineItem.AdvanceTaxRate / 100);
-                var salesTaxAmount = amount * (lineItem.SalesTaxRate / 100);
 
                 var invoiceLineItem = new InvoiceLineItem
                 {
@@ -177,11 +171,9 @@ public class InvoiceService : IInvoiceService
                     Quantity = lineItem.Quantity,
                     UnitPrice = lineItem.UnitPrice,
                     Amount = amount,
-                    AdvanceTaxRate = lineItem.AdvanceTaxRate,
-                    AdvanceTaxAmount = advanceTaxAmount,
-                    SalesTaxRate = lineItem.SalesTaxRate,
-                    SalesTaxAmount = salesTaxAmount,
-                    TotalAmount = amount + advanceTaxAmount + salesTaxAmount,
+                    AdvanceTaxAmount = lineItem.AdvanceTaxAmount,
+                    SalesTaxAmount = lineItem.SalesTaxAmount,
+                    TotalAmount = amount + lineItem.AdvanceTaxAmount + lineItem.SalesTaxAmount,
                     ChartOfAccountId = lineItem.ChartOfAccountId,
                     AccountCode = lineItem.AccountCode,
                     CreatedAt = DateTime.UtcNow,
@@ -370,9 +362,7 @@ public class InvoiceService : IInvoiceService
                 Quantity = li.Quantity,
                 UnitPrice = li.UnitPrice,
                 Amount = li.Amount,
-                AdvanceTaxRate = li.AdvanceTaxRate,
                 AdvanceTaxAmount = li.AdvanceTaxAmount,
-                SalesTaxRate = li.SalesTaxRate,
                 SalesTaxAmount = li.SalesTaxAmount,
                 TotalAmount = li.TotalAmount,
                 ChartOfAccountId = li.ChartOfAccountId,
@@ -661,7 +651,7 @@ public class InvoiceService : IInvoiceService
                     }
                 }
 
-                // Apply template defaults
+                // Apply template defaults (rates are used to compute initial amounts for OCR line items)
                 var defaultAdvanceTaxRate = vendorTemplate?.DefaultAdvanceTaxRate ?? 0;
                 var defaultSalesTaxRate = vendorTemplate?.DefaultSalesTaxRate ?? 0;
                 var defaultChartOfAccountId = vendorTemplate?.DefaultChartOfAccountId;
@@ -706,9 +696,7 @@ public class InvoiceService : IInvoiceService
                         Quantity = ocrLineItem.Quantity,
                         UnitPrice = ocrLineItem.UnitPrice,
                         Amount = amount,
-                        AdvanceTaxRate = defaultAdvanceTaxRate,
                         AdvanceTaxAmount = advanceTaxAmount,
-                        SalesTaxRate = defaultSalesTaxRate,
                         SalesTaxAmount = salesTaxAmount,
                         TotalAmount = amount + advanceTaxAmount + salesTaxAmount,
                         ChartOfAccountId = defaultChartOfAccountId,

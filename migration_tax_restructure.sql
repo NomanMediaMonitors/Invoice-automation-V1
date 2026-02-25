@@ -4,8 +4,8 @@
 -- Date: 2026-02-25
 --
 -- This migration:
--- 1. Adds AdvanceTaxRate, AdvanceTaxAmount, SalesTaxRate, SalesTaxAmount to invoice_line_items
--- 2. Migrates existing TaxRate/TaxAmount data to AdvanceTaxRate/AdvanceTaxAmount
+-- 1. Adds AdvanceTaxAmount, SalesTaxAmount to invoice_line_items (amounts only, no rates)
+-- 2. Migrates existing TaxAmount data to AdvanceTaxAmount
 -- 3. Drops old TaxRate, TaxAmount columns from invoice_line_items
 -- 4. Drops TaxAmount from invoices (now calculated from line items)
 -- 5. Drops HasTaxRate, DefaultTaxRate from vendor_invoice_templates
@@ -13,19 +13,16 @@
 -- 7. Recalculates invoice totals from line items
 -- ============================================================================
 
--- Step 1: Add new columns to invoice_line_items
+-- Step 1: Add new amount columns to invoice_line_items (no rate columns needed)
 ALTER TABLE invoice_line_items
-    ADD COLUMN advance_tax_rate DECIMAL(5,2) NOT NULL DEFAULT 0.00 AFTER amount,
-    ADD COLUMN advance_tax_amount DECIMAL(18,2) NOT NULL DEFAULT 0.00 AFTER advance_tax_rate,
-    ADD COLUMN sales_tax_rate DECIMAL(5,2) NOT NULL DEFAULT 0.00 AFTER advance_tax_amount,
-    ADD COLUMN sales_tax_amount DECIMAL(18,2) NOT NULL DEFAULT 0.00 AFTER sales_tax_rate;
+    ADD COLUMN advance_tax_amount DECIMAL(18,2) NOT NULL DEFAULT 0.00 AFTER amount,
+    ADD COLUMN sales_tax_amount DECIMAL(18,2) NOT NULL DEFAULT 0.00 AFTER advance_tax_amount;
 
--- Step 2: Migrate existing tax data to advance_tax columns
--- (existing TaxRate/TaxAmount becomes AdvanceTaxRate/AdvanceTaxAmount)
+-- Step 2: Migrate existing tax data to advance_tax_amount
+-- (existing TaxAmount becomes AdvanceTaxAmount)
 UPDATE invoice_line_items
-SET advance_tax_rate = tax_rate,
-    advance_tax_amount = tax_amount
-WHERE tax_rate > 0 OR tax_amount > 0;
+SET advance_tax_amount = tax_amount
+WHERE tax_amount > 0;
 
 -- Step 3: Drop old tax columns from invoice_line_items
 ALTER TABLE invoice_line_items
@@ -59,6 +56,7 @@ SET i.advance_tax_amount = (
     );
 
 -- Step 6: Add new default tax rate columns to vendor_invoice_templates
+-- (rates are kept in templates for OCR to auto-compute initial amounts)
 ALTER TABLE vendor_invoice_templates
     ADD COLUMN default_advance_tax_rate DECIMAL(5,2) NULL AFTER default_payable_vendors_account_id,
     ADD COLUMN default_sales_tax_rate DECIMAL(5,2) NULL AFTER default_advance_tax_rate;

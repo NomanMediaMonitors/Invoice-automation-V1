@@ -489,9 +489,7 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.Quantity).HasColumnName("quantity").HasColumnType("DECIMAL(18,4)");
             entity.Property(e => e.UnitPrice).HasColumnName("unit_price").HasColumnType("DECIMAL(18,2)");
             entity.Property(e => e.Amount).HasColumnName("amount").HasColumnType("DECIMAL(18,2)");
-            entity.Property(e => e.AdvanceTaxRate).HasColumnName("advance_tax_rate").HasColumnType("DECIMAL(5,2)").HasDefaultValue(0m);
             entity.Property(e => e.AdvanceTaxAmount).HasColumnName("advance_tax_amount").HasColumnType("DECIMAL(18,2)").HasDefaultValue(0m);
-            entity.Property(e => e.SalesTaxRate).HasColumnName("sales_tax_rate").HasColumnType("DECIMAL(5,2)").HasDefaultValue(0m);
             entity.Property(e => e.SalesTaxAmount).HasColumnName("sales_tax_amount").HasColumnType("DECIMAL(18,2)").HasDefaultValue(0m);
             entity.Property(e => e.TotalAmount).HasColumnName("total_amount").HasColumnType("DECIMAL(18,2)");
             entity.Property(e => e.ChartOfAccountId).HasColumnName("chart_of_account_id").HasColumnType("CHAR(36)");
