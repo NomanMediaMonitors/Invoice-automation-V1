@@ -692,11 +692,12 @@ public class InvoiceService : IInvoiceService
                     newLineItems.Add(lineItem);
                 }
 
-                // Recalculate totals including both existing and new line items
+                // Recalculate totals from actual line items (never trust OCR summary values
+                // as they may include tax, be misread, or refer to different totals in the PDF)
                 var allLineItems = invoice.LineItems.Where(li => !li.IsOcrExtracted).Concat(newLineItems).ToList();
-                invoice.SubTotal = ocrResult.ExtractedData.SubTotal ?? allLineItems.Sum(li => li.Amount);
-                invoice.TaxAmount = ocrResult.ExtractedData.TaxAmount ?? allLineItems.Sum(li => li.TaxAmount);
-                invoice.TotalAmount = ocrResult.ExtractedData.TotalAmount ?? (invoice.SubTotal + invoice.AdvanceTaxAmount + invoice.SalesTaxInputAmount);
+                invoice.SubTotal = allLineItems.Sum(li => li.Amount);
+                invoice.TaxAmount = allLineItems.Sum(li => li.TaxAmount);
+                invoice.TotalAmount = invoice.SubTotal + invoice.AdvanceTaxAmount + invoice.SalesTaxInputAmount;
 
                 await _context.SaveChangesAsync();
 
