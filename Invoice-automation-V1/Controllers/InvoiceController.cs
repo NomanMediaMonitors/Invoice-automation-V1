@@ -522,12 +522,13 @@ public class InvoiceController : Controller
                     .FirstOrDefaultAsync(t => t.VendorId == invoice.VendorId.Value && t.IsActive);
             }
 
-            // Validate: Line items sum must equal SubTotal
+            // Auto-recalculate totals from line items
             if (invoice.LineItems.Any())
             {
-                var lineItemsSum = invoice.LineItems.Sum(li => li.Amount);
-                if (lineItemsSum != invoice.SubTotal)
-                    return Json(new { success = false, message = $"Line items total ({lineItemsSum:N2}) does not match SubTotal ({invoice.SubTotal:N2}). Please correct the amounts." });
+                invoice.SubTotal = invoice.LineItems.Sum(li => li.Amount);
+                invoice.AdvanceTaxAmount = invoice.LineItems.Sum(li => li.AdvanceTaxAmount);
+                invoice.SalesTaxInputAmount = invoice.LineItems.Sum(li => li.SalesTaxAmount);
+                invoice.TotalAmount = invoice.SubTotal + invoice.AdvanceTaxAmount + invoice.SalesTaxInputAmount;
             }
 
             // Validate: All line items must have accounts assigned
@@ -758,7 +759,7 @@ public class InvoiceController : Controller
     // POST: Invoice/AddLineItem
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> AddLineItem(Guid invoiceId, string description, decimal quantity, decimal unitPrice, decimal taxRate, Guid? chartOfAccountId)
+    public async Task<IActionResult> AddLineItem(Guid invoiceId, string description, decimal quantity, decimal unitPrice, decimal advanceTaxRate, decimal salesTaxRate, Guid? chartOfAccountId)
     {
         try
         {
@@ -780,8 +781,9 @@ public class InvoiceController : Controller
             }
 
             var amount = quantity * unitPrice;
-            var taxAmount = amount * (taxRate / 100);
-            var totalAmount = amount + taxAmount;
+            var advanceTaxAmount = amount * (advanceTaxRate / 100);
+            var salesTaxAmount = amount * (salesTaxRate / 100);
+            var totalAmount = amount + advanceTaxAmount + salesTaxAmount;
 
             string? accountCode = null;
             if (chartOfAccountId.HasValue && chartOfAccountId.Value != Guid.Empty)
@@ -799,8 +801,10 @@ public class InvoiceController : Controller
                 Quantity = quantity,
                 UnitPrice = unitPrice,
                 Amount = amount,
-                TaxRate = taxRate,
-                TaxAmount = taxAmount,
+                AdvanceTaxRate = advanceTaxRate,
+                AdvanceTaxAmount = advanceTaxAmount,
+                SalesTaxRate = salesTaxRate,
+                SalesTaxAmount = salesTaxAmount,
                 TotalAmount = totalAmount,
                 ChartOfAccountId = (chartOfAccountId.HasValue && chartOfAccountId.Value != Guid.Empty) ? chartOfAccountId : null,
                 AccountCode = accountCode,
@@ -814,7 +818,8 @@ public class InvoiceController : Controller
 
             // Recalculate invoice totals
             invoice.SubTotal = invoice.LineItems.Sum(li => li.Amount);
-            invoice.TaxAmount = invoice.LineItems.Sum(li => li.TaxAmount);
+            invoice.AdvanceTaxAmount = invoice.LineItems.Sum(li => li.AdvanceTaxAmount);
+            invoice.SalesTaxInputAmount = invoice.LineItems.Sum(li => li.SalesTaxAmount);
             invoice.TotalAmount = invoice.SubTotal + invoice.AdvanceTaxAmount + invoice.SalesTaxInputAmount;
             invoice.UpdatedAt = DateTime.UtcNow;
 
@@ -857,10 +862,12 @@ public class InvoiceController : Controller
             lineItem.Description = request.Description;
             lineItem.Quantity = request.Quantity;
             lineItem.UnitPrice = request.UnitPrice;
-            lineItem.TaxRate = request.TaxRate;
             lineItem.Amount = request.Quantity * request.UnitPrice;
-            lineItem.TaxAmount = lineItem.Amount * (request.TaxRate / 100);
-            lineItem.TotalAmount = lineItem.Amount + lineItem.TaxAmount;
+            lineItem.AdvanceTaxRate = request.AdvanceTaxRate;
+            lineItem.AdvanceTaxAmount = lineItem.Amount * (request.AdvanceTaxRate / 100);
+            lineItem.SalesTaxRate = request.SalesTaxRate;
+            lineItem.SalesTaxAmount = lineItem.Amount * (request.SalesTaxRate / 100);
+            lineItem.TotalAmount = lineItem.Amount + lineItem.AdvanceTaxAmount + lineItem.SalesTaxAmount;
             lineItem.UpdatedAt = DateTime.UtcNow;
 
             if (request.ChartOfAccountId.HasValue && request.ChartOfAccountId.Value != Guid.Empty)
@@ -875,9 +882,10 @@ public class InvoiceController : Controller
                 lineItem.AccountCode = null;
             }
 
-            // Recalculate invoice totals
+            // Recalculate invoice totals from line items
             invoice.SubTotal = invoice.LineItems.Sum(li => li.Amount);
-            invoice.TaxAmount = invoice.LineItems.Sum(li => li.TaxAmount);
+            invoice.AdvanceTaxAmount = invoice.LineItems.Sum(li => li.AdvanceTaxAmount);
+            invoice.SalesTaxInputAmount = invoice.LineItems.Sum(li => li.SalesTaxAmount);
             invoice.TotalAmount = invoice.SubTotal + invoice.AdvanceTaxAmount + invoice.SalesTaxInputAmount;
             invoice.UpdatedAt = DateTime.UtcNow;
 
@@ -889,13 +897,15 @@ public class InvoiceController : Controller
                 lineItem = new
                 {
                     amount = lineItem.Amount,
-                    taxAmount = lineItem.TaxAmount,
+                    advanceTaxAmount = lineItem.AdvanceTaxAmount,
+                    salesTaxAmount = lineItem.SalesTaxAmount,
                     totalAmount = lineItem.TotalAmount
                 },
                 invoice = new
                 {
                     subTotal = invoice.SubTotal,
-                    taxAmount = invoice.TaxAmount,
+                    advanceTaxAmount = invoice.AdvanceTaxAmount,
+                    salesTaxInputAmount = invoice.SalesTaxInputAmount,
                     totalAmount = invoice.TotalAmount
                 }
             });
@@ -956,22 +966,6 @@ public class InvoiceController : Controller
                 case "notes":
                     invoice.Notes = request.Value;
                     break;
-                case "advancetaxamount":
-                    if (decimal.TryParse(request.Value, out var advanceTaxAmount) && advanceTaxAmount >= 0)
-                    {
-                        invoice.AdvanceTaxAmount = advanceTaxAmount;
-                        // Recalculate total: SubTotal + AdvanceTaxAmount + SalesTaxInputAmount
-                        invoice.TotalAmount = invoice.SubTotal + invoice.AdvanceTaxAmount + invoice.SalesTaxInputAmount;
-                    }
-                    break;
-                case "salestaxinputamount":
-                    if (decimal.TryParse(request.Value, out var salesTaxInputAmount) && salesTaxInputAmount >= 0)
-                    {
-                        invoice.SalesTaxInputAmount = salesTaxInputAmount;
-                        // Recalculate total: SubTotal + AdvanceTaxAmount + SalesTaxInputAmount
-                        invoice.TotalAmount = invoice.SubTotal + invoice.AdvanceTaxAmount + invoice.SalesTaxInputAmount;
-                    }
-                    break;
                 default:
                     return Json(new { success = false, message = "Unknown field" });
             }
@@ -1024,10 +1018,11 @@ public class InvoiceController : Controller
 
             _context.InvoiceLineItems.Remove(lineItem);
 
-            // Recalculate invoice totals
+            // Recalculate invoice totals from remaining line items
             var remainingItems = invoice.LineItems.Where(li => li.Id != lineItemId).ToList();
             invoice.SubTotal = remainingItems.Sum(li => li.Amount);
-            invoice.TaxAmount = remainingItems.Sum(li => li.TaxAmount);
+            invoice.AdvanceTaxAmount = remainingItems.Sum(li => li.AdvanceTaxAmount);
+            invoice.SalesTaxInputAmount = remainingItems.Sum(li => li.SalesTaxAmount);
             invoice.TotalAmount = invoice.SubTotal + invoice.AdvanceTaxAmount + invoice.SalesTaxInputAmount;
             invoice.UpdatedAt = DateTime.UtcNow;
 
@@ -1218,7 +1213,8 @@ public class InvoiceController : Controller
         public string Description { get; set; } = string.Empty;
         public decimal Quantity { get; set; }
         public decimal UnitPrice { get; set; }
-        public decimal TaxRate { get; set; }
+        public decimal AdvanceTaxRate { get; set; }
+        public decimal SalesTaxRate { get; set; }
         public Guid? ChartOfAccountId { get; set; }
     }
 

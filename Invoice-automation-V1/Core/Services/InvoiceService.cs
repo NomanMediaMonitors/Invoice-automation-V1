@@ -74,6 +74,10 @@ public class InvoiceService : IInvoiceService
             int lineNumber = 1;
             foreach (var lineItem in model.LineItems)
             {
+                var amount = lineItem.Quantity * lineItem.UnitPrice;
+                var advanceTaxAmount = amount * (lineItem.AdvanceTaxRate / 100);
+                var salesTaxAmount = amount * (lineItem.SalesTaxRate / 100);
+
                 var invoiceLineItem = new InvoiceLineItem
                 {
                     Id = Guid.NewGuid(),
@@ -82,22 +86,25 @@ public class InvoiceService : IInvoiceService
                     Description = lineItem.Description,
                     Quantity = lineItem.Quantity,
                     UnitPrice = lineItem.UnitPrice,
-                    Amount = lineItem.Quantity * lineItem.UnitPrice,
-                    TaxRate = lineItem.TaxRate,
-                    TaxAmount = (lineItem.Quantity * lineItem.UnitPrice) * (lineItem.TaxRate / 100),
+                    Amount = amount,
+                    AdvanceTaxRate = lineItem.AdvanceTaxRate,
+                    AdvanceTaxAmount = advanceTaxAmount,
+                    SalesTaxRate = lineItem.SalesTaxRate,
+                    SalesTaxAmount = salesTaxAmount,
+                    TotalAmount = amount + advanceTaxAmount + salesTaxAmount,
                     ChartOfAccountId = lineItem.ChartOfAccountId,
                     AccountCode = lineItem.AccountCode,
                     CreatedAt = DateTime.UtcNow,
                     UpdatedAt = DateTime.UtcNow
                 };
 
-                invoiceLineItem.TotalAmount = invoiceLineItem.Amount + invoiceLineItem.TaxAmount;
                 invoice.LineItems.Add(invoiceLineItem);
             }
 
             // Calculate totals
             invoice.SubTotal = invoice.LineItems.Sum(li => li.Amount);
-            invoice.TaxAmount = invoice.LineItems.Sum(li => li.TaxAmount);
+            invoice.AdvanceTaxAmount = invoice.LineItems.Sum(li => li.AdvanceTaxAmount);
+            invoice.SalesTaxInputAmount = invoice.LineItems.Sum(li => li.SalesTaxAmount);
             invoice.TotalAmount = invoice.SubTotal + invoice.AdvanceTaxAmount + invoice.SalesTaxInputAmount;
 
             _context.Invoices.Add(invoice);
@@ -157,6 +164,10 @@ public class InvoiceService : IInvoiceService
             int lineNumber = 1;
             foreach (var lineItem in model.LineItems)
             {
+                var amount = lineItem.Quantity * lineItem.UnitPrice;
+                var advanceTaxAmount = amount * (lineItem.AdvanceTaxRate / 100);
+                var salesTaxAmount = amount * (lineItem.SalesTaxRate / 100);
+
                 var invoiceLineItem = new InvoiceLineItem
                 {
                     Id = lineItem.Id ?? Guid.NewGuid(),
@@ -165,22 +176,25 @@ public class InvoiceService : IInvoiceService
                     Description = lineItem.Description,
                     Quantity = lineItem.Quantity,
                     UnitPrice = lineItem.UnitPrice,
-                    Amount = lineItem.Quantity * lineItem.UnitPrice,
-                    TaxRate = lineItem.TaxRate,
-                    TaxAmount = (lineItem.Quantity * lineItem.UnitPrice) * (lineItem.TaxRate / 100),
+                    Amount = amount,
+                    AdvanceTaxRate = lineItem.AdvanceTaxRate,
+                    AdvanceTaxAmount = advanceTaxAmount,
+                    SalesTaxRate = lineItem.SalesTaxRate,
+                    SalesTaxAmount = salesTaxAmount,
+                    TotalAmount = amount + advanceTaxAmount + salesTaxAmount,
                     ChartOfAccountId = lineItem.ChartOfAccountId,
                     AccountCode = lineItem.AccountCode,
                     CreatedAt = DateTime.UtcNow,
                     UpdatedAt = DateTime.UtcNow
                 };
 
-                invoiceLineItem.TotalAmount = invoiceLineItem.Amount + invoiceLineItem.TaxAmount;
                 invoice.LineItems.Add(invoiceLineItem);
             }
 
             // Recalculate totals
             invoice.SubTotal = invoice.LineItems.Sum(li => li.Amount);
-            invoice.TaxAmount = invoice.LineItems.Sum(li => li.TaxAmount);
+            invoice.AdvanceTaxAmount = invoice.LineItems.Sum(li => li.AdvanceTaxAmount);
+            invoice.SalesTaxInputAmount = invoice.LineItems.Sum(li => li.SalesTaxAmount);
             invoice.TotalAmount = invoice.SubTotal + invoice.AdvanceTaxAmount + invoice.SalesTaxInputAmount;
 
             await _context.SaveChangesAsync();
@@ -253,14 +267,17 @@ public class InvoiceService : IInvoiceService
             return null;
         }
 
-        // Auto-recalculate totals if line items don't match stored SubTotal (fixes stale OCR values)
+        // Auto-recalculate totals if line items don't match stored values (fixes stale OCR values)
         if (invoice.LineItems.Any())
         {
             var lineItemsSum = invoice.LineItems.Sum(li => li.Amount);
-            if (lineItemsSum != invoice.SubTotal)
+            var advanceTaxSum = invoice.LineItems.Sum(li => li.AdvanceTaxAmount);
+            var salesTaxSum = invoice.LineItems.Sum(li => li.SalesTaxAmount);
+            if (lineItemsSum != invoice.SubTotal || advanceTaxSum != invoice.AdvanceTaxAmount || salesTaxSum != invoice.SalesTaxInputAmount)
             {
                 invoice.SubTotal = lineItemsSum;
-                invoice.TaxAmount = invoice.LineItems.Sum(li => li.TaxAmount);
+                invoice.AdvanceTaxAmount = advanceTaxSum;
+                invoice.SalesTaxInputAmount = salesTaxSum;
                 invoice.TotalAmount = invoice.SubTotal + invoice.AdvanceTaxAmount + invoice.SalesTaxInputAmount;
                 invoice.UpdatedAt = DateTime.UtcNow;
                 await _context.SaveChangesAsync();
@@ -274,7 +291,7 @@ public class InvoiceService : IInvoiceService
         var postedByUser = invoice.PostedToGLBy.HasValue ? await _context.Users.FindAsync(invoice.PostedToGLBy.Value) : null;
 
         // Load vendor template visibility flags
-        bool hasDueDate = true, hasDescription = true, hasLineItems = true, hasTaxRate = true, hasSubTotal = true;
+        bool hasDueDate = true, hasDescription = true, hasLineItems = true, hasSubTotal = true;
         bool hasAdvanceTaxAccount = true, hasSalesTaxInputAccount = true;
         if (invoice.VendorId.HasValue)
         {
@@ -285,7 +302,6 @@ public class InvoiceService : IInvoiceService
                 hasDueDate = vendorTemplate.HasDueDate;
                 hasDescription = vendorTemplate.HasDescription;
                 hasLineItems = vendorTemplate.HasLineItems;
-                hasTaxRate = vendorTemplate.HasTaxRate;
                 hasSubTotal = vendorTemplate.HasSubTotal;
                 hasAdvanceTaxAccount = vendorTemplate.HasAdvanceTaxAccount;
                 hasSalesTaxInputAccount = vendorTemplate.HasSalesTaxInputAccount;
@@ -305,7 +321,6 @@ public class InvoiceService : IInvoiceService
             InvoiceDate = invoice.InvoiceDate,
             DueDate = invoice.DueDate,
             SubTotal = invoice.SubTotal,
-            TaxAmount = invoice.TaxAmount,
             TotalAmount = invoice.TotalAmount,
             Currency = invoice.Currency,
             Status = invoice.Status.ToString(),
@@ -334,7 +349,6 @@ public class InvoiceService : IInvoiceService
             HasDueDate = hasDueDate,
             HasDescription = hasDescription,
             HasLineItems = hasLineItems,
-            HasTaxRate = hasTaxRate,
             HasSubTotal = hasSubTotal,
             HasAdvanceTaxAccount = hasAdvanceTaxAccount,
             HasSalesTaxInputAccount = hasSalesTaxInputAccount,
@@ -356,8 +370,10 @@ public class InvoiceService : IInvoiceService
                 Quantity = li.Quantity,
                 UnitPrice = li.UnitPrice,
                 Amount = li.Amount,
-                TaxRate = li.TaxRate,
-                TaxAmount = li.TaxAmount,
+                AdvanceTaxRate = li.AdvanceTaxRate,
+                AdvanceTaxAmount = li.AdvanceTaxAmount,
+                SalesTaxRate = li.SalesTaxRate,
+                SalesTaxAmount = li.SalesTaxAmount,
                 TotalAmount = li.TotalAmount,
                 ChartOfAccountId = li.ChartOfAccountId,
                 AccountCode = li.AccountCode,
@@ -646,7 +662,8 @@ public class InvoiceService : IInvoiceService
                 }
 
                 // Apply template defaults
-                var defaultTaxRate = vendorTemplate?.DefaultTaxRate ?? 0;
+                var defaultAdvanceTaxRate = vendorTemplate?.DefaultAdvanceTaxRate ?? 0;
+                var defaultSalesTaxRate = vendorTemplate?.DefaultSalesTaxRate ?? 0;
                 var defaultChartOfAccountId = vendorTemplate?.DefaultChartOfAccountId;
                 string? defaultAccountCode = null;
                 if (defaultChartOfAccountId.HasValue)
@@ -676,9 +693,9 @@ public class InvoiceService : IInvoiceService
                 int lineNumber = invoice.LineItems.Count(li => !li.IsOcrExtracted) + 1;
                 foreach (var ocrLineItem in ocrResult.ExtractedData.LineItems)
                 {
-                    var taxRate = defaultTaxRate;
                     var amount = ocrLineItem.Amount;
-                    var taxAmount = amount * (taxRate / 100);
+                    var advanceTaxAmount = amount * (defaultAdvanceTaxRate / 100);
+                    var salesTaxAmount = amount * (defaultSalesTaxRate / 100);
 
                     var lineItem = new InvoiceLineItem
                     {
@@ -689,9 +706,11 @@ public class InvoiceService : IInvoiceService
                         Quantity = ocrLineItem.Quantity,
                         UnitPrice = ocrLineItem.UnitPrice,
                         Amount = amount,
-                        TaxRate = taxRate,
-                        TaxAmount = taxAmount,
-                        TotalAmount = amount + taxAmount,
+                        AdvanceTaxRate = defaultAdvanceTaxRate,
+                        AdvanceTaxAmount = advanceTaxAmount,
+                        SalesTaxRate = defaultSalesTaxRate,
+                        SalesTaxAmount = salesTaxAmount,
+                        TotalAmount = amount + advanceTaxAmount + salesTaxAmount,
                         ChartOfAccountId = defaultChartOfAccountId,
                         AccountCode = defaultAccountCode,
                         IsOcrExtracted = true,
@@ -710,7 +729,8 @@ public class InvoiceService : IInvoiceService
                 // as they may include tax, be misread, or refer to different totals in the PDF)
                 var allLineItems = invoice.LineItems.Where(li => !li.IsOcrExtracted).Concat(newLineItems).ToList();
                 invoice.SubTotal = allLineItems.Sum(li => li.Amount);
-                invoice.TaxAmount = allLineItems.Sum(li => li.TaxAmount);
+                invoice.AdvanceTaxAmount = allLineItems.Sum(li => li.AdvanceTaxAmount);
+                invoice.SalesTaxInputAmount = allLineItems.Sum(li => li.SalesTaxAmount);
                 invoice.TotalAmount = invoice.SubTotal + invoice.AdvanceTaxAmount + invoice.SalesTaxInputAmount;
 
                 await _context.SaveChangesAsync();
@@ -812,14 +832,17 @@ public class InvoiceService : IInvoiceService
                     return (false, $"All line items must have an account assigned before posting to GL. {unassignedItems.Count} line item(s) are missing an account.");
             }
 
-            // Auto-recalculate totals from line items to fix any stale OCR values
+            // Auto-recalculate totals from line items to fix any stale values
             if (invoice.LineItems.Any())
             {
                 var lineItemsSum = invoice.LineItems.Sum(li => li.Amount);
-                if (lineItemsSum != invoice.SubTotal)
+                var advanceTaxSum = invoice.LineItems.Sum(li => li.AdvanceTaxAmount);
+                var salesTaxSum = invoice.LineItems.Sum(li => li.SalesTaxAmount);
+                if (lineItemsSum != invoice.SubTotal || advanceTaxSum != invoice.AdvanceTaxAmount || salesTaxSum != invoice.SalesTaxInputAmount)
                 {
                     invoice.SubTotal = lineItemsSum;
-                    invoice.TaxAmount = invoice.LineItems.Sum(li => li.TaxAmount);
+                    invoice.AdvanceTaxAmount = advanceTaxSum;
+                    invoice.SalesTaxInputAmount = salesTaxSum;
                     invoice.TotalAmount = invoice.SubTotal + invoice.AdvanceTaxAmount + invoice.SalesTaxInputAmount;
                     invoice.UpdatedAt = DateTime.UtcNow;
                     await _context.SaveChangesAsync();

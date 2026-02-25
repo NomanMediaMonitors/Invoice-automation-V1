@@ -13,7 +13,6 @@ public class VendorInvoiceTemplate
     public bool HasDueDate { get; set; } = true;
     public bool HasDescription { get; set; } = true;
     public bool HasLineItems { get; set; } = true;
-    public bool HasTaxRate { get; set; } = true;
     public bool HasSubTotal { get; set; } = true;
 
     // OCR field mapping - labels/keywords to look for in OCR text for each field
@@ -35,8 +34,9 @@ public class VendorInvoiceTemplate
     public Guid? DefaultSalesTaxInputAccountId { get; set; }
     public Guid? DefaultPayableVendorsAccountId { get; set; }
 
-    // Default tax rate for this vendor (if not extracted from OCR)
-    public decimal? DefaultTaxRate { get; set; }
+    // Default tax rates for this vendor (if not extracted from OCR)
+    public decimal? DefaultAdvanceTaxRate { get; set; }
+    public decimal? DefaultSalesTaxRate { get; set; }
 
     // Default chart of account for this vendor's invoices (legacy - for line items)
     public Guid? DefaultChartOfAccountId { get; set; }

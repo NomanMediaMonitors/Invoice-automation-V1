@@ -348,111 +348,13 @@ public class OcrService : IOcrService
                 }
             }
 
-            // Extract Totals with various formats including PKR with spaces
-            var amountPatterns = new[]
-            {
-                @"Subtotal\s*:?\s*(?:Rs\.?|PKR)?\s*([\d,]+\.?\d*)",
-                @"Sub[\s-]*Total\s*:?\s*(?:Rs\.?|PKR)?\s*([\d,]+\.?\d*)"
-            };
-
-            foreach (var pattern in amountPatterns)
-            {
-                var match = Regex.Match(extractedText, pattern, RegexOptions.IgnoreCase);
-                if (match.Success && decimal.TryParse(match.Groups[1].Value.Replace(",", ""), out var subtotal))
-                {
-                    data.SubTotal = subtotal;
-                    break;
-                }
-            }
-
-            // Tax extraction - also extract tax rate if present (e.g. "Tax 6%")
-            var taxPatterns = new[]
-            {
-                @"Tax\s*\d*%?\s*:?\s*(?:Rs\.?|PKR)?\s*([\d,]+\.?\d*)",
-                @"GST\s*\d*%?\s*:?\s*(?:Rs\.?|PKR)?\s*([\d,]+\.?\d*)",
-                @"VAT\s*\d*%?\s*:?\s*(?:Rs\.?|PKR)?\s*([\d,]+\.?\d*)",
-                @"(?:Rs\.?|PKR)\s*([\d,]+\.?\d*)\s*(?:tax|gst)",
-                @"Tax\s*(?:Rs\.?|PKR)\s*([\d,]+\.?\d*)"
-            };
-
-            foreach (var pattern in taxPatterns)
-            {
-                var match = Regex.Match(extractedText, pattern, RegexOptions.IgnoreCase);
-                if (match.Success && decimal.TryParse(match.Groups[1].Value.Replace(",", ""), out var tax))
-                {
-                    data.TaxAmount = tax;
-                    break;
-                }
-            }
-
-            // Total amount - Grant Total, Grand Total, Total Amount, Net Amount
-            var totalPatterns = new[]
-            {
-                @"Gr[ae]nt?\s+Total\s*(?:Amount)?\s*:?\s*(?:Rs\.?|PKR)?\s*([\d,]+\.?\d*)",
-                @"Grand\s+Total\s*(?:Amount)?\s*:?\s*(?:Rs\.?|PKR)?\s*([\d,]+\.?\d*)",
-                @"Total\s+Amount\s*:?\s*(?:Rs\.?|PKR)?\s*([\d,]+\.?\d*)",
-                @"Net\s+(?:Amount|Total)\s*:?\s*(?:Rs\.?|PKR)?\s*([\d,]+\.?\d*)",
-                @"Amount\s+(?:With|Inc(?:l|luding)?)\s+Tax\s*:?\s*(?:Rs\.?|PKR)?\s*([\d,]+\.?\d*)",
-                @"Amount\s+Due\s*:?\s*(?:Rs\.?|PKR)?\s*([\d,]+\.?\d*)",
-                @"(?:^|\n)\s*Total\s*:?\s*(?:Rs\.?|PKR)?\s*([\d,]+\.?\d*)"
-            };
-
-            foreach (var pattern in totalPatterns)
-            {
-                var match = Regex.Match(extractedText, pattern, RegexOptions.IgnoreCase | RegexOptions.Multiline);
-                if (match.Success && decimal.TryParse(match.Groups[1].Value.Replace(",", ""), out var total) && total > 0)
-                {
-                    // If we find multiple total amounts across pages, sum them
-                    // (multi-page invoices like Rent & Ride have separate Grant Total per page)
-                    if (data.TotalAmount.HasValue)
-                    {
-                        // Check if this is a different total on another page
-                        var allMatches = Regex.Matches(extractedText, pattern, RegexOptions.IgnoreCase | RegexOptions.Multiline);
-                        decimal sum = 0;
-                        foreach (Match m in allMatches)
-                        {
-                            if (decimal.TryParse(m.Groups[1].Value.Replace(",", ""), out var val) && val > 0)
-                            {
-                                sum += val;
-                            }
-                        }
-                        if (sum > data.TotalAmount.Value)
-                        {
-                            data.TotalAmount = sum;
-                        }
-                    }
-                    else
-                    {
-                        // Sum all occurrences of this pattern (handles multi-page totals)
-                        var allMatches = Regex.Matches(extractedText, pattern, RegexOptions.IgnoreCase | RegexOptions.Multiline);
-                        decimal sum = 0;
-                        foreach (Match m in allMatches)
-                        {
-                            if (decimal.TryParse(m.Groups[1].Value.Replace(",", ""), out var val) && val > 0)
-                            {
-                                sum += val;
-                            }
-                        }
-                        data.TotalAmount = sum;
-                    }
-                    break;
-                }
-            }
-
-            // Extract Line Items
+            // Extract Line Items (totals are always calculated from line items, not OCR text)
             data.LineItems = ExtractLineItems(extractedText);
 
-            // If we have line items but no subtotal, calculate it
-            if (!data.SubTotal.HasValue && data.LineItems.Any())
-            {
-                data.SubTotal = data.LineItems.Sum(li => li.Amount);
-            }
-
-            _logger.LogInformation("Parsed invoice data: InvoiceNo={InvoiceNumber}, Date={Date}, Vendor={Vendor}, Total={Total}, LineItems={LineItemCount}",
+            _logger.LogInformation("Parsed invoice data: InvoiceNo={InvoiceNumber}, Date={Date}, Vendor={Vendor}, LineItems={LineItemCount}",
                 data.InvoiceNumber ?? "N/A",
                 data.InvoiceDate?.ToString("yyyy-MM-dd") ?? "N/A",
                 data.VendorName ?? "N/A",
-                data.TotalAmount,
                 data.LineItems.Count);
         }
         catch (Exception ex)
@@ -633,8 +535,7 @@ public class OcrService : IOcrService
         // Minimum required fields for a valid invoice
         return !string.IsNullOrWhiteSpace(data.InvoiceNumber) &&
                data.InvoiceDate.HasValue &&
-               data.TotalAmount.HasValue &&
-               data.TotalAmount.Value > 0;
+               data.LineItems.Any();
     }
 
     private decimal CalculateOverallConfidence(OcrExtractedData data)
@@ -643,18 +544,15 @@ public class OcrService : IOcrService
         int fieldCount = 0;
 
         // Check each field and add to confidence
-        if (!string.IsNullOrWhiteSpace(data.InvoiceNumber)) { confidence += 20; fieldCount++; }
-        if (data.InvoiceDate.HasValue) { confidence += 15; fieldCount++; }
+        if (!string.IsNullOrWhiteSpace(data.InvoiceNumber)) { confidence += 25; fieldCount++; }
+        if (data.InvoiceDate.HasValue) { confidence += 20; fieldCount++; }
         if (data.DueDate.HasValue) { confidence += 10; fieldCount++; }
         if (!string.IsNullOrWhiteSpace(data.VendorName)) { confidence += 15; fieldCount++; }
-        if (data.SubTotal.HasValue) { confidence += 10; fieldCount++; }
-        if (data.TaxAmount.HasValue) { confidence += 10; fieldCount++; }
-        if (data.TotalAmount.HasValue) { confidence += 20; fieldCount++; }
 
-        // Add confidence for line items (up to 20 points)
+        // Add confidence for line items (up to 30 points)
         if (data.LineItems.Any())
         {
-            var lineItemConfidence = Math.Min(20, data.LineItems.Count * 5);
+            var lineItemConfidence = Math.Min(30, data.LineItems.Count * 7);
             confidence += lineItemConfidence;
         }
 
