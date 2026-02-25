@@ -253,6 +253,20 @@ public class InvoiceService : IInvoiceService
             return null;
         }
 
+        // Auto-recalculate totals if line items don't match stored SubTotal (fixes stale OCR values)
+        if (invoice.LineItems.Any())
+        {
+            var lineItemsSum = invoice.LineItems.Sum(li => li.Amount);
+            if (lineItemsSum != invoice.SubTotal)
+            {
+                invoice.SubTotal = lineItemsSum;
+                invoice.TaxAmount = invoice.LineItems.Sum(li => li.TaxAmount);
+                invoice.TotalAmount = invoice.SubTotal + invoice.AdvanceTaxAmount + invoice.SalesTaxInputAmount;
+                invoice.UpdatedAt = DateTime.UtcNow;
+                await _context.SaveChangesAsync();
+            }
+        }
+
         // Get user names for audit fields
         var createdByUser = await _context.Users.FindAsync(invoice.CreatedBy);
         var approvedByUser = invoice.ApprovedBy.HasValue ? await _context.Users.FindAsync(invoice.ApprovedBy.Value) : null;
@@ -798,12 +812,18 @@ public class InvoiceService : IInvoiceService
                     return (false, $"All line items must have an account assigned before posting to GL. {unassignedItems.Count} line item(s) are missing an account.");
             }
 
-            // Validate: Line items sum must equal SubTotal
+            // Auto-recalculate totals from line items to fix any stale OCR values
             if (invoice.LineItems.Any())
             {
                 var lineItemsSum = invoice.LineItems.Sum(li => li.Amount);
                 if (lineItemsSum != invoice.SubTotal)
-                    return (false, $"Line items total ({lineItemsSum:N2}) does not match SubTotal ({invoice.SubTotal:N2}). Please correct the amounts before posting.");
+                {
+                    invoice.SubTotal = lineItemsSum;
+                    invoice.TaxAmount = invoice.LineItems.Sum(li => li.TaxAmount);
+                    invoice.TotalAmount = invoice.SubTotal + invoice.AdvanceTaxAmount + invoice.SalesTaxInputAmount;
+                    invoice.UpdatedAt = DateTime.UtcNow;
+                    await _context.SaveChangesAsync();
+                }
             }
 
             // Validate: Advance Tax account required if enabled and amount > 0
