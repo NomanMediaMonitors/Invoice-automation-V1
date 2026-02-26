@@ -229,6 +229,8 @@
     <script>
     /* ===================================================
        Searchable COA Select — self-contained, no CDN
+       Dropdown appended to <body> + position:fixed so it
+       escapes overflow:auto table/card containers.
        =================================================== */
     window.initCoaSelects = (function () {
         function initOne(el) {
@@ -238,7 +240,7 @@
             var allOpts = Array.from(el.options);
             var isSmall = el.classList.contains('form-select-sm');
 
-            // Wrapper
+            // Wrapper (stays in normal flow — just holds control + hidden select)
             var wrapper = document.createElement('div');
             wrapper.className = 'coa-wrapper';
             if (el.classList.contains('li-account')) wrapper.classList.add('li-account-wrap');
@@ -246,7 +248,7 @@
             el.classList.add('coa-native-select');
             wrapper.appendChild(el);
 
-            // Visible control
+            // Visible control button
             var control = document.createElement('div');
             control.className = 'coa-control' + (isSmall ? ' coa-sm' : '');
             control.setAttribute('tabindex', '0');
@@ -261,7 +263,7 @@
 
             wrapper.insertBefore(control, el);
 
-            // Dropdown panel
+            // Dropdown — appended to <body> so overflow:auto can't clip it
             var dropdown = document.createElement('div');
             dropdown.className = 'coa-dropdown';
 
@@ -279,10 +281,30 @@
             optsList.className = 'coa-options';
             dropdown.appendChild(optsList);
 
-            wrapper.appendChild(dropdown);
+            document.body.appendChild(dropdown); // ← key: outside all overflow containers
 
             var isOpen = false;
             var hiIdx = -1;
+
+            // Position the fixed dropdown below (or above) the control
+            function positionDropdown() {
+                var r = control.getBoundingClientRect();
+                var spaceBelow = window.innerHeight - r.bottom;
+                var spaceAbove = r.top;
+                var w = Math.max(r.width, 240);
+
+                dropdown.style.width = w + 'px';
+                dropdown.style.left = r.left + 'px';
+
+                if (spaceBelow < 220 && spaceAbove > spaceBelow) {
+                    // Flip upward
+                    dropdown.style.top = 'auto';
+                    dropdown.style.bottom = (window.innerHeight - r.top + 4) + 'px';
+                } else {
+                    dropdown.style.top = (r.bottom + 4) + 'px';
+                    dropdown.style.bottom = 'auto';
+                }
+            }
 
             function syncDisplay() {
                 var sel = el.options[el.selectedIndex];
@@ -336,19 +358,28 @@
                 el.dispatchEvent(new Event('change', { bubbles: true }));
             }
 
+            function onScrollOrResize() {
+                if (isOpen) positionDropdown();
+            }
+
             function open() {
+                positionDropdown();
                 searchInput.value = '';
                 renderOpts('');
                 dropdown.classList.add('open');
                 control.classList.add('open');
                 isOpen = true;
                 searchInput.focus();
+                window.addEventListener('scroll', onScrollOrResize, true);
+                window.addEventListener('resize', onScrollOrResize);
             }
 
             function close() {
                 dropdown.classList.remove('open');
                 control.classList.remove('open');
                 isOpen = false;
+                window.removeEventListener('scroll', onScrollOrResize, true);
+                window.removeEventListener('resize', onScrollOrResize);
             }
 
             control.addEventListener('click', function () { isOpen ? close() : open(); });
@@ -373,11 +404,11 @@
                 if (hiIdx >= 0 && items[hiIdx]) items[hiIdx].scrollIntoView({ block: 'nearest' });
             }
 
+            // Close on outside click (check both wrapper and body-appended dropdown)
             document.addEventListener('click', function (e) {
-                if (isOpen && !wrapper.contains(e.target)) close();
+                if (isOpen && !wrapper.contains(e.target) && !dropdown.contains(e.target)) close();
             });
 
-            // Expose sync for external updates
             el._coaUpdate = syncDisplay;
         }
 
