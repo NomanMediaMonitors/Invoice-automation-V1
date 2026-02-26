@@ -6,7 +6,6 @@
     <title>@ViewData["Title"] - Invoice Automation</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.bootstrap5.min.css">
     <link rel="stylesheet" href="~/css/website.css" asp-append-version="true" />
 </head>
 <body>
@@ -227,7 +226,166 @@
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
+    <script>
+    /* ===================================================
+       Searchable COA Select — self-contained, no CDN
+       =================================================== */
+    window.initCoaSelects = (function () {
+        function initOne(el) {
+            if (el.dataset.coaInit) return;
+            el.dataset.coaInit = '1';
+
+            var allOpts = Array.from(el.options);
+            var isSmall = el.classList.contains('form-select-sm');
+
+            // Wrapper
+            var wrapper = document.createElement('div');
+            wrapper.className = 'coa-wrapper';
+            if (el.classList.contains('li-account')) wrapper.classList.add('li-account-wrap');
+            el.parentNode.insertBefore(wrapper, el);
+            el.classList.add('coa-native-select');
+            wrapper.appendChild(el);
+
+            // Visible control
+            var control = document.createElement('div');
+            control.className = 'coa-control' + (isSmall ? ' coa-sm' : '');
+            control.setAttribute('tabindex', '0');
+
+            var ctrlText = document.createElement('span');
+            ctrlText.className = 'coa-control-text coa-placeholder';
+            control.appendChild(ctrlText);
+
+            var arrow = document.createElement('i');
+            arrow.className = 'coa-control-arrow bi bi-chevron-down';
+            control.appendChild(arrow);
+
+            wrapper.insertBefore(control, el);
+
+            // Dropdown panel
+            var dropdown = document.createElement('div');
+            dropdown.className = 'coa-dropdown';
+
+            var searchWrap = document.createElement('div');
+            searchWrap.className = 'coa-search-wrap';
+            var searchInput = document.createElement('input');
+            searchInput.type = 'text';
+            searchInput.className = 'coa-search-input';
+            searchInput.placeholder = 'Type to search\u2026';
+            searchInput.autocomplete = 'off';
+            searchWrap.appendChild(searchInput);
+            dropdown.appendChild(searchWrap);
+
+            var optsList = document.createElement('div');
+            optsList.className = 'coa-options';
+            dropdown.appendChild(optsList);
+
+            wrapper.appendChild(dropdown);
+
+            var isOpen = false;
+            var hiIdx = -1;
+
+            function syncDisplay() {
+                var sel = el.options[el.selectedIndex];
+                if (sel && sel.value) {
+                    ctrlText.textContent = sel.text;
+                    ctrlText.classList.remove('coa-placeholder');
+                } else {
+                    var ph = allOpts.find(function (o) { return !o.value; });
+                    ctrlText.textContent = ph ? ph.text : '-- Select --';
+                    ctrlText.classList.add('coa-placeholder');
+                }
+            }
+            syncDisplay();
+
+            function renderOpts(filter) {
+                optsList.innerHTML = '';
+                hiIdx = -1;
+                var lf = (filter || '').toLowerCase();
+                var visible = allOpts.filter(function (o) {
+                    return !lf || o.text.toLowerCase().indexOf(lf) !== -1;
+                });
+                if (!visible.length) {
+                    var empty = document.createElement('div');
+                    empty.className = 'coa-no-results';
+                    empty.textContent = 'No results found';
+                    optsList.appendChild(empty);
+                    return;
+                }
+                visible.forEach(function (opt) {
+                    var item = document.createElement('div');
+                    var cls = 'coa-option';
+                    if (!opt.value) cls += ' coa-placeholder-opt';
+                    if (opt.value === el.value) cls += ' coa-selected';
+                    item.className = cls;
+                    item.textContent = opt.text;
+                    item.dataset.val = opt.value;
+                    item.addEventListener('mousedown', function (e) {
+                        e.preventDefault();
+                        pick(opt.value);
+                    });
+                    optsList.appendChild(item);
+                });
+                var selItem = optsList.querySelector('.coa-selected');
+                if (selItem) selItem.scrollIntoView({ block: 'nearest' });
+            }
+
+            function pick(value) {
+                el.value = value;
+                syncDisplay();
+                close();
+                el.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+
+            function open() {
+                searchInput.value = '';
+                renderOpts('');
+                dropdown.classList.add('open');
+                control.classList.add('open');
+                isOpen = true;
+                searchInput.focus();
+            }
+
+            function close() {
+                dropdown.classList.remove('open');
+                control.classList.remove('open');
+                isOpen = false;
+            }
+
+            control.addEventListener('click', function () { isOpen ? close() : open(); });
+            control.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowDown') { e.preventDefault(); open(); }
+            });
+
+            searchInput.addEventListener('input', function () { renderOpts(this.value); });
+            searchInput.addEventListener('keydown', function (e) {
+                var items = Array.from(optsList.querySelectorAll('.coa-option'));
+                if (e.key === 'Escape') { e.preventDefault(); close(); control.focus(); }
+                else if (e.key === 'ArrowDown') { e.preventDefault(); hiIdx = Math.min(hiIdx + 1, items.length - 1); highlight(items); }
+                else if (e.key === 'ArrowUp')   { e.preventDefault(); hiIdx = Math.max(hiIdx - 1, 0);              highlight(items); }
+                else if (e.key === 'Enter') {
+                    e.preventDefault();
+                    if (hiIdx >= 0 && items[hiIdx]) { pick(items[hiIdx].dataset.val); control.focus(); }
+                }
+            });
+
+            function highlight(items) {
+                items.forEach(function (it, i) { it.classList.toggle('coa-highlighted', i === hiIdx); });
+                if (hiIdx >= 0 && items[hiIdx]) items[hiIdx].scrollIntoView({ block: 'nearest' });
+            }
+
+            document.addEventListener('click', function (e) {
+                if (isOpen && !wrapper.contains(e.target)) close();
+            });
+
+            // Expose sync for external updates
+            el._coaUpdate = syncDisplay;
+        }
+
+        return function (root) {
+            (root || document).querySelectorAll('select.coa-select:not([data-coa-init])').forEach(initOne);
+        };
+    })();
+    </script>
     <script>
         (function() {
             var toggle = document.getElementById('sidebarToggle');

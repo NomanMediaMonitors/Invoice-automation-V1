@@ -280,7 +280,7 @@
                                 <tr>
                                     <th style="width: 50px;">#</th>
                                     <th style="min-width: 250px;">Description</th>
-                                    <th style="min-width: 180px;">Account</th>
+                                    <th style="min-width: 260px;">Account</th>
                                     <th class="text-end" style="min-width: 90px;">Qty</th>
                                     <th class="text-end" style="min-width: 120px;">Unit Price</th>
                                     <th class="text-end" style="min-width: 120px;">Amount</th>
@@ -1050,7 +1050,7 @@
                 .then(function(r) { return r.json(); })
                 .then(function(result) {
                     if (result.success) {
-                        var feedbackEl = selectEl.tomselect ? selectEl.tomselect.wrapper : selectEl;
+                        var feedbackEl = selectEl.closest('.coa-wrapper') || selectEl;
                         feedbackEl.classList.add('is-valid');
                         setTimeout(function() { feedbackEl.classList.remove('is-valid'); }, 2000);
                     } else {
@@ -1155,13 +1155,13 @@
             });
         }
 
-        // ===== Searchable COA Dropdowns (Tom Select) =====
-        document.querySelectorAll('.coa-select').forEach(function(el) {
-            new TomSelect(el, {
-                maxItems: 1,
-                create: false,
-                allowEmptyOption: true
-            });
-        });
+        // ===== Searchable COA Dropdowns =====
+        initCoaSelects();
+
+        // ===== Scroll line items table to show totals on load =====
+        var lineItemsTableWrapper = document.querySelector('#lineItemsTable')?.closest('.table-responsive');
+        if (lineItemsTableWrapper) {
+            lineItemsTableWrapper.scrollLeft = lineItemsTableWrapper.scrollWidth;
+        }
     </script>
 }

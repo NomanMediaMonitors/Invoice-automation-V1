@@ -201,13 +201,7 @@
         toggleAccountSection('hasAdvanceTaxAccount', 'advanceTaxAccountSection');
         toggleAccountSection('hasSalesTaxInputAccount', 'salesTaxInputAccountSection');
 
-        // ===== Searchable COA Dropdowns (Tom Select) =====
-        document.querySelectorAll('.coa-select').forEach(function(el) {
-            new TomSelect(el, {
-                maxItems: 1,
-                create: false,
-                allowEmptyOption: true
-            });
-        });
+        // ===== Searchable COA Dropdowns =====
+        initCoaSelects();
     </script>
 }
