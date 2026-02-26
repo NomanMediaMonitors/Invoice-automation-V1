@@ -3,6 +3,18 @@
   "WorkspaceRootPath": "F:\\Invoice-automation-V1\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{79DCB480-2D80-4EB6-BFA5-1EB8AFB09395}|Invoice-automation-V1\\Invoice-automation-V1.csproj|f:\\invoice-automation-v1\\invoice-automation-v1\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{79DCB480-2D80-4EB6-BFA5-1EB8AFB09395}|Invoice-automation-V1\\Invoice-automation-V1.csproj|solutionrelative:invoice-automation-v1\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{79DCB480-2D80-4EB6-BFA5-1EB8AFB09395}|Invoice-automation-V1\\Invoice-automation-V1.csproj|f:\\invoice-automation-v1\\invoice-automation-v1\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{79DCB480-2D80-4EB6-BFA5-1EB8AFB09395}|Invoice-automation-V1\\Invoice-automation-V1.csproj|solutionrelative:invoice-automation-v1\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{79DCB480-2D80-4EB6-BFA5-1EB8AFB09395}|Invoice-automation-V1\\Invoice-automation-V1.csproj|f:\\invoice-automation-v1\\invoice-automation-v1\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{79DCB480-2D80-4EB6-BFA5-1EB8AFB09395}|Invoice-automation-V1\\Invoice-automation-V1.csproj|solutionrelative:invoice-automation-v1\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{79DCB480-2D80-4EB6-BFA5-1EB8AFB09395}|Invoice-automation-V1\\Invoice-automation-V1.csproj|f:\\invoice-automation-v1\\invoice-automation-v1\\views\\invoice\\details.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{79DCB480-2D80-4EB6-BFA5-1EB8AFB09395}|Invoice-automation-V1\\Invoice-automation-V1.csproj|solutionrelative:invoice-automation-v1\\views\\invoice\\details.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
@@ -13,10 +25,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{79DCB480-2D80-4EB6-BFA5-1EB8AFB09395}|Invoice-automation-V1\\Invoice-automation-V1.csproj|f:\\invoice-automation-v1\\invoice-automation-v1\\controllers\\companycontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{79DCB480-2D80-4EB6-BFA5-1EB8AFB09395}|Invoice-automation-V1\\Invoice-automation-V1.csproj|solutionrelative:invoice-automation-v1\\controllers\\companycontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{79DCB480-2D80-4EB6-BFA5-1EB8AFB09395}|Invoice-automation-V1\\Invoice-automation-V1.csproj|f:\\invoice-automation-v1\\invoice-automation-v1\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{79DCB480-2D80-4EB6-BFA5-1EB8AFB09395}|Invoice-automation-V1\\Invoice-automation-V1.csproj|solutionrelative:invoice-automation-v1\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{79DCB480-2D80-4EB6-BFA5-1EB8AFB09395}|Invoice-automation-V1\\Invoice-automation-V1.csproj|f:\\invoice-automation-v1\\invoice-automation-v1\\controllers\\invoicecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -35,10 +43,6 @@
       "RelativeMoniker": "D:0:0:{79DCB480-2D80-4EB6-BFA5-1EB8AFB09395}|Invoice-automation-V1\\Invoice-automation-V1.csproj|solutionrelative:invoice-automation-v1\\wwwroot\\css\\website.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{79DCB480-2D80-4EB6-BFA5-1EB8AFB09395}|Invoice-automation-V1\\Invoice-automation-V1.csproj|f:\\invoice-automation-v1\\invoice-automation-v1\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{79DCB480-2D80-4EB6-BFA5-1EB8AFB09395}|Invoice-automation-V1\\Invoice-automation-V1.csproj|solutionrelative:invoice-automation-v1\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{79DCB480-2D80-4EB6-BFA5-1EB8AFB09395}|Invoice-automation-V1\\Invoice-automation-V1.csproj|f:\\invoice-automation-v1\\invoice-automation-v1\\views\\employee\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{79DCB480-2D80-4EB6-BFA5-1EB8AFB09395}|Invoice-automation-V1\\Invoice-automation-V1.csproj|solutionrelative:invoice-automation-v1\\views\\employee\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     }
@@ -50,7 +54,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": 5,
           "Children": [
             {
               "$type": "Bookmark",
@@ -62,20 +66,33 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "F:\\Invoice-automation-V1\\Invoice-automation-V1\\appsettings.json",
+              "RelativeDocumentMoniker": "Invoice-automation-V1\\appsettings.json",
+              "ToolTip": "F:\\Invoice-automation-V1\\Invoice-automation-V1\\appsettings.json",
+              "RelativeToolTip": "Invoice-automation-V1\\appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAjAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-02-26T11:40:49.799Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
               "Title": "Details.cshtml",
               "DocumentMoniker": "F:\\Invoice-automation-V1\\Invoice-automation-V1\\Views\\Invoice\\Details.cshtml",
               "RelativeDocumentMoniker": "Invoice-automation-V1\\Views\\Invoice\\Details.cshtml",
               "ToolTip": "F:\\Invoice-automation-V1\\Invoice-automation-V1\\Views\\Invoice\\Details.cshtml",
               "RelativeToolTip": "Invoice-automation-V1\\Views\\Invoice\\Details.cshtml",
-              "ViewState": "AgIAADEDAAAAAAAAAAAkwFADAAA3AAAAAAAAAA==",
+              "ViewState": "AgIAAMAAAAAAAAAAAAArwOcAAACHAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
               "WhenOpened": "2026-02-25T09:54:51.299Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 5,
               "Title": "CompanyController.cs",
               "DocumentMoniker": "F:\\Invoice-automation-V1\\Invoice-automation-V1\\Controllers\\CompanyController.cs",
               "RelativeDocumentMoniker": "Invoice-automation-V1\\Controllers\\CompanyController.cs",
@@ -83,25 +100,24 @@
               "RelativeToolTip": "Invoice-automation-V1\\Controllers\\CompanyController.cs",
               "ViewState": "AgIAAFAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-25T09:54:00.972Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-02-25T09:54:00.972Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 0,
               "Title": "Program.cs",
               "DocumentMoniker": "F:\\Invoice-automation-V1\\Invoice-automation-V1\\Program.cs",
               "RelativeDocumentMoniker": "Invoice-automation-V1\\Program.cs",
               "ToolTip": "F:\\Invoice-automation-V1\\Invoice-automation-V1\\Program.cs",
               "RelativeToolTip": "Invoice-automation-V1\\Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAACcAAAAYAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAABUAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-02-23T12:34:35.928Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 4,
               "Title": "Index.cshtml",
               "DocumentMoniker": "F:\\Invoice-automation-V1\\Invoice-automation-V1\\Views\\Invoice\\Index.cshtml",
               "RelativeDocumentMoniker": "Invoice-automation-V1\\Views\\Invoice\\Index.cshtml",
@@ -109,12 +125,11 @@
               "RelativeToolTip": "Invoice-automation-V1\\Views\\Invoice\\Index.cshtml",
               "ViewState": "AgIAAIkAAAAAAAAAAAAAAJEAAAB4AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-02-21T10:06:20.934Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-02-21T10:06:20.934Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 8,
               "Title": "Edit.cshtml",
               "DocumentMoniker": "F:\\Invoice-automation-V1\\Invoice-automation-V1\\Views\\Vendor\\Edit.cshtml",
               "RelativeDocumentMoniker": "Invoice-automation-V1\\Views\\Vendor\\Edit.cshtml",
@@ -126,7 +141,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 6,
               "Title": "InvoiceController.cs",
               "DocumentMoniker": "F:\\Invoice-automation-V1\\Invoice-automation-V1\\Controllers\\InvoiceController.cs",
               "RelativeDocumentMoniker": "Invoice-automation-V1\\Controllers\\InvoiceController.cs",
@@ -134,24 +149,24 @@
               "RelativeToolTip": "Invoice-automation-V1\\Controllers\\InvoiceController.cs",
               "ViewState": "AgIAAC8AAAAAAAAAAAAswDgAAAAEAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-20T08:26:14.855Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-02-20T08:26:14.855Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 2,
               "Title": "_Layout.cshtml",
               "DocumentMoniker": "F:\\Invoice-automation-V1\\Invoice-automation-V1\\Views\\Shared\\_Layout.cshtml",
               "RelativeDocumentMoniker": "Invoice-automation-V1\\Views\\Shared\\_Layout.cshtml",
               "ToolTip": "F:\\Invoice-automation-V1\\Invoice-automation-V1\\Views\\Shared\\_Layout.cshtml",
               "RelativeToolTip": "Invoice-automation-V1\\Views\\Shared\\_Layout.cshtml",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAALQAAAAAAAAAAAAMwM4AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-02-20T08:20:53.166Z"
+              "WhenOpened": "2026-02-20T08:20:53.166Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 7,
               "Title": "Edit.cshtml",
               "DocumentMoniker": "F:\\Invoice-automation-V1\\Invoice-automation-V1\\Views\\Profile\\Edit.cshtml",
               "RelativeDocumentMoniker": "Invoice-automation-V1\\Views\\Profile\\Edit.cshtml",
@@ -159,12 +174,11 @@
               "RelativeToolTip": "Invoice-automation-V1\\Views\\Profile\\Edit.cshtml",
               "ViewState": "AgIAABAAAAAAAAAAAAAswCcAAAAaAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-02-11T16:08:11.748Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-02-11T16:08:11.748Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 10,
               "Title": "Index.cshtml",
               "DocumentMoniker": "F:\\Invoice-automation-V1\\Invoice-automation-V1\\Views\\Employee\\Index.cshtml",
               "RelativeDocumentMoniker": "Invoice-automation-V1\\Views\\Employee\\Index.cshtml",
@@ -176,7 +190,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 9,
               "Title": "website.css",
               "DocumentMoniker": "F:\\Invoice-automation-V1\\Invoice-automation-V1\\wwwroot\\css\\website.css",
               "RelativeDocumentMoniker": "Invoice-automation-V1\\wwwroot\\css\\website.css",
