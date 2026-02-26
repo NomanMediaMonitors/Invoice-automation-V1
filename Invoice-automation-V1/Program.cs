@@ -7,12 +7,15 @@ using InvoiceAutomation.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 
-var builder = WebApplication.CreateBuilder(args);
-
-// Ensure WebRootPath resolves relative to the executable when running from a published folder.
-// Without this, the app looks for wwwroot relative to the current working directory, which
-// differs between "dotnet run" (source tree) and running the published binary directly.
-builder.WebHost.UseWebRoot(Path.Combine(AppContext.BaseDirectory, "wwwroot"));
+// Pass WebRootPath via WebApplicationOptions so it is set at builder creation time.
+// UseWebRoot() after CreateBuilder is not supported and throws NotSupportedException.
+// AppContext.BaseDirectory resolves correctly both from VS (source tree) and from the
+// published binary directory, replacing the default wwwroot lookup by working directory.
+var builder = WebApplication.CreateBuilder(new WebApplicationOptions
+{
+    Args = args,
+    WebRootPath = Path.Combine(AppContext.BaseDirectory, "wwwroot")
+});
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
