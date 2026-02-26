@@ -1701,18 +1701,15 @@ select option,
     color: var(--primary-color);
 }
 
-/* Dropdown panel */
+/* Dropdown panel — appended to <body>, so fixed positioning escapes overflow clips */
 .coa-dropdown {
-    position: absolute;
-    top: calc(100% + 4px);
-    left: 0;
-    right: 0;
+    position: fixed;
     min-width: 240px;
     background: var(--bg-primary);
     border: 1px solid var(--border-color);
     border-radius: 0.5rem;
     box-shadow: 0 10px 32px rgba(0, 0, 0, 0.14), 0 2px 8px rgba(0, 0, 0, 0.06);
-    z-index: 1060;
+    z-index: 9999;
     display: none;
     overflow: hidden;
 }
