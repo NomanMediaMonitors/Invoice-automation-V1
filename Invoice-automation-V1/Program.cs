@@ -9,6 +9,11 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Ensure WebRootPath resolves relative to the executable when running from a published folder.
+// Without this, the app looks for wwwroot relative to the current working directory, which
+// differs between "dotnet run" (source tree) and running the published binary directly.
+builder.WebHost.UseWebRoot(Path.Combine(AppContext.BaseDirectory, "wwwroot"));
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
