@@ -1,0 +1,8 @@
+F:\Invoice-automation-V1\Invoice-automation-V1\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css
+F:\Invoice-automation-V1\Invoice-automation-V1\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css.map
+F:\Invoice-automation-V1\Invoice-automation-V1\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.min.css
+F:\Invoice-automation-V1\Invoice-automation-V1\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.min.css.map
+F:\Invoice-automation-V1\Invoice-automation-V1\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.rtl.css
+F:\Invoice-automation-V1\Invoice-automation-V1\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.rtl.css.map
+F:\Invoice-automation-V1\Invoice-automation-V1\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.rtl.min.css
+F:\Invoice-automation-V1\Invoice-automation-V1\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.rtl.min.css.map
