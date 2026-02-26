@@ -526,7 +526,6 @@ public class VendorController : Controller
             template.HasDueDate = model.HasDueDate;
             template.HasDescription = model.HasDescription;
             template.HasLineItems = model.HasLineItems;
-            template.HasTaxRate = model.HasTaxRate;
             template.HasSubTotal = model.HasSubTotal;
             template.HasAdvanceTaxAccount = model.HasAdvanceTaxAccount;
             template.HasSalesTaxInputAccount = model.HasSalesTaxInputAccount;
@@ -538,7 +537,8 @@ public class VendorController : Controller
             template.TotalLabel = model.TotalLabel;
             template.AdvanceTaxAmountLabel = model.AdvanceTaxAmountLabel;
             template.SalesTaxInputAmountLabel = model.SalesTaxInputAmountLabel;
-            template.DefaultTaxRate = model.DefaultTaxRate;
+            template.DefaultAdvanceTaxRate = model.DefaultAdvanceTaxRate;
+            template.DefaultSalesTaxRate = model.DefaultSalesTaxRate;
             template.DefaultChartOfAccountId = (model.DefaultChartOfAccountId == Guid.Empty) ? null : model.DefaultChartOfAccountId;
             template.DefaultAdvanceTaxAccountId = (model.DefaultAdvanceTaxAccountId == Guid.Empty) ? null : model.DefaultAdvanceTaxAccountId;
             template.DefaultSalesTaxInputAccountId = (model.DefaultSalesTaxInputAccountId == Guid.Empty) ? null : model.DefaultSalesTaxInputAccountId;

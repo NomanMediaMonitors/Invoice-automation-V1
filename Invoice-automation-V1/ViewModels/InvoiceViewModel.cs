@@ -108,7 +108,6 @@ public class InvoiceDetailsViewModel
     public DateTime InvoiceDate { get; set; }
     public DateTime? DueDate { get; set; }
     public decimal SubTotal { get; set; }
-    public decimal TaxAmount { get; set; }
     public decimal TotalAmount { get; set; }
     public string Currency { get; set; } = "PKR";
     public string Status { get; set; } = string.Empty;
@@ -153,7 +152,6 @@ public class InvoiceDetailsViewModel
     public bool HasDueDate { get; set; } = true;
     public bool HasDescription { get; set; } = true;
     public bool HasLineItems { get; set; } = true;
-    public bool HasTaxRate { get; set; } = true;
     public bool HasSubTotal { get; set; } = true;
     public bool HasAdvanceTaxAccount { get; set; } = true;
     public bool HasSalesTaxInputAccount { get; set; } = true;
@@ -189,10 +187,9 @@ public class InvoiceLineItemViewModel
 
     public decimal Amount { get; set; }
 
-    [Range(0, 100)]
-    public decimal TaxRate { get; set; }
+    public decimal AdvanceTaxAmount { get; set; }
+    public decimal SalesTaxAmount { get; set; }
 
-    public decimal TaxAmount { get; set; }
     public decimal TotalAmount { get; set; }
 
     public Guid? ChartOfAccountId { get; set; }
@@ -247,9 +244,6 @@ public class OcrExtractedData
     public DateTime? InvoiceDate { get; set; }
     public DateTime? DueDate { get; set; }
     public string? VendorName { get; set; }
-    public decimal? TotalAmount { get; set; }
-    public decimal? TaxAmount { get; set; }
-    public decimal? SubTotal { get; set; }
     public List<OcrLineItem> LineItems { get; set; } = new();
     public string? RawText { get; set; }
 }

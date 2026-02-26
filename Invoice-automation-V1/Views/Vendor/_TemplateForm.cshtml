@@ -39,10 +39,6 @@
                             <label asp-for="HasLineItems" class="form-check-label">Line Items</label>
                         </div>
                         <div class="form-check form-switch mb-2">
-                            <input asp-for="HasTaxRate" class="form-check-input">
-                            <label asp-for="HasTaxRate" class="form-check-label">Tax Rate</label>
-                        </div>
-                        <div class="form-check form-switch mb-2">
                             <input asp-for="HasSubTotal" class="form-check-input">
                             <label asp-for="HasSubTotal" class="form-check-label">Sub Total</label>
                         </div>
@@ -57,11 +53,15 @@
 
                 <h6 class="text-muted small text-uppercase mb-3">Defaults</h6>
                 <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label asp-for="DefaultTaxRate" class="form-label">Default Tax Rate (%)</label>
-                        <input asp-for="DefaultTaxRate" type="number" class="form-control" min="0" max="100" step="0.01" placeholder="e.g., 17">
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="DefaultAdvanceTaxRate" class="form-label">Default Advance Tax Rate (%)</label>
+                        <input asp-for="DefaultAdvanceTaxRate" type="number" class="form-control" min="0" max="100" step="0.01" placeholder="e.g., 6">
                     </div>
-                    <div class="col-md-6 mb-3">
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="DefaultSalesTaxRate" class="form-label">Default Sales Tax Rate (%)</label>
+                        <input asp-for="DefaultSalesTaxRate" type="number" class="form-control" min="0" max="100" step="0.01" placeholder="e.g., 17">
+                    </div>
+                    <div class="col-md-4 mb-3">
                         <label asp-for="DefaultChartOfAccountId" class="form-label">Default Line Item Account</label>
                         <select asp-for="DefaultChartOfAccountId" class="form-select" asp-items="ViewBag.ChartOfAccounts">
                             <option value="">-- None --</option>

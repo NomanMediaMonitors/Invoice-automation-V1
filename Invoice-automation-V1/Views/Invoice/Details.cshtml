@@ -226,14 +226,24 @@
                                         <label class="form-label form-label-sm">Unit Price <span class="required">*</span></label>
                                         <input type="number" name="unitPrice" class="form-control form-control-sm" min="0.01" step="0.01" required placeholder="0.00" id="newPrice">
                                     </div>
-                                    @if (Model.HasTaxRate)
+                                    @if (Model.HasAdvanceTaxAccount)
                                     {
                                         <div class="col-md-1">
-                                            <label class="form-label form-label-sm">Tax %</label>
-                                            <input type="number" name="taxRate" class="form-control form-control-sm" value="0" min="0" max="100" step="0.01" id="newTaxRate">
+                                            <label class="form-label form-label-sm">Adv Tax</label>
+                                            <input type="number" name="advanceTaxAmount" class="form-control form-control-sm" value="0" min="0" step="0.01" id="newAdvanceTaxAmount">
                                         </div>
                                     }
-                                    <div class="col-md-@(Model.HasTaxRate ? "3" : "4")">
+                                    @if (Model.HasSalesTaxInputAccount)
+                                    {
+                                        <div class="col-md-1">
+                                            <label class="form-label form-label-sm">Sales Tax</label>
+                                            <input type="number" name="salesTaxAmount" class="form-control form-control-sm" value="0" min="0" step="0.01" id="newSalesTaxAmount">
+                                        </div>
+                                    }
+                                    @{
+                                        var addFormAccountColSize = 4 - (Model.HasAdvanceTaxAccount ? 1 : 0) - (Model.HasSalesTaxInputAccount ? 1 : 0);
+                                    }
+                                    <div class="col-md-@addFormAccountColSize">
                                         <label class="form-label form-label-sm">Account</label>
                                         <select name="chartOfAccountId" class="form-select form-select-sm">
                                             <option value="">-- Select --</option>
@@ -273,14 +283,14 @@
                                     <th style="min-width: 180px;">Account</th>
                                     <th class="text-end" style="min-width: 90px;">Qty</th>
                                     <th class="text-end" style="min-width: 120px;">Unit Price</th>
-                                    @if (Model.HasTaxRate)
-                                    {
-                                        <th class="text-end" style="min-width: 80px;">Tax %</th>
-                                    }
                                     <th class="text-end" style="min-width: 120px;">Amount</th>
-                                    @if (Model.HasTaxRate)
+                                    @if (Model.HasAdvanceTaxAccount)
                                     {
-                                        <th class="text-end" style="min-width: 100px;">Tax</th>
+                                        <th class="text-end" style="min-width: 110px;">Adv Tax</th>
+                                    }
+                                    @if (Model.HasSalesTaxInputAccount)
+                                    {
+                                        <th class="text-end" style="min-width: 110px;">Sales Tax</th>
                                     }
                                     <th class="text-end" style="min-width: 120px;">Total</th>
                                     @if (canEdit)
@@ -330,18 +340,22 @@
                                                        value="@item.UnitPrice" min="0" step="0.01"
                                                        data-original="@item.UnitPrice" style="min-width: 110px; width: 100%;">
                                             </td>
-                                            @if (Model.HasTaxRate)
+                                            <td class="text-end li-amount" style="white-space: nowrap;">@Model.Currency @item.Amount.ToString("N2")</td>
+                                            @if (Model.HasAdvanceTaxAccount)
                                             {
                                                 <td>
-                                                    <input type="number" class="form-control form-control-sm text-end li-taxrate"
-                                                           value="@item.TaxRate" min="0" max="100" step="0.01"
-                                                           data-original="@item.TaxRate" style="min-width: 70px; width: 100%;">
+                                                    <input type="number" class="form-control form-control-sm text-end li-advancetaxamount"
+                                                           value="@item.AdvanceTaxAmount" min="0" step="0.01"
+                                                           data-original="@item.AdvanceTaxAmount" style="min-width: 100px; width: 100%;">
                                                 </td>
                                             }
-                                            <td class="text-end li-amount" style="white-space: nowrap;">@Model.Currency @item.Amount.ToString("N2")</td>
-                                            @if (Model.HasTaxRate)
+                                            @if (Model.HasSalesTaxInputAccount)
                                             {
-                                                <td class="text-end li-taxamount" style="white-space: nowrap;">@Model.Currency @item.TaxAmount.ToString("N2")</td>
+                                                <td>
+                                                    <input type="number" class="form-control form-control-sm text-end li-salestaxamount"
+                                                           value="@item.SalesTaxAmount" min="0" step="0.01"
+                                                           data-original="@item.SalesTaxAmount" style="min-width: 100px; width: 100%;">
+                                                </td>
                                             }
                                             <td class="text-end fw-bold li-totalamount" style="white-space: nowrap;">@Model.Currency @item.TotalAmount.ToString("N2")</td>
                                             <td class="text-center">
@@ -380,14 +394,14 @@
                                             </td>
                                             <td class="text-end" style="white-space: nowrap;">@item.Quantity.ToString("N2")</td>
                                             <td class="text-end" style="white-space: nowrap;">@Model.Currency @item.UnitPrice.ToString("N2")</td>
-                                            @if (Model.HasTaxRate)
-                                            {
-                                                <td class="text-end" style="white-space: nowrap;">@item.TaxRate.ToString("N2")%</td>
-                                            }
                                             <td class="text-end" style="white-space: nowrap;">@Model.Currency @item.Amount.ToString("N2")</td>
-                                            @if (Model.HasTaxRate)
+                                            @if (Model.HasAdvanceTaxAccount)
                                             {
-                                                <td class="text-end" style="white-space: nowrap;">@Model.Currency @item.TaxAmount.ToString("N2")</td>
+                                                <td class="text-end" style="white-space: nowrap;">@Model.Currency @item.AdvanceTaxAmount.ToString("N2")</td>
+                                            }
+                                            @if (Model.HasSalesTaxInputAccount)
+                                            {
+                                                <td class="text-end" style="white-space: nowrap;">@Model.Currency @item.SalesTaxAmount.ToString("N2")</td>
                                             }
                                             <td class="text-end fw-bold" style="white-space: nowrap;">@Model.Currency @item.TotalAmount.ToString("N2")</td>
                                         }
@@ -395,7 +409,7 @@
                                 }
                             </tbody>
                             @{
-                                var footerColspan = 6 + (Model.HasTaxRate ? 2 : 0) + (canEdit ? 1 : 0);
+                                var footerColspan = 6 + (Model.HasAdvanceTaxAccount ? 1 : 0) + (Model.HasSalesTaxInputAccount ? 1 : 0) + (canEdit ? 1 : 0);
                             }
                             <tfoot>
                                 @if (Model.HasSubTotal)
@@ -403,13 +417,6 @@
                                     <tr style="background: var(--bg-secondary);">
                                         <td colspan="@footerColspan" class="text-end"><strong>Subtotal:</strong></td>
                                         <td class="text-end fw-bold" id="invoiceSubTotal">@Model.Currency @Model.SubTotal.ToString("N2")</td>
-                                    </tr>
-                                }
-                                @if (Model.HasTaxRate)
-                                {
-                                    <tr style="background: var(--bg-secondary);">
-                                        <td colspan="@footerColspan" class="text-end"><strong>Tax:</strong></td>
-                                        <td class="text-end fw-bold" id="invoiceTaxAmount">@Model.Currency @Model.TaxAmount.ToString("N2")</td>
                                     </tr>
                                 }
                                 @if (Model.HasAdvanceTaxAccount)
@@ -499,19 +506,7 @@
                                                 <span>@(Model.AdvanceTaxAccountName ?? "Not assigned")</span>
                                             }
                                         </td>
-                                        <td class="text-end">
-                                            @if (canEditAccounts)
-                                            {
-                                                <input type="number" class="form-control form-control-sm text-end gl-amount-field"
-                                                       data-field="advancetaxamount" data-invoice-id="@Model.Id"
-                                                       value="@Model.AdvanceTaxAmount" min="0" step="0.01"
-                                                       style="width: 100%;">
-                                            }
-                                            else
-                                            {
-                                                <span class="fw-bold">@Model.Currency @Model.AdvanceTaxAmount.ToString("N2")</span>
-                                            }
-                                        </td>
+                                        <td class="text-end fw-bold" id="glAdvanceTaxAmount">@Model.Currency @Model.AdvanceTaxAmount.ToString("N2")</td>
                                     </tr>
                                 }
                                 @if (Model.HasSalesTaxInputAccount)
@@ -539,19 +534,7 @@
                                                 <span>@(Model.SalesTaxInputAccountName ?? "Not assigned")</span>
                                             }
                                         </td>
-                                        <td class="text-end">
-                                            @if (canEditAccounts)
-                                            {
-                                                <input type="number" class="form-control form-control-sm text-end gl-amount-field"
-                                                       data-field="salestaxinputamount" data-invoice-id="@Model.Id"
-                                                       value="@Model.SalesTaxInputAmount" min="0" step="0.01"
-                                                       style="width: 100%;">
-                                            }
-                                            else
-                                            {
-                                                <span class="fw-bold">@Model.Currency @Model.SalesTaxInputAmount.ToString("N2")</span>
-                                            }
-                                        </td>
+                                        <td class="text-end fw-bold" id="glSalesTaxAmount">@Model.Currency @Model.SalesTaxInputAmount.ToString("N2")</td>
                                     </tr>
                                 }
                             </tbody>
@@ -860,15 +843,13 @@
             function updateRowPreview(row) {
                 var qty = parseFloat(row.querySelector('.li-qty')?.value) || 0;
                 var price = parseFloat(row.querySelector('.li-unitprice')?.value) || 0;
-                var taxRate = parseFloat(row.querySelector('.li-taxrate')?.value) || 0;
+                var advTax = parseFloat(row.querySelector('.li-advancetaxamount')?.value) || 0;
+                var salesTax = parseFloat(row.querySelector('.li-salestaxamount')?.value) || 0;
                 var amount = qty * price;
-                var tax = amount * (taxRate / 100);
-                var total = amount + tax;
+                var total = amount + advTax + salesTax;
                 var amountCell = row.querySelector('.li-amount');
-                var taxCell = row.querySelector('.li-taxamount');
                 var totalCell = row.querySelector('.li-totalamount');
                 if (amountCell) amountCell.textContent = currency + ' ' + amount.toFixed(2);
-                if (taxCell) taxCell.textContent = currency + ' ' + tax.toFixed(2);
                 if (totalCell) totalCell.textContent = currency + ' ' + total.toFixed(2);
             }
 
@@ -887,7 +868,8 @@
                     description: row.querySelector('.li-description')?.value || '',
                     quantity: parseFloat(row.querySelector('.li-qty')?.value) || 0,
                     unitPrice: parseFloat(row.querySelector('.li-unitprice')?.value) || 0,
-                    taxRate: parseFloat(row.querySelector('.li-taxrate')?.value) || 0,
+                    advanceTaxAmount: parseFloat(row.querySelector('.li-advancetaxamount')?.value) || 0,
+                    salesTaxAmount: parseFloat(row.querySelector('.li-salestaxamount')?.value) || 0,
                     chartOfAccountId: row.querySelector('.li-account')?.value || null
                 };
 
@@ -909,17 +891,31 @@
                         // Flash green on the row
                         row.classList.add('table-success');
                         setTimeout(function() { row.classList.remove('table-success'); }, 1500);
-                        // Update totals
+                        // Update line item cells
                         var amountCell = row.querySelector('.li-amount');
-                        var taxCell = row.querySelector('.li-taxamount');
+                        var advTaxInput = row.querySelector('.li-advancetaxamount');
+                        var salesTaxInput = row.querySelector('.li-salestaxamount');
                         var totalCell = row.querySelector('.li-totalamount');
                         if (amountCell) amountCell.textContent = currency + ' ' + result.lineItem.amount.toFixed(2);
-                        if (taxCell) taxCell.textContent = currency + ' ' + result.lineItem.taxAmount.toFixed(2);
+                        if (advTaxInput) { advTaxInput.value = result.lineItem.advanceTaxAmount.toFixed(2); advTaxInput.dataset.original = result.lineItem.advanceTaxAmount.toFixed(2); }
+                        if (salesTaxInput) { salesTaxInput.value = result.lineItem.salesTaxAmount.toFixed(2); salesTaxInput.dataset.original = result.lineItem.salesTaxAmount.toFixed(2); }
                         if (totalCell) totalCell.textContent = currency + ' ' + result.lineItem.totalAmount.toFixed(2);
                         // Update invoice totals
-                        document.getElementById('invoiceSubTotal').textContent = currency + ' ' + result.invoice.subTotal.toFixed(2);
-                        document.getElementById('invoiceTaxAmount').textContent = currency + ' ' + result.invoice.taxAmount.toFixed(2);
-                        document.getElementById('invoiceTotalAmount').textContent = currency + ' ' + result.invoice.totalAmount.toFixed(2);
+                        var subTotalEl = document.getElementById('invoiceSubTotal');
+                        if (subTotalEl) subTotalEl.textContent = currency + ' ' + result.invoice.subTotal.toFixed(2);
+                        var advTaxTotalEl = document.getElementById('invoiceAdvanceTaxAmount');
+                        if (advTaxTotalEl) advTaxTotalEl.textContent = currency + ' ' + result.invoice.advanceTaxAmount.toFixed(2);
+                        var salesTaxTotalEl = document.getElementById('invoiceSalesTaxInputAmount');
+                        if (salesTaxTotalEl) salesTaxTotalEl.textContent = currency + ' ' + result.invoice.salesTaxInputAmount.toFixed(2);
+                        var totalAmountEl = document.getElementById('invoiceTotalAmount');
+                        if (totalAmountEl) totalAmountEl.textContent = currency + ' ' + result.invoice.totalAmount.toFixed(2);
+                        // Update GL section amounts
+                        var glSubTotalEl = document.getElementById('glSubTotal');
+                        if (glSubTotalEl) glSubTotalEl.textContent = currency + ' ' + result.invoice.subTotal.toFixed(2);
+                        var glAdvTaxEl = document.getElementById('glAdvanceTaxAmount');
+                        if (glAdvTaxEl) glAdvTaxEl.textContent = currency + ' ' + result.invoice.advanceTaxAmount.toFixed(2);
+                        var glSalesTaxEl = document.getElementById('glSalesTaxAmount');
+                        if (glSalesTaxEl) glSalesTaxEl.textContent = currency + ' ' + result.invoice.salesTaxInputAmount.toFixed(2);
                     } else {
                         alert('Error: ' + (result.message || 'Unknown error'));
                     }
@@ -1066,80 +1062,35 @@
             });
         });
 
-        // ===== GL Amount Fields (Advance Tax, Sales Tax Input) =====
-        document.querySelectorAll('.gl-amount-field').forEach(function(input) {
-            var debounceTimer;
-            input.addEventListener('change', function() {
-                var field = this.dataset.field;
-                var invoiceIdVal = this.dataset.invoiceId;
-                var inputEl = this;
-
-                clearTimeout(debounceTimer);
-                debounceTimer = setTimeout(function() {
-                    fetch('@Url.Action("UpdateInvoiceField", "Invoice")', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'RequestVerificationToken': antiForgeryToken
-                        },
-                        body: JSON.stringify({
-                            invoiceId: invoiceIdVal,
-                            field: field,
-                            value: inputEl.value
-                        })
-                    })
-                    .then(function(r) { return r.json(); })
-                    .then(function(result) {
-                        if (result.success) {
-                            inputEl.classList.add('is-valid');
-                            setTimeout(function() { inputEl.classList.remove('is-valid'); }, 2000);
-                            // Update totals displayed in line items footer
-                            var invoiceTotal = document.getElementById('invoiceTotalAmount');
-                            if (invoiceTotal && result.totalAmount !== undefined) {
-                                invoiceTotal.textContent = '@Model.Currency ' + parseFloat(result.totalAmount).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                            }
-                            var advanceTaxEl = document.getElementById('invoiceAdvanceTaxAmount');
-                            if (advanceTaxEl && result.advanceTaxAmount !== undefined) {
-                                advanceTaxEl.textContent = '@Model.Currency ' + parseFloat(result.advanceTaxAmount).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                            }
-                            var salesTaxEl = document.getElementById('invoiceSalesTaxInputAmount');
-                            if (salesTaxEl && result.salesTaxInputAmount !== undefined) {
-                                salesTaxEl.textContent = '@Model.Currency ' + parseFloat(result.salesTaxInputAmount).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                            }
-                        } else {
-                            alert('Error: ' + (result.message || 'Failed to save'));
-                        }
-                    })
-                    .catch(function(err) {
-                        alert('Error saving amount');
-                    });
-                }, 300);
-            });
-        });
-
         // ===== Add Line Item Preview =====
         var qtyEl = document.getElementById('newQty');
         var priceEl = document.getElementById('newPrice');
-        var taxRateEl = document.getElementById('newTaxRate');
+        var advTaxAmtEl = document.getElementById('newAdvanceTaxAmount');
+        var salesTaxAmtEl = document.getElementById('newSalesTaxAmount');
         var previewEl = document.getElementById('lineItemPreview');
 
         function updatePreview() {
             if (!qtyEl || !priceEl || !previewEl) return;
             var qty = parseFloat(qtyEl.value) || 0;
             var price = parseFloat(priceEl.value) || 0;
-            var taxRate = parseFloat(taxRateEl.value) || 0;
+            var advTax = advTaxAmtEl ? (parseFloat(advTaxAmtEl.value) || 0) : 0;
+            var salesTax = salesTaxAmtEl ? (parseFloat(salesTaxAmtEl.value) || 0) : 0;
             var amount = qty * price;
-            var tax = amount * (taxRate / 100);
-            var total = amount + tax;
+            var total = amount + advTax + salesTax;
             if (amount > 0) {
-                previewEl.textContent = 'Amount: ' + amount.toFixed(2) + ' | Tax: ' + tax.toFixed(2) + ' | Total: ' + total.toFixed(2);
+                var parts = ['Amount: ' + amount.toFixed(2)];
+                if (advTax > 0) parts.push('Adv Tax: ' + advTax.toFixed(2));
+                if (salesTax > 0) parts.push('Sales Tax: ' + salesTax.toFixed(2));
+                parts.push('Total: ' + total.toFixed(2));
+                previewEl.textContent = parts.join(' | ');
             } else {
                 previewEl.textContent = '';
             }
         }
         if (qtyEl) qtyEl.addEventListener('input', updatePreview);
         if (priceEl) priceEl.addEventListener('input', updatePreview);
-        if (taxRateEl) taxRateEl.addEventListener('input', updatePreview);
+        if (advTaxAmtEl) advTaxAmtEl.addEventListener('input', updatePreview);
+        if (salesTaxAmtEl) salesTaxAmtEl.addEventListener('input', updatePreview);
 
         // ===== GL Preview =====
         var glPreviewBtn = document.getElementById('btnShowGLPreview');

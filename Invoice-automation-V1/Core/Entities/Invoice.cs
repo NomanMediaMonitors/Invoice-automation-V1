@@ -11,7 +11,6 @@ public class Invoice
     public DateTime InvoiceDate { get; set; }
     public DateTime? DueDate { get; set; }
     public decimal SubTotal { get; set; }
-    public decimal TaxAmount { get; set; }
     public decimal TotalAmount { get; set; }
     public string Currency { get; set; } = "PKR";
     public InvoiceStatus Status { get; set; } = InvoiceStatus.Draft;

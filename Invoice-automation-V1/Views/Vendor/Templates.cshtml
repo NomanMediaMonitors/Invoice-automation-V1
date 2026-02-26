@@ -85,13 +85,18 @@
                             @if (template.HasDueDate) { <span class="badge bg-primary-subtle text-primary-emphasis">Due Date</span> }
                             @if (template.HasDescription) { <span class="badge bg-primary-subtle text-primary-emphasis">Description</span> }
                             @if (template.HasLineItems) { <span class="badge bg-primary-subtle text-primary-emphasis">Line Items</span> }
-                            @if (template.HasTaxRate) { <span class="badge bg-primary-subtle text-primary-emphasis">Tax Rate</span> }
                             @if (template.HasSubTotal) { <span class="badge bg-primary-subtle text-primary-emphasis">Sub Total</span> }
+                            @if (template.HasAdvanceTaxAccount) { <span class="badge bg-success-subtle text-success-emphasis">Advance Tax</span> }
+                            @if (template.HasSalesTaxInputAccount) { <span class="badge bg-success-subtle text-success-emphasis">Sales Tax Input</span> }
                         </div>
 
-                        @if (template.DefaultTaxRate.HasValue)
+                        @if (template.DefaultAdvanceTaxRate.HasValue)
                         {
-                            <p class="small mb-1"><strong>Default Tax Rate:</strong> @template.DefaultTaxRate.Value.ToString("N2")%</p>
+                            <p class="small mb-1"><strong>Default Advance Tax Rate:</strong> @template.DefaultAdvanceTaxRate.Value.ToString("N2")%</p>
+                        }
+                        @if (template.DefaultSalesTaxRate.HasValue)
+                        {
+                            <p class="small mb-1"><strong>Default Sales Tax Rate:</strong> @template.DefaultSalesTaxRate.Value.ToString("N2")%</p>
                         }
                         @if (template.DefaultChartOfAccount != null)
                         {

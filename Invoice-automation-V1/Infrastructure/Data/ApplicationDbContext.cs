@@ -415,7 +415,6 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.InvoiceDate).HasColumnName("invoice_date").HasColumnType("DATE");
             entity.Property(e => e.DueDate).HasColumnName("due_date").HasColumnType("DATE");
             entity.Property(e => e.SubTotal).HasColumnName("sub_total").HasColumnType("DECIMAL(18,2)");
-            entity.Property(e => e.TaxAmount).HasColumnName("tax_amount").HasColumnType("DECIMAL(18,2)");
             entity.Property(e => e.TotalAmount).HasColumnName("total_amount").HasColumnType("DECIMAL(18,2)");
             entity.Property(e => e.Currency).HasMaxLength(10).HasColumnName("currency").HasDefaultValue("PKR");
             entity.Property(e => e.Status).IsRequired().HasColumnName("status").HasConversion<string>().HasMaxLength(50);
@@ -490,8 +489,8 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.Quantity).HasColumnName("quantity").HasColumnType("DECIMAL(18,4)");
             entity.Property(e => e.UnitPrice).HasColumnName("unit_price").HasColumnType("DECIMAL(18,2)");
             entity.Property(e => e.Amount).HasColumnName("amount").HasColumnType("DECIMAL(18,2)");
-            entity.Property(e => e.TaxRate).HasColumnName("tax_rate").HasColumnType("DECIMAL(5,2)");
-            entity.Property(e => e.TaxAmount).HasColumnName("tax_amount").HasColumnType("DECIMAL(18,2)");
+            entity.Property(e => e.AdvanceTaxAmount).HasColumnName("advance_tax_amount").HasColumnType("DECIMAL(18,2)").HasDefaultValue(0m);
+            entity.Property(e => e.SalesTaxAmount).HasColumnName("sales_tax_amount").HasColumnType("DECIMAL(18,2)").HasDefaultValue(0m);
             entity.Property(e => e.TotalAmount).HasColumnName("total_amount").HasColumnType("DECIMAL(18,2)");
             entity.Property(e => e.ChartOfAccountId).HasColumnName("chart_of_account_id").HasColumnType("CHAR(36)");
             entity.Property(e => e.AccountCode).HasMaxLength(50).HasColumnName("account_code");
@@ -524,7 +523,6 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.HasDueDate).HasColumnName("has_due_date").HasColumnType("TINYINT(1)").HasDefaultValue(true);
             entity.Property(e => e.HasDescription).HasColumnName("has_description").HasColumnType("TINYINT(1)").HasDefaultValue(true);
             entity.Property(e => e.HasLineItems).HasColumnName("has_line_items").HasColumnType("TINYINT(1)").HasDefaultValue(true);
-            entity.Property(e => e.HasTaxRate).HasColumnName("has_tax_rate").HasColumnType("TINYINT(1)").HasDefaultValue(true);
             entity.Property(e => e.HasSubTotal).HasColumnName("has_sub_total").HasColumnType("TINYINT(1)").HasDefaultValue(true);
 
             // OCR field mapping labels
@@ -545,7 +543,8 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.DefaultSalesTaxInputAccountId).HasColumnName("default_sales_tax_input_account_id").HasColumnType("CHAR(36)");
             entity.Property(e => e.DefaultPayableVendorsAccountId).HasColumnName("default_payable_vendors_account_id").HasColumnType("CHAR(36)");
             // Defaults
-            entity.Property(e => e.DefaultTaxRate).HasColumnName("default_tax_rate").HasColumnType("DECIMAL(5,2)");
+            entity.Property(e => e.DefaultAdvanceTaxRate).HasColumnName("default_advance_tax_rate").HasColumnType("DECIMAL(5,2)");
+            entity.Property(e => e.DefaultSalesTaxRate).HasColumnName("default_sales_tax_rate").HasColumnType("DECIMAL(5,2)");
             entity.Property(e => e.DefaultChartOfAccountId).HasColumnName("default_chart_of_account_id").HasColumnType("CHAR(36)");
 
             entity.Property(e => e.Notes).HasMaxLength(1000).HasColumnName("notes");

@@ -9,8 +9,8 @@ public class InvoiceLineItem
     public decimal Quantity { get; set; }
     public decimal UnitPrice { get; set; }
     public decimal Amount { get; set; }
-    public decimal TaxRate { get; set; }
-    public decimal TaxAmount { get; set; }
+    public decimal AdvanceTaxAmount { get; set; }
+    public decimal SalesTaxAmount { get; set; }
     public decimal TotalAmount { get; set; }
 
     // Chart of Account for expense categorization
