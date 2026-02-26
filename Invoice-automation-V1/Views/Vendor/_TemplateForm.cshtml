@@ -63,7 +63,7 @@
                     </div>
                     <div class="col-md-4 mb-3">
                         <label asp-for="DefaultChartOfAccountId" class="form-label">Default Line Item Account</label>
-                        <select asp-for="DefaultChartOfAccountId" class="form-select" asp-items="ViewBag.ChartOfAccounts">
+                        <select asp-for="DefaultChartOfAccountId" class="form-select coa-select" asp-items="ViewBag.ChartOfAccounts">
                             <option value="">-- None --</option>
                         </select>
                     </div>
@@ -96,7 +96,7 @@
                         <label asp-for="HasAdvanceTaxAccount" class="form-check-label fw-semibold">Advance Tax</label>
                     </div>
                     <div id="advanceTaxAccountSection">
-                        <select asp-for="DefaultAdvanceTaxAccountId" class="form-select form-select-sm" asp-items="ViewBag.ChartOfAccounts">
+                        <select asp-for="DefaultAdvanceTaxAccountId" class="form-select form-select-sm coa-select" asp-items="ViewBag.ChartOfAccounts">
                             <option value="">-- Default Advance Tax Account --</option>
                         </select>
                     </div>
@@ -108,7 +108,7 @@
                         <label asp-for="HasSalesTaxInputAccount" class="form-check-label fw-semibold">Sales Tax Input</label>
                     </div>
                     <div id="salesTaxInputAccountSection">
-                        <select asp-for="DefaultSalesTaxInputAccountId" class="form-select form-select-sm" asp-items="ViewBag.ChartOfAccounts">
+                        <select asp-for="DefaultSalesTaxInputAccountId" class="form-select form-select-sm coa-select" asp-items="ViewBag.ChartOfAccounts">
                             <option value="">-- Default Sales Tax Input Account --</option>
                         </select>
                     </div>
@@ -119,7 +119,7 @@
                 <div class="mb-0">
                     <label asp-for="DefaultPayableVendorsAccountId" class="form-label fw-semibold">Payable Vendors Account</label>
                     <div class="form-text mb-2">This account will be used as the credit entry (Total Amount) when posting to GL.</div>
-                    <select asp-for="DefaultPayableVendorsAccountId" class="form-select form-select-sm" asp-items="ViewBag.ChartOfAccounts">
+                    <select asp-for="DefaultPayableVendorsAccountId" class="form-select form-select-sm coa-select" asp-items="ViewBag.ChartOfAccounts">
                         <option value="">-- Select Payable Vendors Account --</option>
                     </select>
                 </div>
@@ -200,5 +200,14 @@
 
         toggleAccountSection('hasAdvanceTaxAccount', 'advanceTaxAccountSection');
         toggleAccountSection('hasSalesTaxInputAccount', 'salesTaxInputAccountSection');
+
+        // ===== Searchable COA Dropdowns (Tom Select) =====
+        document.querySelectorAll('.coa-select').forEach(function(el) {
+            new TomSelect(el, {
+                maxItems: 1,
+                create: false,
+                allowEmptyOption: true
+            });
+        });
     </script>
 }

@@ -245,7 +245,7 @@
                                     }
                                     <div class="col-md-@addFormAccountColSize">
                                         <label class="form-label form-label-sm">Account</label>
-                                        <select name="chartOfAccountId" class="form-select form-select-sm">
+                                        <select name="chartOfAccountId" class="form-select form-select-sm coa-select">
                                             <option value="">-- Select --</option>
                                             @if (ViewBag.ChartOfAccounts != null)
                                             {
@@ -316,7 +316,7 @@
                                                 }
                                             </td>
                                             <td>
-                                                <select class="form-select form-select-sm li-account" style="min-width: 170px;">
+                                                <select class="form-select form-select-sm li-account coa-select" style="min-width: 170px;">
                                                     <option value="">-- Select --</option>
                                                     @if (ViewBag.ChartOfAccounts != null)
                                                     {
@@ -488,7 +488,7 @@
                                         <td>
                                             @if (canEditAccounts)
                                             {
-                                                <select class="form-select form-select-sm gl-account-select"
+                                                <select class="form-select form-select-sm gl-account-select coa-select"
                                                         data-account-type="advancetax" data-invoice-id="@Model.Id">
                                                     <option value="">-- Select Account --</option>
                                                     @if (ViewBag.ChartOfAccounts != null)
@@ -516,7 +516,7 @@
                                         <td>
                                             @if (canEditAccounts)
                                             {
-                                                <select class="form-select form-select-sm gl-account-select"
+                                                <select class="form-select form-select-sm gl-account-select coa-select"
                                                         data-account-type="salestaxinput" data-invoice-id="@Model.Id">
                                                     <option value="">-- Select Account --</option>
                                                     @if (ViewBag.ChartOfAccounts != null)
@@ -1050,8 +1050,9 @@
                 .then(function(r) { return r.json(); })
                 .then(function(result) {
                     if (result.success) {
-                        selectEl.classList.add('is-valid');
-                        setTimeout(function() { selectEl.classList.remove('is-valid'); }, 2000);
+                        var feedbackEl = selectEl.tomselect ? selectEl.tomselect.wrapper : selectEl;
+                        feedbackEl.classList.add('is-valid');
+                        setTimeout(function() { feedbackEl.classList.remove('is-valid'); }, 2000);
                     } else {
                         alert('Error: ' + (result.message || 'Failed to save'));
                     }
@@ -1153,5 +1154,14 @@
                     });
             });
         }
+
+        // ===== Searchable COA Dropdowns (Tom Select) =====
+        document.querySelectorAll('.coa-select').forEach(function(el) {
+            new TomSelect(el, {
+                maxItems: 1,
+                create: false,
+                allowEmptyOption: true
+            });
+        });
     </script>
 }
